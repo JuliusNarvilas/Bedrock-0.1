@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83384870dc966b04fb7e7127962ca4ad, type: 3}
+  m_Name: ResourceDB
+  m_EditorClassIdentifier: 
+  m_Items:
+  - m_Name: Fonts
+    m_Ext: 
+    m_Path: 
+    m_Type: 1
+    m_ObjectTypeName: 
+  - m_Name: OpenSans-Regular
+    m_Ext: .ttf
+    m_Path: Fonts
+    m_Type: 2
+    m_ObjectTypeName: UnityEngine.Font, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  - m_Name: Images
+    m_Ext: 
+    m_Path: 
+    m_Type: 1
+    m_ObjectTypeName: 
+  - m_Name: me face
+    m_Ext: .jpg
+    m_Path: Images
+    m_Type: 2
+    m_ObjectTypeName: UnityEngine.Texture2D, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  - m_Name: profile
+    m_Ext: .png
+    m_Path: Images
+    m_Type: 2
+    m_ObjectTypeName: UnityEngine.Texture2D, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  - m_Name: Test
+    m_Ext: .jpg
+    m_Path: Images
+    m_Type: 2
+    m_ObjectTypeName: UnityEngine.Texture2D, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  - m_Name: Localization
+    m_Ext: 
+    m_Path: 
+    m_Type: 1
+    m_ObjectTypeName: 
+  - m_Name: en
+    m_Ext: 
+    m_Path: Localization
+    m_Type: 1
+    m_ObjectTypeName: 
+  - m_Name: data
+    m_Ext: .json
+    m_Path: Localization/en
+    m_Type: 2
+    m_ObjectTypeName: UnityEngine.TextAsset, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  - m_Name: global
+    m_Ext: 
+    m_Path: Localization
+    m_Type: 1
+    m_ObjectTypeName: 
+  - m_Name: data
+    m_Ext: .json
+    m_Path: Localization/global
+    m_Type: 2
+    m_ObjectTypeName: UnityEngine.TextAsset, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  - m_Name: localizations
+    m_Ext: .json
+    m_Path: Localization
+    m_Type: 2
+    m_ObjectTypeName: UnityEngine.TextAsset, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  - m_Name: Materials
+    m_Ext: 
+    m_Path: 
+    m_Type: 1
+    m_ObjectTypeName: 
+  - m_Name: Sprite
+    m_Ext: .mat
+    m_Path: Materials
+    m_Type: 2
+    m_ObjectTypeName: UnityEngine.Material, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  - m_Name: IntelligentTextSettings
+    m_Ext: .asset
+    m_Path: 
+    m_Type: 2
+    m_ObjectTypeName: Common.Text.IntelligentTextSettings, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  - m_Name: ResourceDB
+    m_Ext: .asset
+    m_Path: 
+    m_Type: 2
+    m_ObjectTypeName: Common.IO.ResourcesDB, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  m_FileCount: 10
+  m_FolderCount: 6
+  UpdateAutomatically: 0

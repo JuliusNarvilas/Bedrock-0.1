@@ -1,0 +1,14 @@
+{
+    "localizationList" : [
+        {
+            "id" : "global",
+            "displayName" : "",
+            "path" : "Localization/global/data"
+        },
+        {
+            "id" : "en",
+            "displayName" : "English",
+            "path" : "Localization/en/data"
+        }
+    ]
+}

@@ -1,0 +1,40 @@
+{
+    "inserts": [
+        {
+            "id": "text1",
+            "data": "Test localization text1-2"
+        },
+        {
+            "id": "text2",
+            "data": "Test localization <insert id=\"text3\" /> inserted-2"
+        },
+        {
+            "id": "text3",
+            "data": "text3-2"
+        },
+        {
+            "id": "text3",
+            "data": "text3-2"
+        }
+    ],
+    "styles": [
+        {
+            "id": "HeadStyle",
+            "data": {
+                "fontPath": "Fonts\\",
+                "fontSize": 20,
+                "color": { "r": 1, "g": 0, "b": 0, "a": 1 },
+                "lineSpacing": 1.0
+            }
+        },
+        {
+            "id": "BodyStyle",
+            "data": {
+                "fontPath": "Fonts\\",
+                "fontSize": 16,
+                "color": { "r": 0, "g": 1, "b": 0, "a": 1 },
+                "lineSpacing": 1.0
+            }
+        }
+    ]
+}
