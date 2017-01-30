@@ -290,18 +290,13 @@ namespace Common.Text
         /// </summary>
         public void RebuildMesh()
         {
-            if (m_Mesh != null)
+            if (m_Mesh == null)
             {
-                m_Mesh.Clear();
-#if UNITY_EDITOR
-                UnityEngine.Object.DestroyImmediate(m_Mesh);
-#else
-                UnityEngine.Object.Destroy(m_Mesh);
-#endif
+                m_Mesh = new Mesh();
+                m_Mesh.name = "Text Mesh";
+                m_Mesh.hideFlags = HideFlags.DontSaveInBuild | HideFlags.DontSaveInEditor | HideFlags.HideInHierarchy | HideFlags.NotEditable;
             }
-            m_Mesh = new Mesh();
-            m_Mesh.name = "Text Mesh";
-            m_Mesh.hideFlags = HideFlags.DontSaveInBuild | HideFlags.DontSaveInEditor | HideFlags.HideInHierarchy | HideFlags.NotEditable;
+            m_Mesh.Clear(false);
 
             //build up the final text
             StringBuilder textAccumulator = new StringBuilder();
@@ -395,9 +390,10 @@ namespace Common.Text
                 combinedData.SubMeshes.AddRange(tempMeshData.SubMeshes);
             }
 
-            m_Mesh.vertices = combinedData.Verts.ToArray();
-            m_Mesh.colors32 = combinedData.Colors.ToArray();
-            m_Mesh.uv = combinedData.Uvs.ToArray();
+            m_Mesh.SetVertices(combinedData.Verts);
+            m_Mesh.SetColors(combinedData.Colors);
+            m_Mesh.SetUVs(0, combinedData.Uvs);
+
             int combinedSubMeshCount = combinedData.SubMeshes.Count;
             m_Mesh.subMeshCount = combinedSubMeshCount;
             if(m_Materials == null)

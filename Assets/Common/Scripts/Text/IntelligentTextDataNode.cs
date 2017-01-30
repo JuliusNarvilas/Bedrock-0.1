@@ -224,13 +224,6 @@ namespace Common.Text
                 meshData.Uvs[i] = spriteUVs[i - startVertIndex];
             }
 
-            /*
-            meshData.Colors[startVertIndex + 0] = new Color32(byte.MaxValue, 0, 0, byte.MaxValue);
-            meshData.Colors[startVertIndex + 1] = new Color32(0, byte.MaxValue, 0, byte.MaxValue);
-            meshData.Colors[startVertIndex + 2] = new Color32(0, 0, byte.MaxValue, byte.MaxValue);
-            meshData.Colors[startVertIndex + 3] = new Color32(0, 0, 0, byte.MaxValue);
-            */
-
             meshData.SubMeshes.Add(subMeshData);
 
             int size = MeshModifier.Count;
@@ -238,6 +231,7 @@ namespace Common.Text
             {
                 MeshModifier[i].ChangeMesh();
             }
+            
             return i_StartCharIndex + 1;
         }
     }

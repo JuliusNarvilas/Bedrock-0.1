@@ -120,6 +120,7 @@ namespace Common.Text
                     {
                         var materials = m_Parser.Materials;
                         var canvasRenderer = GetComponent<CanvasRenderer>();
+                        canvasRenderer.Clear();
                         canvasRenderer.materialCount = materials.Count;
                         for (int i = 0; i < materials.Count; ++i)
                         {

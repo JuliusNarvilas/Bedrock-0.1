@@ -94,20 +94,17 @@ namespace Common.Text
                 if (textureResource != null && materialResource != null)
                 {
                     var spriteAsset = textureResource.Load<Sprite>(imageRecord.sprite);
-                    var textureAsset = textureResource.Load<Texture2D>();
                     var materialAsset = materialResource.Load<Material>();
-                    if (spriteAsset != null && textureAsset != null && materialAsset != null)
+                    if (spriteAsset != null && materialAsset != null)
                     {
                         var materialClone = new Material(materialAsset);
-                        materialClone.mainTexture = textureAsset;
+                        materialClone.mainTexture = spriteAsset.texture;
                         Images[imageRecord.id] = new IntelligentTextImage() { Sprite = spriteAsset, Material = materialClone };
-                        TrackedResources.Add(textureResource);
                         TrackedResources.Add(textureResource);
                         TrackedResources.Add(materialResource);
                     }
                     else
                     {
-                        textureResource.Unload();
                         textureResource.Unload();
                         materialResource.Unload();
                     }

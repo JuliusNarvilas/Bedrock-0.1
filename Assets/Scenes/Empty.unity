@@ -362,11 +362,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bfdcb1da64cdfc40b376644f2b4a5e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Text: 'a
-
-    b
-
-    <image id="image1" transformId="transform1"/> abc'
+  m_Text: "a \nb\n<image id=\"image1\" transformId=\"transform1\"/>abc"
   m_StyleId: Default
   m_GenerateOutOfBounds: 0
   m_HorizontalOverflow: 0
