@@ -5,6 +5,7 @@ using Common.Grid.Path;
 
 namespace Assets.Common.Scripts.Grid
 {
+    //TODO: WIP
     public class HexGrid<TTile, TTerrain, TContext> : IGridControl<TTile, TTerrain, GridPosition2D, TContext>
         where TTile : GridTile<TTerrain, GridPosition2D, TContext>
         where TTerrain : GridTerrain<TContext>
@@ -19,22 +20,12 @@ namespace Assets.Common.Scripts.Grid
             throw new NotImplementedException();
         }
 
-        public TTile GetTile(GridPosition2D i_Position)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void GetConnected(GridPosition2D i_Position, List<TTile> o_ConnectedElements)
+        public void GetConnected(GridPosition2D i_Position, List<TTile> o_ConnectedTiles)
         {
             throw new NotImplementedException();
         }
 
         public void GetPathArea(GridPosition2D i_Min, GridPosition2D i_Max, TContext i_Context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Draw()
         {
             throw new NotImplementedException();
         }

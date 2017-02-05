@@ -5,12 +5,18 @@ using System.Text;
 
 namespace Common.Text
 {
+    /// <summary>
+    /// Intelligent text localization data for a culture or language.
+    /// </summary>
     public class IntelligentTextLocalization
     {
         public const char PLACEHOLDER_OPENING = '{';
         public const char PLACEHOLDER_CLOSING = '}';
 
-        private int m_LocalizationTextMaxCapacity;
+        /// <summary>
+        /// Estimated required capacity for string building.
+        /// </summary>
+        private int m_TextMaxInitialCapacity;
 
         public Dictionary<string, string> TextLocalizations;
         public Dictionary<string, IntelligentTextStyle> Styles;
@@ -21,7 +27,7 @@ namespace Common.Text
 
         public IntelligentTextLocalization()
         {
-            m_LocalizationTextMaxCapacity = 0;
+            m_TextMaxInitialCapacity = 0;
             TextLocalizations = new Dictionary<string, string>();
             Styles = new Dictionary<string, IntelligentTextStyle>();
             Images = new Dictionary<string, IntelligentTextImage>();
@@ -30,17 +36,22 @@ namespace Common.Text
             TrackedResources = new List<ResourcesDBItem>();
         }
 
+        /// <summary>
+        /// Append more data for localization.
+        /// Is used to combine global localizations with specialized ones.
+        /// </summary>
+        /// <param name="i_Data">Localization data.</param>
         public void Append(IntelligentTextLocalizationData i_Data)
         {
-            int localizationCount = i_Data.textLocalizations.Count;
+            int localizationCount = i_Data.text.Count;
             IntelligentTextKeyValueRecord localizationRecord;
             for (int i = 0; i < localizationCount; ++i)
             {
-                localizationRecord = i_Data.textLocalizations[i];
+                localizationRecord = i_Data.text[i];
                 TextLocalizations[localizationRecord.id] = localizationRecord.data;
-                if(m_LocalizationTextMaxCapacity < localizationRecord.data.Length)
+                if(m_TextMaxInitialCapacity < localizationRecord.data.Length)
                 {
-                    m_LocalizationTextMaxCapacity = localizationRecord.data.Length;
+                    m_TextMaxInitialCapacity = localizationRecord.data.Length;
                 }
             }
             
@@ -125,9 +136,27 @@ namespace Common.Text
             }
         }
 
-        public string Localize(string i_Text)
+        /// <summary>
+        /// Localizes text by searching for text localization ids wrapped with <see cref="PLACEHOLDER_OPENING"/> and <see cref="PLACEHOLDER_CLOSING"/>.
+        /// If i_TermOnly is true, the text input is interpreted as a single localization id straight away.
+        /// </summary>
+        /// <param name="i_Text">Text for localization.</param>
+        /// <param name="i_TermOnly">Indicator for treating text input as localization term rather than text with placeholders.</param>
+        /// <returns>Localized string.</returns>
+        public string Localize(string i_Text, bool i_TermOnly = false)
         {
-            StringBuilder result = new StringBuilder(m_LocalizationTextMaxCapacity);
+            if(i_TermOnly)
+            {
+                string replacement;
+                if (TextLocalizations.TryGetValue(i_Text, out replacement))
+                {
+                    return replacement;
+                }
+                Log.DebugLogError("IntelligentTextLocalization: text localization id \"{0}\" not found", i_Text);
+                return string.Empty;
+            }
+
+            StringBuilder result = new StringBuilder(m_TextMaxInitialCapacity);
             int textSize = i_Text.Length;
             int lastTextIndex = textSize - 1;
             for (int i = 0; i < textSize; ++i)
@@ -149,13 +178,13 @@ namespace Common.Text
                             }
                             else
                             {
-                                //print the whole placeholder text as was if no localization was found
-                                result.Append(i_Text, i, endIndex - i + 1);
+                                Log.DebugLogError("IntelligentTextLocalization: text localization id \"{0}\" not found", key);
                             }
                             i = endIndex;
                         }
                         else
                         {
+                            Log.DebugLogError("IntelligentTextLocalization bad text format: {0}", i_Text);
                             //end localization if no placeholders are possible
                             result.Append(i_Text, i, textSize - i);
                             break;

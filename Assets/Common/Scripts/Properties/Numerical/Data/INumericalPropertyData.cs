@@ -30,26 +30,6 @@ namespace Common.Properties.Numerical.Data
         /// <param name="i_Value">The substract amount.</param>
         void Substract(TNumerical i_Value);
         /// <summary>
-        /// Multiplies the specified value.
-        /// </summary>
-        /// <param name="i_Value">The multiply amount.</param>
-        void Multiply(TNumerical i_Value);
-        /// <summary>
-        /// Divides the specified value.
-        /// </summary>
-        /// <param name="i_Value">The divide amount.</param>
-        void Divide(TNumerical i_Value);
-        /// <summary>
-        /// Gets the additive inverse of the underlying data, so that <code>value + x = 0</code>.
-        /// </summary>
-        /// <returns>The additive inverse.</returns>
-        TNumerical AdditiveInverse();
-        /// <summary>
-        /// Gets the multiplicative inverse of the underlying data, so that <code>value * x = 1 (identity)</code>.
-        /// </summary>
-        /// <returns>The multiplicative inverse.</returns>
-        TNumerical MultiplicativeInverse();
-        /// <summary>
         /// Sets the underlying data to a zero representation.
         /// </summary>
         void ToZero();
@@ -73,14 +53,6 @@ namespace Common.Properties.Numerical.Data
         public static void Substract<T>(this INumericalPropertyData<T> i_Target, INumericalPropertyData<T> i_Value)
         {
             i_Target.Substract(i_Value.Get());
-        }
-        public static void Multiply<T>(this INumericalPropertyData<T> i_Target, INumericalPropertyData<T> i_Value)
-        {
-            i_Target.Multiply(i_Value.Get());
-        }
-        public static void Divide<T>(this INumericalPropertyData<T> i_Target, INumericalPropertyData<T> i_Value)
-        {
-            i_Target.Divide(i_Value.Get());
         }
     }
     

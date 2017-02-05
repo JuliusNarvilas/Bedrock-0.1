@@ -30,7 +30,9 @@ namespace Common.Grid.Path
             {
                 m_Data.Add(new GridPathElement<TTile, TTerrain, GridPosition2D, TContext>());
             }
-            m_Data[0].Tile = m_Source.GetTile(i_Min);
+            TTile tile;
+            m_Source.TryGetTile(i_Min, out tile);
+            m_Data[0].Tile = tile;
 
             Grow(i_Max);
         }
@@ -88,9 +90,11 @@ namespace Common.Grid.Path
                             }
                             else
                             {
-                                var temp = m_Data[freeElementIndex++];
-                                temp.Tile = m_Source.GetTile(new GridPosition2D(itX, itY));
-                                m_Data[index] = temp;
+                                var tempElement = m_Data[freeElementIndex++];
+                                TTile tempTile;
+                                m_Source.TryGetTile(new GridPosition2D(itX, itY), out tempTile);
+                                tempElement.Tile = tempTile;
+                                m_Data[index] = tempElement;
                             }
                         }
                     }

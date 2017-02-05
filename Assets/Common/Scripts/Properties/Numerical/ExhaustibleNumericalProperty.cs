@@ -78,8 +78,8 @@ namespace Common.Properties.Numerical
         /// <param name="i_Context">The context.</param>
         public void Restore(TNumerical i_Restoration, TContext i_Context = default(TContext))
         {
-            m_DataZero.Set(i_Restoration);
-            Deplete(m_DataZero.AdditiveInverse(), i_Context);
+            m_DataZero.Substract(i_Restoration);
+            Deplete(m_DataZero.Get(), i_Context);
         }
 
         protected void UpdateExhaustableModifiedValue()

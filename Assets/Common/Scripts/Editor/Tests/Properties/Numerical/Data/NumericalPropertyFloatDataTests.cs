@@ -58,19 +58,6 @@ namespace Common.Tests.Properties.Numerical.Data
         }
 
         [Test]
-        public void NumericalPropertyFloatDataMultiply()
-        {
-            Random rnd = new Random();
-            float randomNumberSource1 = rnd.Next(1, 1000);
-            float randomNumberSource2 = rnd.Next(1, 1000);
-            NumericalPropertyFloatData propertyDataValue = new NumericalPropertyFloatData(randomNumberSource1);
-
-            propertyDataValue.Multiply(randomNumberSource2);
-            float multiplied = propertyDataValue.Get();
-            Assert.That(multiplied == (randomNumberSource1 * randomNumberSource2));
-        }
-
-        [Test]
         public void NumericalPropertyFloatDataSet()
         {
             Random rnd = new Random();
@@ -82,20 +69,6 @@ namespace Common.Tests.Properties.Numerical.Data
         }
 
         [Test]
-        public void NumericalPropertyFloatDataInverse()
-        {
-            Random rnd = new Random();
-            float randomNumberSource1 = rnd.Next(1, 1000);
-            NumericalPropertyFloatData propertyDataValue = new NumericalPropertyFloatData(randomNumberSource1);
-
-            float additiveInverse = propertyDataValue.AdditiveInverse();
-            Assert.That(additiveInverse == -propertyDataValue.Get());
-
-            float multiplicativeInverse = 1.0f / propertyDataValue.Get();
-            Assert.That(propertyDataValue.MultiplicativeInverse() == multiplicativeInverse);
-        }
-
-        [Test]
         public void NumericalPropertyFloatDataToZero()
         {
             Random rnd = new Random();
@@ -104,19 +77,6 @@ namespace Common.Tests.Properties.Numerical.Data
 
             propertyDataValue.ToZero();
             Assert.That(propertyDataValue.Get() == 0);
-        }
-
-        [Test]
-        public void NumericalPropertyFloatDataDivide()
-        {
-            Random rnd = new Random();
-            float randomNumberSource1 = rnd.Next(1, 1000);
-            float randomNumberSource2 = rnd.Next(1, 1000);
-            NumericalPropertyFloatData propertyDataValue = new NumericalPropertyFloatData(randomNumberSource1);
-            propertyDataValue.Divide(randomNumberSource2);
-
-            float divided = propertyDataValue.Get();
-            Assert.That(divided.EqualsF(randomNumberSource1 / randomNumberSource2));
         }
 
     }

@@ -15,16 +15,30 @@ namespace Common.Grid
         /// <returns></returns>
         GridPath<TTile, TTerrain, TPosition, TContext> GetPath(TPosition i_Start, TPosition i_End, TContext i_Context);
 
+        //TODO: WIP
         void GetPathArea(TPosition i_Min, TPosition i_Max, TContext i_Context);
 
-        TTile GetTile(TPosition i_Position);
-
+        /// <summary>
+        /// Tries to get a tile at given position.
+        /// </summary>
+        /// <param name="i_Position">The position.</param>
+        /// <param name="o_Tile">The tile result.</param>
+        /// <returns>True if a tile was found and false otherwise (usually because position is outside grid bounds)</returns>
         bool TryGetTile(TPosition i_Position, out TTile o_Tile);
 
+        /// <summary>
+        /// Gets the heuristic distance.
+        /// </summary>
+        /// <param name="i_From">The source position.</param>
+        /// <param name="i_To">The destination position.</param>
+        /// <returns></returns>
         int GetHeuristicDistance(TPosition i_From, TPosition i_To);
 
-        void GetConnected(TPosition i_Position, List<TTile> o_ConnectedElements);
-
-        void Draw();
+        /// <summary>
+        /// Gets the connected tiles for the given position.
+        /// </summary>
+        /// <param name="i_Position">The position.</param>
+        /// <param name="o_ConnectedTiles">The connected tiles.</param>
+        void GetConnected(TPosition i_Position, List<TTile> o_ConnectedTiles);
     }
 }

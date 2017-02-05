@@ -20,6 +20,8 @@ namespace Common.Grid
             int xDiff = Math.Abs(i_To.X - i_From.X);
             int yDiff = Math.Abs(i_To.Y - i_From.Y);
 
+            //Heuristic distance does not need to be precise.
+            /*
             if (m_AllowMoveDiagonally)
             {
                 int minDiff = Math.Min(xDiff, yDiff);
@@ -30,24 +32,15 @@ namespace Common.Grid
             {
                 return xDiff + yDiff;
             }
-        }
-        
-        public TTile GetTile(GridPosition2D i_Position)
-        {
-            int tilesIndex = i_Position.Y * m_SizeX + i_Position.X;
-            Log.DebugAssert(
-                i_Position.X >= 0 && i_Position.Y >= 0 &&
-                tilesIndex <= m_SizeX * m_SizeY,
-                "RectangleGrid:GetTile position out of bounds ({0}, max {1};{2})", i_Position, m_SizeX, m_SizeY
-            );
-            return m_Tiles[tilesIndex];
+            */
+            return xDiff + yDiff;
         }
         
         public bool TryGetTile(GridPosition2D i_Position, out TTile o_Tile)
         {
-            int tilesIndex = i_Position.Y * m_SizeX + i_Position.X;
-            if (i_Position.X >= 0 && i_Position.Y >= 0 && tilesIndex <= m_SizeX * m_SizeY)
+            if (i_Position.X >= 0 && i_Position.X < m_SizeX && i_Position.Y >= 0 && i_Position.Y < m_SizeY)
             {
+                int tilesIndex = i_Position.Y * m_SizeX + i_Position.X;
                 o_Tile = m_Tiles[tilesIndex];
                 return true;
             }
@@ -55,60 +48,74 @@ namespace Common.Grid
             return false;
         }
 
-        //TODO: IMPROVE and make it more readable
-        public void GetConnected(GridPosition2D i_Position, List<TTile> o_ConnectedElements)
+
+        public void GetConnected(GridPosition2D i_Position, List<TTile> o_ConnectedTiles)
         {
+            //left side
             TTile tempElement = null;
-            if (i_Position.X > 0)
+            if(TryGetTile(new GridPosition2D(i_Position.X - 1, i_Position.Y), out tempElement))
             {
-                tempElement = GetTile(new GridPosition2D(i_Position.X - 1, i_Position.Y));
-                if (tempElement != null) o_ConnectedElements.Add(tempElement);
+                o_ConnectedTiles.Add(tempElement);
+
                 if (m_AllowMoveDiagonally)
                 {
-                    tempElement = GetTile(new GridPosition2D(i_Position.X - 1, i_Position.Y - 1));
-                    if (tempElement != null) o_ConnectedElements.Add(tempElement);
-                    tempElement = GetTile(new GridPosition2D(i_Position.X - 1, i_Position.Y + 1));
-                    if (tempElement != null) o_ConnectedElements.Add(tempElement);
+                    if (TryGetTile(new GridPosition2D(i_Position.X - 1, i_Position.Y - 1), out tempElement))
+                    {
+                        o_ConnectedTiles.Add(tempElement);
+                    }
+                    if (TryGetTile(new GridPosition2D(i_Position.X - 1, i_Position.Y + 1), out tempElement))
+                    {
+                        o_ConnectedTiles.Add(tempElement);
+                    }
                 }
             }
-            tempElement = GetTile(new GridPosition2D(i_Position.X + 1, i_Position.Y));
-            if (tempElement != null) o_ConnectedElements.Add(tempElement);
-            if (m_AllowMoveDiagonally)
+            //right side
+            if (TryGetTile(new GridPosition2D(i_Position.X + 1, i_Position.Y), out tempElement))
             {
-                tempElement = GetTile(new GridPosition2D(i_Position.X + 1, i_Position.Y - 1));
-                if (tempElement != null) o_ConnectedElements.Add(tempElement);
-                tempElement = GetTile(new GridPosition2D(i_Position.X + 1, i_Position.Y + 1));
-                if (tempElement != null) o_ConnectedElements.Add(tempElement);
+                o_ConnectedTiles.Add(tempElement);
+
+                if (m_AllowMoveDiagonally)
+                {
+                    if (TryGetTile(new GridPosition2D(i_Position.X + 1, i_Position.Y - 1), out tempElement))
+                    {
+                        o_ConnectedTiles.Add(tempElement);
+                    }
+                    if (TryGetTile(new GridPosition2D(i_Position.X + 1, i_Position.Y + 1), out tempElement))
+                    {
+                        o_ConnectedTiles.Add(tempElement);
+                    }
+                }
             }
 
-            if (i_Position.Y > 0)
+            if (TryGetTile(new GridPosition2D(i_Position.X, i_Position.Y - 1), out tempElement))
             {
-                tempElement = GetTile(new GridPosition2D(i_Position.X, i_Position.Y - 1));
-                if (tempElement != null)
-                {
-                    o_ConnectedElements.Add(tempElement);
-                }
+                o_ConnectedTiles.Add(tempElement);
             }
-            tempElement = GetTile(new GridPosition2D(i_Position.X, i_Position.Y + 1));
-            if (tempElement != null)
+            if (TryGetTile(new GridPosition2D(i_Position.X, i_Position.Y + 1), out tempElement))
             {
-                o_ConnectedElements.Add(tempElement);
+                o_ConnectedTiles.Add(tempElement);
             }
         }
 
         public GridPath<TTile, TTerrain, GridPosition2D, TContext> GetPath(GridPosition2D i_Start, GridPosition2D i_End, TContext i_Context)
         {
-            return new GridPath<TTile, TTerrain, GridPosition2D, TContext>(this, null, i_Start, i_End, i_Context);
+            const int pathingDataMargin = 4;
+            var pathData = GridPathData2DProvider<TTile, TTerrain, TContext>.GLOBAL.GetGridPathData();
+
+            int minX = Math.Max(i_Start.X - pathingDataMargin, 0);
+            int minY = Math.Max(i_Start.Y - pathingDataMargin, 0);
+            int maxX = Math.Min(i_End.X - pathingDataMargin, m_SizeX - 1);
+            int maxY = Math.Min(i_End.Y - pathingDataMargin, m_SizeY - 1);
+
+            pathData.Set(this, new GridPosition2D(minX, minY), new GridPosition2D(maxX, maxY));
+            return new GridPath<TTile, TTerrain, GridPosition2D, TContext>(this, pathData, i_Start, i_End, i_Context);
         }
 
         public void GetPathArea(GridPosition2D i_Min, GridPosition2D i_Max, TContext i_Context)
         {
-            throw new NotImplementedException();
-        }
-
-        public void Draw()
-        {
-            throw new NotImplementedException();
+            var pathData = GridPathData2DProvider<TTile, TTerrain, TContext>.GLOBAL.GetGridPathData();
+            pathData.Set(this, i_Min, i_Max);
+            //TODO: finish
         }
     }
 }

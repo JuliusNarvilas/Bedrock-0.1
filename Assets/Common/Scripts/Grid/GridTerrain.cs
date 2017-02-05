@@ -1,6 +1,10 @@
 ﻿
 namespace Common.Grid
 {
+    /// <summary>
+    /// Base class for representing a grid terrain data.
+    /// </summary>
+    /// <typeparam name="TContext">The type of the context.</typeparam>
     public abstract class GridTerrain<TContext>
     {
         public readonly int Id;

@@ -4,7 +4,14 @@ using System.Collections.Generic;
 
 namespace Common.Grid.Path
 {
-
+    /// <summary>
+    /// Grid pathfinding functionality.
+    /// </summary>
+    /// <typeparam name="TTile">The type of the tile.</typeparam>
+    /// <typeparam name="TTerrain">The type of the terrain.</typeparam>
+    /// <typeparam name="TPosition">The type of the position.</typeparam>
+    /// <typeparam name="TContext">The type of the context.</typeparam>
+    /// <seealso cref="System.IDisposable" />
     public class GridPath<TTile, TTerrain, TPosition, TContext> : IDisposable
         where TTile : GridTile<TTerrain, TPosition, TContext>
         where TTerrain : GridTerrain<TContext>

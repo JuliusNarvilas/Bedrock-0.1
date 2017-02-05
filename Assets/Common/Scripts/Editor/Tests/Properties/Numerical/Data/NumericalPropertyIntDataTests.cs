@@ -58,19 +58,6 @@ namespace Common.Tests.Properties.Numerical.Data
         }
 
         [Test]
-        public void NumericalPropertyIntDataMultiply()
-        {
-            Random rnd = new Random();
-            int randomIntSource1 = rnd.Next(1, 1000);
-            int randomIntSource2 = rnd.Next(1, 1000);
-            NumericalPropertyIntData propertyDataValue = new NumericalPropertyIntData(randomIntSource1);
-
-            propertyDataValue.Multiply(randomIntSource2);
-            int multiplied = propertyDataValue.Get();
-            Assert.That(multiplied == (randomIntSource1 * randomIntSource2));
-        }
-
-        [Test]
         public void NumericalPropertyIntDataSet()
         {
             Random rnd = new Random();
@@ -82,19 +69,6 @@ namespace Common.Tests.Properties.Numerical.Data
         }
 
         [Test]
-        public void NumericalPropertyIntDataInverse()
-        {
-            Random rnd = new Random();
-            int randomIntSource1 = rnd.Next(1, 1000);
-            NumericalPropertyIntData propertyDataValue = new NumericalPropertyIntData(randomIntSource1);
-
-            int additiveInverse = propertyDataValue.AdditiveInverse();
-            Assert.That(additiveInverse == -propertyDataValue.Get());
-
-            Assert.That(propertyDataValue.MultiplicativeInverse() == 0);
-        }
-
-        [Test]
         public void NumericalPropertyIntDataToZero()
         {
             Random rnd = new Random();
@@ -103,19 +77,6 @@ namespace Common.Tests.Properties.Numerical.Data
 
             propertyDataValue.ToZero();
             Assert.That(propertyDataValue.Get() == 0);
-        }
-
-        [Test]
-        public void NumericalPropertyIntDataDivide()
-        {
-            Random rnd = new Random();
-            int randomIntSource1 = rnd.Next(1, 1000);
-            int randomIntSource2 = rnd.Next(1, 1000);
-            NumericalPropertyIntData propertyDataValue = new NumericalPropertyIntData(randomIntSource1);
-            
-            propertyDataValue.Divide(randomIntSource2);
-            int divided = propertyDataValue.Get();
-            Assert.That(divided == (randomIntSource1 / randomIntSource2));
         }
     }
 }

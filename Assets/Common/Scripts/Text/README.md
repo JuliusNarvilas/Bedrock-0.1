@@ -9,6 +9,6 @@ IntelligentText Parsing:
 *Calculate space placeholder size
 *Gather text mesh information + non insert / text localization
 *Building sub-meshes
-?Adjust line spacing
-?position unassociated elements (3D meshes)
+?TODO: Adjust line spacing
+?TODO: position unassociated elements (3D meshes)
 *Combine sub-meshes

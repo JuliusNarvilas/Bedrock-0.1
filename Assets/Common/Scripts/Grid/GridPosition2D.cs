@@ -3,6 +3,10 @@ using System;
 
 namespace Common.Grid
 {
+    /// <summary>
+    /// Immutable structure for 2D positioning coordinates.
+    /// </summary>
+    /// <seealso cref="System.IEquatable{Common.Grid.GridPosition2D}" />
     public struct GridPosition2D : IEquatable<GridPosition2D>
     {
         public readonly int X;

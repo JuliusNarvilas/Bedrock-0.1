@@ -14,6 +14,7 @@ namespace Common.Text
     }
 
     /// <summary>
+    /// TODO: WIP
     /// An interface to adjust final generated IntelligentText mesh.
     /// </summary>
     public interface IIntelligentTextMeshModifier
@@ -21,13 +22,31 @@ namespace Common.Text
         void ChangeMesh();
     }
 
+    /// <summary>
+    /// Basic data node class for storing intelligent text section information
+    /// </summary>
     public class IntelligentTextDataNode
     {
         public readonly List<Bounds> Bounds;
+        /// <summary>
+        /// The index number of this data node.
+        /// </summary>
         public readonly int Id;
+        /// <summary>
+        /// Intelligent text section type.
+        /// </summary>
         public readonly IntelligentTextDataType Type;
+        /// <summary>
+        /// The interactor identifier.
+        /// </summary>
         public readonly string InteractorId;
+        /// <summary>
+        /// The children data nodes.
+        /// </summary>
         public readonly List<IntelligentTextDataNode> Children;
+        /// <summary>
+        /// The custom mesh modifiers for changing the final mesh data.
+        /// </summary>
         public readonly List<IIntelligentTextMeshModifier> MeshModifier;
 
         public IntelligentTextDataNode(int i_Id)
@@ -49,14 +68,31 @@ namespace Common.Text
             MeshModifier = new List<IIntelligentTextMeshModifier>();
         }
 
+        /// <summary>
+        /// Merges the specified node.
+        /// </summary>
+        /// <param name="i_Node">The other node.</param>
+        /// <returns>True in case of accepted and successful merge and false otherwise</returns>
         public virtual bool Merge(IntelligentTextDataNode i_Node)
         {
             return false;
         }
 
+        /// <summary>
+        /// Builds the final text.
+        /// </summary>
+        /// <param name="i_TextAccumulator">The text accumulator.</param>
+        /// <param name="i_Parser">The parser data.</param>
         public virtual void BuildText(StringBuilder i_TextAccumulator, ref IntelligentTextParser i_Parser)
         { }
 
+        /// <summary>
+        /// Builds the sub mesh for this intelligent text section.
+        /// </summary>
+        /// <param name="i_StartCharIndex">Index of the starting character.</param>
+        /// <param name="i_MeshSets">The mesh sets for adding new meshes or changing existing ones.</param>
+        /// <param name="i_Parser">The parser data.</param>
+        /// <returns></returns>
         public virtual int BuildSubMesh(int i_StartCharIndex, List<IntelligentTextMeshData> i_MeshSets, ref IntelligentTextParser i_Parser)
         {
             int size = MeshModifier.Count;
@@ -69,6 +105,10 @@ namespace Common.Text
         }
     }
 
+    /// <summary>
+    /// Data node class for storing simple text information for an intelligent text section.
+    /// </summary>
+    /// <seealso cref="Common.Text.IntelligentTextDataNode" />
     public class IntelligentTextDataTextNode : IntelligentTextDataNode
     {
         public string Text;

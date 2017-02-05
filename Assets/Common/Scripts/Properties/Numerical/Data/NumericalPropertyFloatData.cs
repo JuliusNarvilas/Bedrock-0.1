@@ -62,45 +62,9 @@ namespace Common.Properties.Numerical.Data
             m_Value -= i_Value;
         }
 
-        public void Multiply(float i_Value)
-        {
-#if (NUMERICAL_PROPERTY_DATA_VALIDATION)
-            float temp = m_Value * i_Value;
-            Log.DebugLogErrorIf(
-                ((temp <= m_Value) && (i_Value > 1)) ||
-                ((temp >= m_Value) && (i_Value < -1)),
-                "Number overflow: {0} * {1}.",
-                m_Value,
-                i_Value
-            );
-#endif
-            m_Value *= i_Value;
-        }
-
-        public void Divide(float i_Value)
-        {
-#if (NUMERICAL_PROPERTY_DATA_VALIDATION)
-            Log.DebugLogErrorIf(
-                i_Value == 0.0f,
-                "Division by 0.0f."
-            );
-#endif
-            m_Value /= i_Value;
-        }
-
         public INumericalPropertyData<float> CreateZero()
         {
             return new NumericalPropertyFloatData(0.0f);
-        }
-
-        public float AdditiveInverse()
-        {
-            return -m_Value;
-        }
-
-        public float MultiplicativeInverse()
-        {
-            return 1.0f / m_Value;
         }
 
         public void ToZero()

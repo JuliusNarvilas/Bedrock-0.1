@@ -1,6 +1,11 @@
 ﻿
 namespace Common.Grid
 {
+    /// <summary>
+    /// A simple implementation of grid terrain type data with a constant cost.
+    /// </summary>
+    /// <typeparam name="TContext">The type of the context.</typeparam>
+    /// <seealso cref="Common.Grid.GridTerrain{TContext}" />
     public class GridTerrainSimple<TContext> : GridTerrain<TContext>
     {
         public readonly float Cost;

@@ -6,8 +6,17 @@ namespace Common.Text
     {
         public enum UpdateType
         {
+            /// <summary>
+            /// Rebuilds the mesh.
+            /// </summary>
             Update,
+            /// <summary>
+            /// Rebuilds the text.
+            /// </summary>
             Rebuild,
+            /// <summary>
+            /// Reconfigures the parser.
+            /// </summary>
             Refresh
         }
         

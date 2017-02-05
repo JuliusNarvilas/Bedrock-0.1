@@ -2,9 +2,16 @@
 
 namespace Common.Text
 {
+    /// <summary>
+    /// A behaviour for introducing text with more features into a scene.
+    /// </summary>
+    /// <seealso cref="UnityEngine.MonoBehaviour" />
     [RequireComponent(typeof(RectTransform))]
     public class IntelligentText : MonoBehaviour
     {
+        /// <summary>
+        /// The text type mode this bahaviour is using.
+        /// </summary>
         protected enum RenderMode
         {
             ConvasRenderer,
@@ -13,9 +20,15 @@ namespace Common.Text
             Invalid
         }
 
+        /// <summary>
+        /// The text to be put through intelligent text systen.
+        /// </summary>
         [SerializeField]
         [TextArea]
         protected string m_Text;
+        /// <summary>
+        /// The font style identifier.
+        /// </summary>
         [SerializeField]
         protected string m_StyleId;
         [SerializeField]
@@ -56,6 +69,9 @@ namespace Common.Text
             }
         }
 
+        /// <summary>
+        /// Initialises the render mode.
+        /// </summary>
         private void InitialiseRenderMode()
         {
             m_RenderMode = RenderMode.Unknown;
@@ -90,6 +106,9 @@ namespace Common.Text
             }
         }
 
+        /// <summary>
+        /// Rebuilds the text by parsing the initial intelligent text.
+        /// </summary>
         public void RebuildText()
         {
             if (m_RenderMode == RenderMode.Unknown || m_RenderMode == RenderMode.Invalid)
@@ -101,6 +120,9 @@ namespace Common.Text
             Display();
         }
 
+        /// <summary>
+        /// Updates the text by rebuilding the mesh.
+        /// </summary>
         public void UpdateText()
         {
             if(m_RenderMode == RenderMode.Unknown || m_RenderMode == RenderMode.Invalid)
@@ -112,6 +134,9 @@ namespace Common.Text
             Display();
         }
 
+        /// <summary>
+        /// Displays text.
+        /// </summary>
         private void Display()
         {
             switch (m_RenderMode)
@@ -121,12 +146,12 @@ namespace Common.Text
                         var materials = m_Parser.Materials;
                         var canvasRenderer = GetComponent<CanvasRenderer>();
                         canvasRenderer.Clear();
+                        canvasRenderer.SetMesh(m_Parser.Mesh);
                         canvasRenderer.materialCount = materials.Count;
                         for (int i = 0; i < materials.Count; ++i)
                         {
                             canvasRenderer.SetMaterial(materials[i], i);
                         }
-                        canvasRenderer.SetMesh(m_Parser.Mesh);
                     }
                     break;
                 case RenderMode.MeshRenderer:
@@ -140,6 +165,10 @@ namespace Common.Text
             }
         }
 
+        /// <summary>
+        /// Refreshes text by reapplying the parser settings and rebuilds the text.
+        /// </summary>
+        /// <seealso cref="RebuildText"/>
         public void Refresh()
         {
             IntelligentTextStyle style = IntelligentTextSettings.Instance.GetStyle(m_StyleId);

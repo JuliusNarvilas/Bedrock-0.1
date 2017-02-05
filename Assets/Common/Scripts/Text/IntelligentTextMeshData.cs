@@ -4,6 +4,10 @@ using Common.Collections;
 
 namespace Common.Text
 {
+    /// <summary>
+    /// Positioning data for items inserted inside intelligent text.
+    /// This data is used to adjust final text vertical line spacing for accomodating inserted items.
+    /// </summary>
     public class IntelligentTextForeignItemProperties
     {
         public IntelligentTextTransformAnchor Anchor;
@@ -40,6 +44,9 @@ namespace Common.Text
         public static readonly IntelligentTextForeignItemPropertiesSorter Descending = new IntelligentTextForeignItemPropertiesSorter(false);
     }
 
+    /// <summary>
+    /// Mesh buffers' data for combining final intelligent text into a single mesh.
+    /// </summary>
     public class IntelligentTextMeshData
     {
         public class Sorter : IComparer<IntelligentTextMeshData>
@@ -73,7 +80,11 @@ namespace Common.Text
         public List<IntelligentTextSubMeshData> SubMeshes;
         public Rect ExtentRect;
 
-
+        /// <summary>
+        /// Removes the indicated character data from mesh buffers.
+        /// </summary>
+        /// <param name="i_CharStartIndex">Start character index for removal.</param>
+        /// <param name="i_Count">The character count to remove.</param>
         public void RemoveChars(int i_CharStartIndex, int i_Count)
         {
             if(i_Count <= 0)
@@ -212,6 +223,11 @@ namespace Common.Text
             }
         }
 
+        /// <summary>
+        /// Changes the Vertex buffer horizontal position values to accomodate the positioning data.
+        /// </summary>
+        /// <param name="i_TextAnchor">The i text anchor.</param>
+        /// <param name="i_ForeignItems">The i foreign items.</param>
         public void AccommodateElements(
             TextAnchor i_TextAnchor, List<IntelligentTextForeignItemProperties> i_ForeignItems
         )
