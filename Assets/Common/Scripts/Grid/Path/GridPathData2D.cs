@@ -111,7 +111,7 @@ namespace Common.Grid.Path
 
         public GridPathDataResponse TryGetElement(GridPosition2D i_Pos, out GridPathElement<TTile, TTerrain, GridPosition2D, TContext> o_Value)
         {
-            if (m_Min.X < i_Pos.X && m_Min.Y < i_Pos.Y && m_Max.X > i_Pos.X && m_Max.Y > i_Pos.Y)
+            if (m_Min.X <= i_Pos.X && m_Min.Y <= i_Pos.Y && m_Max.X >= i_Pos.X && m_Max.Y >= i_Pos.Y)
             {
                 int index = (i_Pos.Y - m_Min.Y) * m_SizeX + i_Pos.X - m_Min.X;
                 o_Value = m_Data[index];

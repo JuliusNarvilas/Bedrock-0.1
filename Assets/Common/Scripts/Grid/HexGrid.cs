@@ -34,5 +34,10 @@ namespace Assets.Common.Scripts.Grid
         {
             throw new NotImplementedException();
         }
+
+        public GridArea<TTile, TTerrain, GridPosition2D, TContext> GetPathArea(GridPosition2D i_Min, GridPosition2D i_Max, GridPosition2D i_Origin, TContext i_Context)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

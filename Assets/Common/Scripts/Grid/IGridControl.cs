@@ -15,8 +15,15 @@ namespace Common.Grid
         /// <returns></returns>
         GridPath<TTile, TTerrain, TPosition, TContext> GetPath(TPosition i_Start, TPosition i_End, TContext i_Context);
 
-        //TODO: WIP
-        void GetPathArea(TPosition i_Min, TPosition i_Max, TContext i_Context);
+        /// <summary>
+        /// Gets the path area.
+        /// </summary>
+        /// <param name="i_Min">The minimum area coordinate.</param>
+        /// <param name="i_Max">The maximum area coordinate.</param>
+        /// <param name="i_Origin">The origin pathing origin.</param>
+        /// <param name="i_Context">The context.</param>
+        /// <returns></returns>
+        GridArea<TTile, TTerrain, TPosition, TContext> GetPathArea(TPosition i_Min, TPosition i_Max, TPosition i_Origin, TContext i_Context);
 
         /// <summary>
         /// Tries to get a tile at given position.

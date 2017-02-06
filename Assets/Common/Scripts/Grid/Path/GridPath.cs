@@ -42,11 +42,13 @@ namespace Common.Grid.Path
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Grid2DPath"/> class, creating a tile sequence for quickest path between given positions.
+        /// Initializes a new instance of the <see cref="Grid2DPath" /> class, creating a tile sequence for quickest path between given positions.
         /// </summary>
-        /// <param name="i_Grid">The i_ grid.</param>
-        /// <param name="i_StartPos">The i_ start position.</param>
-        /// <param name="i_EndPosition">The i_ end position.</param>
+        /// <param name="i_Grid">The grid.</param>
+        /// <param name="i_PathData">The path data.</param>
+        /// <param name="i_StartPos">The start position.</param>
+        /// <param name="i_EndPosition">The end position.</param>
+        /// <param name="i_Context">The context.</param>
         public GridPath(
             IGridControl<TTile, TTerrain, TPosition, TContext> i_Grid,
             IGridPathData<TTile, TTerrain, TPosition, TContext> i_PathData,
@@ -146,6 +148,10 @@ namespace Common.Grid.Path
             for (var i = 0; i < size; ++i)
             {
                 neighbourElement = GetElementOrDefault(m_ConnectedList[i].Position);
+                if(neighbourElement == null)
+                {
+                    continue;
+                }
                 switch (neighbourElement.PathingState)
                 {
                     case GridPathfindingState.New:

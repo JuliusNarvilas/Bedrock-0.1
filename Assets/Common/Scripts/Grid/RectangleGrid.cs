@@ -14,26 +14,22 @@ namespace Common.Grid
         protected int m_SizeX;
         protected int m_SizeY;
         protected bool m_AllowMoveDiagonally = true;
+        protected float m_NonDiagonalFactor = 1.0f;
+        protected float m_DiagonalFactor = (float)Math.Sqrt(2.0);
 
         public int GetHeuristicDistance(GridPosition2D i_From, GridPosition2D i_To)
         {
             int xDiff = Math.Abs(i_To.X - i_From.X);
             int yDiff = Math.Abs(i_To.Y - i_From.Y);
-
-            //Heuristic distance does not need to be precise.
-            /*
+            
             if (m_AllowMoveDiagonally)
             {
-                int minDiff = Math.Min(xDiff, yDiff);
-                int diagonalDist = (int)(Math.Sqrt(minDiff * minDiff * 2) + 0.5);
-                return diagonalDist + xDiff - minDiff + yDiff - minDiff;
+                return (int)(m_NonDiagonalFactor * (xDiff + yDiff) + (m_DiagonalFactor - 2.0f * m_NonDiagonalFactor) * Math.Min(xDiff, yDiff) + 0.5f);
             }
             else
             {
                 return xDiff + yDiff;
             }
-            */
-            return xDiff + yDiff;
         }
         
         public bool TryGetTile(GridPosition2D i_Position, out TTile o_Tile)
@@ -111,11 +107,10 @@ namespace Common.Grid
             return new GridPath<TTile, TTerrain, GridPosition2D, TContext>(this, pathData, i_Start, i_End, i_Context);
         }
 
-        public void GetPathArea(GridPosition2D i_Min, GridPosition2D i_Max, TContext i_Context)
+        public GridArea<TTile, TTerrain, GridPosition2D, TContext> GetPathArea(GridPosition2D i_Min, GridPosition2D i_Max, GridPosition2D i_Origin, TContext i_Context)
         {
             var pathData = GridPathData2DProvider<TTile, TTerrain, TContext>.GLOBAL.GetGridPathData();
-            pathData.Set(this, i_Min, i_Max);
-            //TODO: finish
+            return new GridArea<TTile, TTerrain, GridPosition2D, TContext>(this, pathData, i_Min, i_Max, i_Origin, i_Context);
         }
     }
 }
