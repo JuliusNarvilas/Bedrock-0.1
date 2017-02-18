@@ -15,13 +15,13 @@ namespace Common.Grid.Path
     public class GridPath<TTile, TTerrain, TPosition, TContext> : IDisposable
         where TTile : GridTile<TTerrain, TPosition, TContext>
         where TTerrain : GridTerrain<TContext>
+        where TContext : IGridContext<TTile, TTerrain, TPosition, TContext>
     {
         private readonly IGridControl<TTile, TTerrain, TPosition, TContext> m_Grid;
-        private readonly IGridPathData<TTile, TTerrain, TPosition, TContext> m_GridPathData;
+        private IGridPathData<TTile, TTerrain, TPosition, TContext> m_GridPathData;
 
         private List<GridPathElement<TTile, TTerrain, TPosition, TContext>> m_OpenList = new List<GridPathElement<TTile, TTerrain, TPosition, TContext>>();
         private List<GridPathElement<TTile, TTerrain, TPosition, TContext>> m_ClosedList = new List<GridPathElement<TTile, TTerrain, TPosition, TContext>>();
-        private List<GridPathElement<TTile, TTerrain, TPosition, TContext>> m_PathResultList;
         private TContext m_Context;
 
         private List<TTile> m_ConnectedList = new List<TTile>();
@@ -38,7 +38,7 @@ namespace Common.Grid.Path
         /// </value>
         public List<GridPathElement<TTile, TTerrain, TPosition, TContext>> Tiles
         {
-            get { return m_PathResultList; }
+            get { return m_OpenList; }
         }
 
         /// <summary>
@@ -97,8 +97,7 @@ namespace Common.Grid.Path
         private void Open(GridPathElement<TTile, TTerrain, TPosition, TContext> i_Element, GridPathElement<TTile, TTerrain, TPosition, TContext> i_Parent)
         {
             // move terrain cost
-            float terrainCost = i_Parent.Tile.GetTransitionOutCost(i_Element.Tile, m_Context);
-            terrainCost += i_Element.Tile.GetTransitionInCost(i_Parent.Tile, m_Context);
+            float terrainCost = m_Context.GetCost(m_Grid, i_Element, i_Parent);
             if (terrainCost >= 0.0f)
             {
                 i_Element.HeuristicDistance = m_Grid.GetHeuristicDistance(i_Element.Tile.Position, m_FinishElement.Tile.Position);
@@ -171,41 +170,45 @@ namespace Common.Grid.Path
 
         private void Finish()
         {
+            //clean unused elements
+            int openListElementCount = m_OpenList.Count;
+            m_OpenList.Clear();
+
             int maxPathTileCount = m_ClosedList.Count;
             //if finish exists and was reached
             if ((m_FinishElement != null) && (m_FinishElement.PathingState == GridPathfindingState.Closed))
             {
-                m_PathResultList = new List<GridPathElement<TTile, TTerrain, TPosition, TContext>>(maxPathTileCount);
-                FillPathResult(m_FinishElement);
+                if(m_OpenList.Capacity < maxPathTileCount)
+                {
+                    m_OpenList.Capacity = maxPathTileCount;
+                }
+                FillPathResult(m_FinishElement, 0);
             }
-            //clean closed list
-            for (int i = 0; i < maxPathTileCount; ++i)
+            else
             {
-                m_ClosedList[i].Clear();
+                m_OpenList = null;
             }
-            m_ClosedList.Clear();
             m_ClosedList = null;
 
-            int openListElementCount = m_OpenList.Count;
-            for (int i = 0; i < openListElementCount; ++i)
-            {
-                m_OpenList[i].Clear();
-            }
-            m_OpenList.Clear();
-            m_OpenList = null;
-
             m_FinishElement = null;
+            m_GridPathData.Dispose();
+            m_GridPathData = null;
         }
 
-        private GridPathElement<TTile, TTerrain, TPosition, TContext> FillPathResult(GridPathElement<TTile, TTerrain, TPosition, TContext> i_Element)
+        private GridPathElement<TTile, TTerrain, TPosition, TContext> FillPathResult(GridPathElement<TTile, TTerrain, TPosition, TContext> i_Element, int counter)
         {
             if(i_Element != null)
             {
-                var inserted = FillPathResult(i_Element.Parent);
-                var clone = i_Element.Clone();
-                clone.Parent = inserted;
-                m_PathResultList.Add(clone);
-                return clone;
+                var inserted = FillPathResult(i_Element.Parent, ++counter);
+                var resultElement = m_OpenList[m_OpenList.Count - counter];
+                resultElement.Set(i_Element);
+                resultElement.Parent = inserted;
+                
+                return resultElement;
+            }
+            else
+            {
+                GridPathElementPool<TTile, TTerrain, TPosition, TContext>.GLOBAL.GetMultiple(counter, m_OpenList);
             }
             return null;
         }
@@ -225,7 +228,11 @@ namespace Common.Grid.Path
 
         public void Dispose()
         {
-            m_GridPathData.Dispose();
+            if (m_OpenList != null)
+            {
+                GridPathElementPool<TTile, TTerrain, TPosition, TContext>.GLOBAL.RecycleMultiple(m_OpenList);
+                m_OpenList = null;
+            }
         }
     }
 }

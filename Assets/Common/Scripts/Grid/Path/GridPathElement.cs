@@ -62,18 +62,16 @@ namespace Common.Grid.Path
         }
 
         /// <summary>
-        /// Clones this instance.
+        /// Copies given instance.
         /// </summary>
-        /// <returns>The cloned instance.</returns>
-        public GridPathElement<TTile, TTerrain, TPosition, TContext> Clone()
+        /// <param name="i_Other">The other instance to copy.</param>
+        public void Set(GridPathElement<TTile, TTerrain, TPosition, TContext> i_Other)
         {
-            GridPathElement<TTile, TTerrain, TPosition, TContext> result = new GridPathElement<TTile, TTerrain, TPosition, TContext>();
-            result.HeuristicDistance = HeuristicDistance;
-            result.PathCost = PathCost;
-            result.FValue = FValue;
-            result.PathingState = PathingState;
-            result.Parent = Parent;
-            return result;
+            HeuristicDistance = i_Other.HeuristicDistance;
+            PathCost = i_Other.PathCost;
+            FValue = i_Other.FValue;
+            PathingState = i_Other.PathingState;
+            Parent = i_Other.Parent;
         }
 
         public class FValueComparer : IComparer<GridPathElement<TTile, TTerrain, TPosition, TContext>>

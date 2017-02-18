@@ -13,13 +13,14 @@ namespace Common.Grid.Path
     public class GridArea<TTile, TTerrain, TPosition, TContext>
         where TTile : GridTile<TTerrain, TPosition, TContext>
         where TTerrain : GridTerrain<TContext>
+        where TContext : IGridContext<TTile, TTerrain, TPosition, TContext>
     {
         public readonly IGridControl<TTile, TTerrain, TPosition, TContext> Grid;
         public readonly IGridPathData<TTile, TTerrain, TPosition, TContext> GridPathData;
         public readonly TPosition Min;
         public readonly TPosition Max;
         public readonly TPosition Origin;
-        public TContext Context;
+        private TContext m_Context;
 
         private readonly Queue<GridPathElement<TTile, TTerrain, TPosition, TContext>> m_OpenQueue = new Queue<GridPathElement<TTile, TTerrain, TPosition, TContext>>();
         private readonly List<TTile> m_ConnectedList = new List<TTile>();
@@ -33,11 +34,10 @@ namespace Common.Grid.Path
         {
             Grid = i_Grid;
             GridPathData = i_PathData;
-            GridPathData.Set(i_Grid, i_Min, i_Max);
             Min = i_Min;
             Max = i_Max;
             Origin = i_Origin;
-            Context = i_Context;
+            m_Context = i_Context;
             
             GridPathElement<TTile, TTerrain, TPosition, TContext> originElement;
             if (i_PathData.TryGetElement(i_Origin, out originElement) == GridPathDataResponse.Success)
@@ -55,8 +55,7 @@ namespace Common.Grid.Path
         private void Open(GridPathElement<TTile, TTerrain, TPosition, TContext> i_Element, GridPathElement<TTile, TTerrain, TPosition, TContext> i_Parent)
         {
             // move terrain cost
-            float terrainCost = i_Parent.Tile.GetTransitionOutCost(i_Element.Tile, Context);
-            terrainCost += i_Element.Tile.GetTransitionInCost(i_Parent.Tile, Context);
+            float terrainCost = m_Context.GetCost(Grid, i_Element, i_Parent);
             if (terrainCost >= 0.0f)
             {
                 i_Element.PathCost = terrainCost + i_Parent.PathCost; //cost of the path so far
@@ -70,8 +69,8 @@ namespace Common.Grid.Path
 
         private bool Reopen(GridPathElement<TTile, TTerrain, TPosition, TContext> i_Element, GridPathElement<TTile, TTerrain, TPosition, TContext> i_Parent)
         {
-            float terrainCost = i_Parent.Tile.GetTransitionOutCost(i_Element.Tile, Context);
-            terrainCost += i_Element.Tile.GetTransitionInCost(i_Parent.Tile, Context);
+            float terrainCost = i_Parent.Tile.GetTransitionOutCost(i_Element.Tile, m_Context);
+            terrainCost += i_Element.Tile.GetTransitionInCost(i_Parent.Tile, m_Context);
             //negative cost indicates blockers
             if (terrainCost >= 0)
             {

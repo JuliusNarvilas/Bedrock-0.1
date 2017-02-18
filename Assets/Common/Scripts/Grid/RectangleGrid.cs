@@ -7,15 +7,24 @@ namespace Common.Grid
     public class RectangleGrid<TTile, TTerrain, TContext> : IGridControl<TTile, TTerrain, GridPosition2D, TContext>
         where TTile : GridTile<TTerrain, GridPosition2D, TContext>
         where TTerrain : GridTerrain<TContext>
+        where TContext : IGridContext<TTile, TTerrain, GridPosition2D, TContext>
     {
         protected readonly List<TTile> m_Tiles = new List<TTile>();
-        protected readonly List<List<GridPathElement<TTile, TTerrain, GridPosition2D, TContext>>> m_PathDataList = new List<List<GridPathElement<TTile, TTerrain, GridPosition2D, TContext>>>();
 
         protected int m_SizeX;
         protected int m_SizeY;
         protected bool m_AllowMoveDiagonally = true;
-        protected float m_NonDiagonalFactor = 1.0f;
-        protected float m_DiagonalFactor = (float)Math.Sqrt(2.0);
+        protected float m_NonDiagonalHeuristicFactor = 1.0f;
+        protected float m_DiagonalHeuristicFactor = (float)Math.Sqrt(2.0);
+
+        public int GetSizeX()
+        {
+            return m_SizeX;
+        }
+        public int GetSizeY()
+        {
+            return m_SizeY;
+        }
 
         public int GetHeuristicDistance(GridPosition2D i_From, GridPosition2D i_To)
         {
@@ -24,7 +33,7 @@ namespace Common.Grid
             
             if (m_AllowMoveDiagonally)
             {
-                return (int)(m_NonDiagonalFactor * (xDiff + yDiff) + (m_DiagonalFactor - 2.0f * m_NonDiagonalFactor) * Math.Min(xDiff, yDiff) + 0.5f);
+                return (int)(m_NonDiagonalHeuristicFactor * (xDiff + yDiff) + (m_DiagonalHeuristicFactor - 2.0f * m_NonDiagonalHeuristicFactor) * Math.Min(xDiff, yDiff) + 0.5f);
             }
             else
             {
@@ -110,6 +119,7 @@ namespace Common.Grid
         public GridArea<TTile, TTerrain, GridPosition2D, TContext> GetPathArea(GridPosition2D i_Min, GridPosition2D i_Max, GridPosition2D i_Origin, TContext i_Context)
         {
             var pathData = GridPathData2DProvider<TTile, TTerrain, TContext>.GLOBAL.GetGridPathData();
+            pathData.Set(this, i_Min, i_Max);
             return new GridArea<TTile, TTerrain, GridPosition2D, TContext>(this, pathData, i_Min, i_Max, i_Origin, i_Context);
         }
     }

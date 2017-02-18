@@ -9,6 +9,7 @@ namespace Assets.Common.Scripts.Grid
     public class HexGrid<TTile, TTerrain, TContext> : IGridControl<TTile, TTerrain, GridPosition2D, TContext>
         where TTile : GridTile<TTerrain, GridPosition2D, TContext>
         where TTerrain : GridTerrain<TContext>
+        where TContext : IGridContext<TTile, TTerrain, GridPosition2D, TContext>
     {
         public int GetHeuristicDistance(GridPosition2D i_From, GridPosition2D i_To)
         {

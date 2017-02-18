@@ -6,6 +6,7 @@ namespace Common.Grid
     public interface IGridControl<TTile, TTerrain, TPosition, TContext>
         where TTile : GridTile<TTerrain, TPosition, TContext>
         where TTerrain : GridTerrain<TContext>
+        where TContext : IGridContext<TTile, TTerrain, TPosition, TContext>
     {
         /// <summary>
         /// Gets the path.

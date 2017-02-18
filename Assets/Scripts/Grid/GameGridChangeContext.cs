@@ -1,7 +1,10 @@
 ﻿
+using Common.Grid;
+
 namespace Game.Grid
 {
-    public struct GameGridChangeContext
+    public class GameGridChangeContext :
+        BasicGridContext<GameGridTile, GameGridTerrain, GridPosition2D, GameGridChangeContext>
     {
         public int temp;
     }

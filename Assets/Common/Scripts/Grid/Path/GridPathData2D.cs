@@ -6,6 +6,7 @@ namespace Common.Grid.Path
     public class GridPathData2D<TTile, TTerrain, TContext> : IGridPathData<TTile, TTerrain, GridPosition2D, TContext>
         where TTile : GridTile<TTerrain, GridPosition2D, TContext>
         where TTerrain : GridTerrain<TContext>
+        where TContext : IGridContext<TTile, TTerrain, GridPosition2D, TContext>
     {
         private List<GridPathElement<TTile, TTerrain, GridPosition2D, TContext>> m_Data = new List<GridPathElement<TTile, TTerrain, GridPosition2D, TContext>>();
         private GridPosition2D m_Min = new GridPosition2D();

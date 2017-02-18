@@ -19,6 +19,7 @@ namespace Common.Grid.Path
     public interface IGridPathDataProvider<TTile, TTerrain, TPosition, TContext>
         where TTile : GridTile<TTerrain, TPosition, TContext>
         where TTerrain : GridTerrain<TContext>
+        where TContext : IGridContext<TTile, TTerrain, TPosition, TContext>
     {
         /// <summary>
         /// Gets the grid path data.
@@ -45,6 +46,7 @@ namespace Common.Grid.Path
     public interface IGridPathData<TTile, TTerrain, TPosition, TContext> : IDisposable
         where TTile : GridTile<TTerrain, TPosition, TContext>
         where TTerrain : GridTerrain<TContext>
+        where TContext : IGridContext<TTile, TTerrain, TPosition, TContext>
     {
         /// <summary>
         /// Sets the initial pathing data bounds.

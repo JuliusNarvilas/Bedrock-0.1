@@ -11,7 +11,7 @@ namespace Game.Grid
 
         public readonly float Cost;
 
-        private GameGridTerrain(int i_Id, string i_Name, float i_Cost) : base(i_Id, i_Name)
+        public GameGridTerrain(int i_Id, string i_Name, float i_Cost) : base(i_Id, i_Name)
         {
             Cost = i_Cost;
         }
