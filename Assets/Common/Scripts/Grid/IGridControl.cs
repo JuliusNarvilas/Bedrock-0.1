@@ -3,10 +3,7 @@ using System.Collections.Generic;
 
 namespace Common.Grid
 {
-    public interface IGridControl<TTile, TTerrain, TPosition, TContext>
-        where TTile : GridTile<TTerrain, TPosition, TContext>
-        where TTerrain : GridTerrain<TContext>
-        where TContext : IGridContext<TTile, TTerrain, TPosition, TContext>
+    public interface IGridControl<TPosition, TTileData, TContext>
     {
         /// <summary>
         /// Gets the path.
@@ -14,7 +11,7 @@ namespace Common.Grid
         /// <param name="i_Start">The start position.</param>
         /// <param name="i_End">The end position.</param>
         /// <returns></returns>
-        GridPath<TTile, TTerrain, TPosition, TContext> GetPath(TPosition i_Start, TPosition i_End, TContext i_Context);
+        GridPath<TPosition, TTileData, TContext> GetPath(TPosition i_Start, TPosition i_End, TContext i_Context);
 
         /// <summary>
         /// Gets the path area.
@@ -24,7 +21,7 @@ namespace Common.Grid
         /// <param name="i_Origin">The origin pathing origin.</param>
         /// <param name="i_Context">The context.</param>
         /// <returns></returns>
-        GridArea<TTile, TTerrain, TPosition, TContext> GetPathArea(TPosition i_Min, TPosition i_Max, TPosition i_Origin, TContext i_Context);
+        GridArea<TPosition, TTileData, TContext> GetPathArea(TPosition i_Min, TPosition i_Max, TPosition i_Origin, TContext i_Context);
 
         /// <summary>
         /// Tries to get a tile at given position.
@@ -32,7 +29,7 @@ namespace Common.Grid
         /// <param name="i_Position">The position.</param>
         /// <param name="o_Tile">The tile result.</param>
         /// <returns>True if a tile was found and false otherwise (usually because position is outside grid bounds)</returns>
-        bool TryGetTile(TPosition i_Position, out TTile o_Tile);
+        bool TryGetTile(TPosition i_Position, out GridTile<TPosition, TTileData, TContext> o_Tile);
 
         /// <summary>
         /// Gets the heuristic distance.
@@ -47,6 +44,6 @@ namespace Common.Grid
         /// </summary>
         /// <param name="i_Position">The position.</param>
         /// <param name="o_ConnectedTiles">The connected tiles.</param>
-        void GetConnected(TPosition i_Position, List<TTile> o_ConnectedTiles);
+        void GetConnected(TPosition i_Position, List<GridTile<TPosition, TTileData, TContext>> o_ConnectedTiles);
     }
 }

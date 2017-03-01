@@ -113,5 +113,31 @@ namespace Common
         {
             return (((i_Hash1 << 5) + i_Hash1) ^ i_Hash2);
         }
+
+        public static int GetLowestBitPosition(int i_Value)
+        {
+            int bitsCount = sizeof(int) * 8;
+            for (int i = 0; i < bitsCount; ++i)
+            {
+                if ((i_Value & (1 << i)) != 0)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        public static int GetHighestBitPosition(int i_Value)
+        {
+            int bitsCount = sizeof(int) * 8;
+            for (int i = bitsCount - 1; i >= 0; ++i)
+            {
+                if ((i_Value & (1 << i)) != 0)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
     }
 }

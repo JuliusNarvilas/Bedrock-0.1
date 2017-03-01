@@ -12,20 +12,17 @@ namespace Common.Grid.Path
     /// <typeparam name="TPosition">The type of the position.</typeparam>
     /// <typeparam name="TContext">The type of the context.</typeparam>
     /// <seealso cref="System.IDisposable" />
-    public class GridPath<TTile, TTerrain, TPosition, TContext> : IDisposable
-        where TTile : GridTile<TTerrain, TPosition, TContext>
-        where TTerrain : GridTerrain<TContext>
-        where TContext : IGridContext<TTile, TTerrain, TPosition, TContext>
+    public class GridPath<TPosition, TTileData, TContext> : IDisposable
     {
-        private readonly IGridControl<TTile, TTerrain, TPosition, TContext> m_Grid;
-        private IGridPathData<TTile, TTerrain, TPosition, TContext> m_GridPathData;
+        private readonly IGridControl<TPosition, TTileData, TContext> m_Grid;
+        private IGridPathData<TPosition, TTileData, TContext> m_GridPathData;
 
-        private List<GridPathElement<TTile, TTerrain, TPosition, TContext>> m_OpenList = new List<GridPathElement<TTile, TTerrain, TPosition, TContext>>();
-        private List<GridPathElement<TTile, TTerrain, TPosition, TContext>> m_ClosedList = new List<GridPathElement<TTile, TTerrain, TPosition, TContext>>();
+        private List<GridPathElement<TPosition, TTileData, TContext>> m_OpenList = new List<GridPathElement<TPosition, TTileData, TContext>>();
+        private List<GridPathElement<TPosition, TTileData, TContext>> m_ClosedList = new List<GridPathElement<TPosition, TTileData, TContext>>();
         private TContext m_Context;
 
-        private List<TTile> m_ConnectedList = new List<TTile>();
-        private GridPathElement<TTile, TTerrain, TPosition, TContext> m_FinishElement;
+        private List<GridTile<TPosition, TTileData, TContext>> m_ConnectedList = new List<GridTile<TPosition, TTileData, TContext>>();
+        private GridPathElement<TPosition, TTileData, TContext> m_FinishElement;
 
         /// <summary>
         /// Gets the path grid tiles from starting to finishing locations.
@@ -36,7 +33,7 @@ namespace Common.Grid.Path
         /// <value>
         /// Path grid tiles.
         /// </value>
-        public List<GridPathElement<TTile, TTerrain, TPosition, TContext>> Tiles
+        public List<GridPathElement<TPosition, TTileData, TContext>> Tiles
         {
             get { return m_OpenList; }
         }
@@ -50,8 +47,8 @@ namespace Common.Grid.Path
         /// <param name="i_EndPosition">The end position.</param>
         /// <param name="i_Context">The context.</param>
         public GridPath(
-            IGridControl<TTile, TTerrain, TPosition, TContext> i_Grid,
-            IGridPathData<TTile, TTerrain, TPosition, TContext> i_PathData,
+            IGridControl<TPosition, TTileData, TContext> i_Grid,
+            IGridPathData<TPosition, TTileData, TContext> i_PathData,
             TPosition i_StartPos, TPosition i_EndPosition,
             TContext i_Context
         )
@@ -83,9 +80,9 @@ namespace Common.Grid.Path
             Finish();
         }
 
-        private GridPathElement<TTile, TTerrain, TPosition, TContext> GetElementOrDefault(TPosition i_Pos)
+        private GridPathElement<TPosition, TTileData, TContext> GetElementOrDefault(TPosition i_Pos)
         {
-            GridPathElement<TTile, TTerrain, TPosition, TContext> result;
+            GridPathElement<TPosition, TTileData, TContext> result;
             if (m_GridPathData.TryGetElement(i_Pos, out result) == GridPathDataResponse.OutOfDataRange)
             {
                     m_GridPathData.Grow(i_Pos);
@@ -94,10 +91,10 @@ namespace Common.Grid.Path
             return result;
         }
 
-        private void Open(GridPathElement<TTile, TTerrain, TPosition, TContext> i_Element, GridPathElement<TTile, TTerrain, TPosition, TContext> i_Parent)
+        private void Open(GridPathElement<TPosition, TTileData, TContext> i_Element, GridPathElement<TPosition, TTileData, TContext> i_Parent)
         {
             // move terrain cost
-            float terrainCost = m_Context.GetCost(m_Grid, i_Element, i_Parent);
+            float terrainCost = i_Element.Tile.GetCost(m_Grid, i_Parent, m_Context);
             if (terrainCost >= 0.0f)
             {
                 i_Element.HeuristicDistance = m_Grid.GetHeuristicDistance(i_Element.Tile.Position, m_FinishElement.Tile.Position);
@@ -110,10 +107,9 @@ namespace Common.Grid.Path
             }
         }
 
-        private bool Reopen(GridPathElement<TTile, TTerrain, TPosition, TContext> i_Element, GridPathElement<TTile, TTerrain, TPosition, TContext> i_Parent)
+        private bool Reopen(GridPathElement<TPosition, TTileData, TContext> i_Element, GridPathElement<TPosition, TTileData, TContext> i_Parent)
         {
-            float terrainCost = i_Parent.Tile.GetTransitionOutCost(i_Element.Tile, m_Context);
-            terrainCost += i_Element.Tile.GetTransitionInCost(i_Parent.Tile, m_Context);
+            float terrainCost = i_Element.Tile.GetCost(m_Grid, i_Parent, m_Context);
             //negative cost indicates blockers
             if (terrainCost >= 0)
             {
@@ -129,13 +125,13 @@ namespace Common.Grid.Path
             return false;
         }
 
-        private void Close(GridPathElement<TTile, TTerrain, TPosition, TContext> i_Element)
+        private void Close(GridPathElement<TPosition, TTileData, TContext> i_Element)
         {
             i_Element.PathingState = GridPathfindingState.Closed;
             m_ClosedList.Add(i_Element);
         }
 
-        private void OpenNeighbours(GridPathElement<TTile, TTerrain, TPosition, TContext> i_Element)
+        private void OpenNeighbours(GridPathElement<TPosition, TTileData, TContext> i_Element)
         {
             m_Grid.GetConnected(i_Element.Tile.Position, m_ConnectedList);
 
@@ -143,7 +139,7 @@ namespace Common.Grid.Path
             bool oldElementChanged = false;
 
             int size = m_ConnectedList.Count;
-            GridPathElement<TTile, TTerrain, TPosition, TContext> neighbourElement;
+            GridPathElement<TPosition, TTileData, TContext> neighbourElement;
             for (var i = 0; i < size; ++i)
             {
                 neighbourElement = GetElementOrDefault(m_ConnectedList[i].Position);
@@ -163,7 +159,7 @@ namespace Common.Grid.Path
             }
             if (oldElementChanged || (openListSizeBefore > m_OpenList.Count))
             {
-                m_OpenList.InsertionSort(GridPathElement<TTile, TTerrain, TPosition, TContext>.FValueComparer.Descending);
+                m_OpenList.InsertionSort(GridPathElement<TPosition, TTileData, TContext>.FValueComparer.Descending);
             }
             m_ConnectedList.Clear();
         }
@@ -195,7 +191,7 @@ namespace Common.Grid.Path
             m_GridPathData = null;
         }
 
-        private GridPathElement<TTile, TTerrain, TPosition, TContext> FillPathResult(GridPathElement<TTile, TTerrain, TPosition, TContext> i_Element, int counter)
+        private GridPathElement<TPosition, TTileData, TContext> FillPathResult(GridPathElement<TPosition, TTileData, TContext> i_Element, int counter)
         {
             if(i_Element != null)
             {
@@ -208,15 +204,15 @@ namespace Common.Grid.Path
             }
             else
             {
-                GridPathElementPool<TTile, TTerrain, TPosition, TContext>.GLOBAL.GetMultiple(counter, m_OpenList);
+                GridPathElementPool<TPosition, TTileData, TContext>.GLOBAL.GetMultiple(counter, m_OpenList);
             }
             return null;
         }
 
-        private GridPathElement<TTile, TTerrain, TPosition, TContext> PickNext()
+        private GridPathElement<TPosition, TTileData, TContext> PickNext()
         {
             int lastIndex = m_OpenList.Count - 1;
-            GridPathElement<TTile, TTerrain, TPosition, TContext> pick = null;
+            GridPathElement<TPosition, TTileData, TContext> pick = null;
             if (lastIndex >= 0)
             {
                 pick = m_OpenList[lastIndex];
@@ -230,7 +226,7 @@ namespace Common.Grid.Path
         {
             if (m_OpenList != null)
             {
-                GridPathElementPool<TTile, TTerrain, TPosition, TContext>.GLOBAL.RecycleMultiple(m_OpenList);
+                GridPathElementPool<TPosition, TTileData, TContext>.GLOBAL.RecycleMultiple(m_OpenList);
                 m_OpenList = null;
             }
         }

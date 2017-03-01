@@ -3,12 +3,10 @@ using System.Collections.Generic;
 
 namespace Common.Grid.Path
 {
-    public class GridPathElementPool<TTile, TTerrain, TPosition, TContext>
-        where TTile : GridTile<TTerrain, TPosition, TContext>
-        where TTerrain : GridTerrain<TContext>
+    public class GridPathElementPool<TPosition, TTileData, TContext>
     {
         private readonly object m_SyncLock = new object();
-        private readonly List<GridPathElement<TTile, TTerrain, TPosition, TContext>> m_Data = new List<GridPathElement<TTile, TTerrain, TPosition, TContext>>();
+        private readonly List<GridPathElement<TPosition, TTileData, TContext>> m_Data = new List<GridPathElement<TPosition, TTileData, TContext>>();
         private int m_MaxCapacity;
 
         public GridPathElementPool(int i_Capacity)
@@ -16,7 +14,7 @@ namespace Common.Grid.Path
             m_MaxCapacity = i_Capacity;
         }
 
-        public GridPathElement<TTile, TTerrain, TPosition, TContext> Get()
+        public GridPathElement<TPosition, TTileData, TContext> Get()
         {
             lock (m_SyncLock)
             {
@@ -27,10 +25,10 @@ namespace Common.Grid.Path
                     return result;
                 }
             }
-            return new GridPathElement<TTile, TTerrain, TPosition, TContext>();
+            return new GridPathElement<TPosition, TTileData, TContext>();
         }
 
-        public void GetMultiple(int i_Count, List<GridPathElement<TTile, TTerrain, TPosition, TContext>> o_List)
+        public void GetMultiple(int i_Count, List<GridPathElement<TPosition, TTileData, TContext>> o_List)
         {
             if (o_List != null)
             {
@@ -58,13 +56,13 @@ namespace Common.Grid.Path
                 
                 while (filledCount < i_Count)
                 {
-                    o_List.Add(new GridPathElement<TTile, TTerrain, TPosition, TContext>());
+                    o_List.Add(new GridPathElement<TPosition, TTileData, TContext>());
                     ++filledCount;
                 }
             }
         }
 
-        public void Recycle(GridPathElement<TTile, TTerrain, TPosition, TContext> i_Data)
+        public void Recycle(GridPathElement<TPosition, TTileData, TContext> i_Data)
         {
             i_Data.Clear();
             lock (m_SyncLock)
@@ -73,7 +71,7 @@ namespace Common.Grid.Path
             }
         }
 
-        public void RecycleMultiple(List<GridPathElement<TTile, TTerrain, TPosition, TContext>> i_Data)
+        public void RecycleMultiple(List<GridPathElement<TPosition, TTileData, TContext>> i_Data)
         {
             lock (m_SyncLock)
             {
@@ -88,6 +86,6 @@ namespace Common.Grid.Path
             i_Data.Clear();
         }
 
-        public static readonly GridPathElementPool<TTile, TTerrain, TPosition, TContext> GLOBAL = new GridPathElementPool<TTile, TTerrain, TPosition, TContext>(50);
+        public static readonly GridPathElementPool<TPosition, TTileData, TContext> GLOBAL = new GridPathElementPool<TPosition, TTileData, TContext>(50);
     }
 }

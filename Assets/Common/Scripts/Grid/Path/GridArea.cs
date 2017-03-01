@@ -10,24 +10,21 @@ namespace Common.Grid.Path
     /// <typeparam name="TPosition">The type of the position.</typeparam>
     /// <typeparam name="TContext">The type of the context.</typeparam>
     /// <seealso cref="System.IDisposable" />
-    public class GridArea<TTile, TTerrain, TPosition, TContext>
-        where TTile : GridTile<TTerrain, TPosition, TContext>
-        where TTerrain : GridTerrain<TContext>
-        where TContext : IGridContext<TTile, TTerrain, TPosition, TContext>
+    public class GridArea<TPosition, TTileData, TContext>
     {
-        public readonly IGridControl<TTile, TTerrain, TPosition, TContext> Grid;
-        public readonly IGridPathData<TTile, TTerrain, TPosition, TContext> GridPathData;
+        public readonly IGridControl<TPosition, TTileData, TContext> Grid;
+        public readonly IGridPathData<TPosition, TTileData, TContext> GridPathData;
         public readonly TPosition Min;
         public readonly TPosition Max;
         public readonly TPosition Origin;
         private TContext m_Context;
 
-        private readonly Queue<GridPathElement<TTile, TTerrain, TPosition, TContext>> m_OpenQueue = new Queue<GridPathElement<TTile, TTerrain, TPosition, TContext>>();
-        private readonly List<TTile> m_ConnectedList = new List<TTile>();
+        private readonly Queue<GridPathElement<TPosition, TTileData, TContext>> m_OpenQueue = new Queue<GridPathElement<TPosition, TTileData, TContext>>();
+        private readonly List<GridTile<TPosition, TTileData, TContext>> m_ConnectedList = new List<GridTile<TPosition, TTileData, TContext>>();
 
         public GridArea(
-            IGridControl<TTile, TTerrain, TPosition, TContext> i_Grid,
-            IGridPathData<TTile, TTerrain, TPosition, TContext> i_PathData,
+            IGridControl<TPosition, TTileData, TContext> i_Grid,
+            IGridPathData<TPosition, TTileData, TContext> i_PathData,
             TPosition i_Min, TPosition i_Max, TPosition i_Origin,
             TContext i_Context
         )
@@ -39,7 +36,7 @@ namespace Common.Grid.Path
             Origin = i_Origin;
             m_Context = i_Context;
             
-            GridPathElement<TTile, TTerrain, TPosition, TContext> originElement;
+            GridPathElement<TPosition, TTileData, TContext> originElement;
             if (i_PathData.TryGetElement(i_Origin, out originElement) == GridPathDataResponse.Success)
             {
                 OpenNeighbours(originElement);
@@ -52,10 +49,10 @@ namespace Common.Grid.Path
             m_ConnectedList = null;
         }
 
-        private void Open(GridPathElement<TTile, TTerrain, TPosition, TContext> i_Element, GridPathElement<TTile, TTerrain, TPosition, TContext> i_Parent)
+        private void Open(GridPathElement<TPosition, TTileData, TContext> i_Element, GridPathElement<TPosition, TTileData, TContext> i_Parent)
         {
             // move terrain cost
-            float terrainCost = m_Context.GetCost(Grid, i_Element, i_Parent);
+            float terrainCost = i_Element.Tile.GetCost(Grid, i_Parent, m_Context);
             if (terrainCost >= 0.0f)
             {
                 i_Element.PathCost = terrainCost + i_Parent.PathCost; //cost of the path so far
@@ -67,10 +64,9 @@ namespace Common.Grid.Path
             }
         }
 
-        private bool Reopen(GridPathElement<TTile, TTerrain, TPosition, TContext> i_Element, GridPathElement<TTile, TTerrain, TPosition, TContext> i_Parent)
+        private bool Reopen(GridPathElement<TPosition, TTileData, TContext> i_Element, GridPathElement<TPosition, TTileData, TContext> i_Parent)
         {
-            float terrainCost = i_Parent.Tile.GetTransitionOutCost(i_Element.Tile, m_Context);
-            terrainCost += i_Element.Tile.GetTransitionInCost(i_Parent.Tile, m_Context);
+            float terrainCost = i_Element.Tile.GetCost(Grid, i_Parent, m_Context);
             //negative cost indicates blockers
             if (terrainCost >= 0)
             {
@@ -86,13 +82,13 @@ namespace Common.Grid.Path
             return false;
         }
 
-        private void OpenNeighbours(GridPathElement<TTile, TTerrain, TPosition, TContext> i_Element)
+        private void OpenNeighbours(GridPathElement<TPosition, TTileData, TContext> i_Element)
         {
             Grid.GetConnected(i_Element.Tile.Position, m_ConnectedList);
             int size = m_ConnectedList.Count;
             for (var i = 0; i < size; ++i)
             {
-                GridPathElement<TTile, TTerrain, TPosition, TContext> neighbourElement;
+                GridPathElement<TPosition, TTileData, TContext> neighbourElement;
                 if (GridPathData.TryGetElement(m_ConnectedList[i].Position, out neighbourElement) == GridPathDataResponse.Success)
                 {
                     switch (neighbourElement.PathingState)

@@ -1,9 +1,10 @@
 ﻿
 using Common.Grid;
+using Common.Grid.Specializations;
 
 namespace Game.Grid
 {
-    public class GameRectGrid : RectangleGrid<GameGridTile, GameGridTerrain, GameGridChangeContext>
+    public class GameRectGrid : CuboidGrid<int, GameGridChangeContext>
     {
         public GameRectGrid(int i_SizeX, int i_SizeY, bool i_AllowMoveDiagonally)
         {
@@ -15,7 +16,7 @@ namespace Game.Grid
             {
                 for(int j = 0; j < m_SizeY; ++j)
                 {
-                    m_Tiles.Add(new GameGridTile(new GridPosition2D(i, j), new GameGridTerrain(0, "Test", 1)));
+                    m_Tiles.Add(new GameGridTile(new GridPosition3D(i, j, 0)));
                 }
             }
         }

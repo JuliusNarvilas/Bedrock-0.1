@@ -3,15 +3,12 @@ using System.Collections.Generic;
 
 namespace Common.Grid.Path
 {
-    public abstract class GridPathDataProvider<TTile, TTerrain, TPosition, TContext> : IGridPathDataProvider<TTile, TTerrain, TPosition, TContext>
-        where TTile : GridTile<TTerrain, TPosition, TContext>
-        where TTerrain : GridTerrain<TContext>
-        where TContext : IGridContext<TTile, TTerrain, TPosition, TContext>
+    public abstract class GridPathDataProvider<TPosition, TTileData, TContext>
     {
         private readonly object m_SyncLock = new object();
-        private readonly List<IGridPathData<TTile, TTerrain, TPosition, TContext>> m_Data = new List<IGridPathData<TTile, TTerrain, TPosition, TContext>>();
+        private readonly List<IGridPathData<TPosition, TTileData, TContext>> m_Data = new List<IGridPathData<TPosition, TTileData, TContext>>();
 
-        public IGridPathData<TTile, TTerrain, TPosition, TContext> GetGridPathData()
+        public IGridPathData<TPosition, TTileData, TContext> GetGridPathData()
         {
             lock(m_SyncLock)
             {
@@ -25,9 +22,9 @@ namespace Common.Grid.Path
             return Create();
         }
 
-        protected abstract IGridPathData<TTile, TTerrain, TPosition, TContext> Create();
+        protected abstract IGridPathData<TPosition, TTileData, TContext> Create();
 
-        public void Recycle(IGridPathData<TTile, TTerrain, TPosition, TContext> i_Data)
+        public void Recycle(IGridPathData<TPosition, TTileData, TContext> i_Data)
         {
             i_Data.Clean();
             lock (m_SyncLock)
