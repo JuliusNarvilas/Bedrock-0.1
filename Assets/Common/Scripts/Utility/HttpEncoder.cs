@@ -40,7 +40,7 @@ using System.Text;
 using System.Web.Configuration;
 #endif
 
-namespace RestSharp.Contrib
+namespace Common.Utility
 {
 #if NET_4_0
 	public

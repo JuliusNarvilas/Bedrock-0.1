@@ -13,7 +13,7 @@ namespace Common.IO
         {
             m_ContentArea = pos;
             EditorGUI.BeginProperty(m_ContentArea, label, prop);
-            m_ContentArea.height = EditorGUIExtensions.DEFAULT_GUI_HEIGHT;
+            m_ContentArea.height = EditorHelpers.DEFAULT_GUI_HEIGHT;
             ResourcesDBItem tempResourceItem = null;
             SerializedProperty assetProp = prop.FindPropertyRelative("FilePath");
             if (assetProp != null)
@@ -66,7 +66,7 @@ namespace Common.IO
 
         public override float GetPropertyHeight(SerializedProperty prop, GUIContent label)
         {
-            return EditorGUIExtensions.DEFAULT_GUI_LINE_HEIGHT;
+            return EditorHelpers.DEFAULT_GUI_LINE_HEIGHT;
         }
     }
 }

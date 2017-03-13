@@ -1,34 +1,35 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System;
+using System.Reflection;
+using Common.Utility;
 
 namespace Common
 {
-
-    public enum EnumStringCasing
-    {
-        /// <summary>
-        /// Matches string with casing and serializes to string with original enum casing.
-        /// </summary>
-        Strict,
-        /// <summary>
-        /// Matches string ignoring casing and serializes to string with original enum casing.
-        /// </summary>
-        LoosePreserve,
-        /// <summary>
-        /// Matches string ignoring casing and serializes to string with upper casing.
-        /// </summary>
-        LooseUpper,
-        /// <summary>
-        /// Matches string ignoring casing and serializes to string with lower casing.
-        /// </summary>
-        LooseLower
-    }
-
-    public static class EditorGUIExtensions
+    public static class EditorHelpers
     {
         public const float DEFAULT_GUI_LINE_HEIGHT = 18;
         public const float DEFAULT_GUI_HEIGHT = 16;
+        
+        public enum EnumStringCasing
+        {
+            /// <summary>
+            /// Matches string with casing and serializes to string with original enum casing.
+            /// </summary>
+            Strict,
+            /// <summary>
+            /// Matches string ignoring casing and serializes to string with original enum casing.
+            /// </summary>
+            LoosePreserve,
+            /// <summary>
+            /// Matches string ignoring casing and serializes to string with upper casing.
+            /// </summary>
+            LooseUpper,
+            /// <summary>
+            /// Matches string ignoring casing and serializes to string with lower casing.
+            /// </summary>
+            LooseLower
+        }
 
         /// <summary>
         /// Default enum string converter for serializing enum strings as other string values and converting them back.
@@ -59,7 +60,6 @@ namespace Common
             string i_Name,
             string i_DisplayName,
             Type i_EnumType,
-            ref Rect i_ContentArea,
             EnumStringCasing i_Casing = EnumStringCasing.LoosePreserve,
             Func<string, bool, string> i_Converter = null
         )
@@ -104,15 +104,8 @@ namespace Common
                     selectedEnum = (Enum)Enum.Parse(i_EnumType, Enum.GetNames(i_EnumType)[0]);
                 }
             }
-            Rect enumUIArea = new Rect(i_ContentArea.x, i_ContentArea.y, i_ContentArea.width, DEFAULT_GUI_HEIGHT);
-            Rect labelUIArea = enumUIArea;
-            labelUIArea.width *= 0.5f;
-            enumUIArea.width *= 0.5f;
-            enumUIArea.x += labelUIArea.width;
-            i_ContentArea.y += DEFAULT_GUI_LINE_HEIGHT;
-
-            EditorGUI.LabelField(labelUIArea, i_DisplayName);
-            selectedEnum = EditorGUI.EnumPopup(enumUIArea, GUIContent.none, selectedEnum);
+            
+            selectedEnum = EditorGUILayout.EnumPopup(i_DisplayName, selectedEnum);
             string resultString = selectedEnum.ToString();
             switch (i_Casing)
             {
@@ -163,11 +156,129 @@ namespace Common
             enumUIArea.width *= 0.5f;
             enumUIArea.x += labelUIArea.width;
             contentArea.y += DEFAULT_GUI_LINE_HEIGHT;
-
-            EditorGUI.LabelField(labelUIArea, displayName);
-            selectedEnum = EditorGUI.EnumPopup(enumUIArea, GUIContent.none, selectedEnum);
+            
+            selectedEnum = EditorGUILayout.EnumPopup(displayName, selectedEnum);
             matchedProperty.enumValueIndex = Convert.ToInt32(selectedEnum);
             return matchedProperty;
+        }
+
+        /// <summary>
+        /// Gets the object the property represents.
+        /// </summary>
+        /// <param name="prop">Serialised property.</param>
+        /// <returns>Value object.</returns>
+        public static object GetTargetObject(this SerializedProperty prop)
+        {
+            var path = prop.propertyPath.Replace(".Array.data[", "[");
+            object obj = prop.serializedObject.targetObject;
+            var elements = path.Split('.');
+            foreach (var element in elements)
+            {
+                if (element.Contains("["))
+                {
+                    var elementName = element.Substring(0, element.IndexOf("["));
+                    var index = System.Convert.ToInt32(element.Substring(element.IndexOf("[")).Replace("[", "").Replace("]", ""));
+                    obj = GetValue_Imp(obj, elementName, index);
+                }
+                else
+                {
+                    obj = GetValue_Imp(obj, element);
+                }
+            }
+            return obj;
+        }
+
+        private static object GetValue_Imp(object source, string name)
+        {
+            if (source == null)
+                return null;
+            var type = source.GetType();
+
+            while (type != null)
+            {
+                var f = type.GetField(name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+                if (f != null)
+                    return f.GetValue(source);
+
+                var p = type.GetProperty(name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                if (p != null)
+                    return p.GetValue(source, null);
+
+                type = type.BaseType;
+            }
+            return null;
+        }
+
+        private static object GetValue_Imp(object source, string name, int index)
+        {
+            var enumerable = GetValue_Imp(source, name) as System.Collections.IEnumerable;
+            if (enumerable == null) return null;
+            var enm = enumerable.GetEnumerator();
+            //while (index-- >= 0)
+            //    enm.MoveNext();
+            //return enm.Current;
+
+            for (int i = 0; i <= index; i++)
+            {
+                if (!enm.MoveNext()) return null;
+            }
+            return enm.Current;
+        }
+        
+        public static T GetEnumValue<T>(this SerializedProperty prop, T defaultVal = default(T)) where T : struct, System.IConvertible
+        {
+            T result;
+            if(prop.TryGetEnumValue<T>(out result))
+            {
+                return result;
+            }
+            return defaultVal;
+        }
+
+        public static bool TryGetEnumValue<T>(this SerializedProperty prop, out T result) where T : struct, System.IConvertible
+        {
+            if (prop == null)
+            {
+                result = default(T);
+                return false;
+            }
+            try
+            {
+                return ConvertUtility.TryToEnum<T>(prop.intValue, out result);
+            }
+            catch
+            {
+                result = default(T);
+                return false;
+            }
+        }
+
+        public static System.Enum GetEnumValueOfType(this SerializedProperty prop, System.Type enumType, System.Enum defaultVal = default(System.Enum))
+        {
+            System.Enum result;
+            if(prop.TryGetEnumValueOfType(enumType, out result))
+            {
+                return result;
+            }
+            return defaultVal;
+        }
+
+        public static bool TryGetEnumValueOfType(this SerializedProperty prop, System.Type enumType, out System.Enum result)
+        {
+            if (prop == null)
+            {
+                result = default(System.Enum);
+                return false;
+            }
+            try
+            {
+                return ConvertUtility.TryToEnumOfType(enumType, prop.intValue, out result);
+            }
+            catch
+            {
+                result = default(System.Enum);
+                return false;
+            }
         }
     }
 }

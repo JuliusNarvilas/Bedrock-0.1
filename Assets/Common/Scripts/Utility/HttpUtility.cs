@@ -38,7 +38,7 @@ using System.IO;
 using System.Security.Permissions;
 using System.Text;
 
-namespace RestSharp.Contrib
+namespace Common.Utility
 {
 
     //#if !MONOTOUCH

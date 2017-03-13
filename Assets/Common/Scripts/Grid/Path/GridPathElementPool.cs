@@ -7,11 +7,10 @@ namespace Common.Grid.Path
     {
         private readonly object m_SyncLock = new object();
         private readonly List<GridPathElement<TPosition, TTileData, TContext>> m_Data = new List<GridPathElement<TPosition, TTileData, TContext>>();
-        private int m_MaxCapacity;
 
         public GridPathElementPool(int i_Capacity)
         {
-            m_MaxCapacity = i_Capacity;
+            m_Data = new List<GridPathElement<TPosition, TTileData, TContext>>(i_Capacity);
         }
 
         public GridPathElement<TPosition, TTileData, TContext> Get()
@@ -67,15 +66,19 @@ namespace Common.Grid.Path
             i_Data.Clear();
             lock (m_SyncLock)
             {
-                m_Data.Add(i_Data);
+                if (m_Data.Count < m_Data.Capacity)
+                {
+                    m_Data.Add(i_Data);
+                }
             }
         }
 
         public void RecycleMultiple(List<GridPathElement<TPosition, TTileData, TContext>> i_Data)
         {
+            int newDataCount = i_Data.Count;
             lock (m_SyncLock)
             {
-                int count = i_Data.Count;
+                int count = Math.Min(m_Data.Capacity - m_Data.Count, newDataCount);
                 for (int i = 0; i < count; ++i)
                 {
                     var element = i_Data[i];
@@ -86,6 +89,6 @@ namespace Common.Grid.Path
             i_Data.Clear();
         }
 
-        public static readonly GridPathElementPool<TPosition, TTileData, TContext> GLOBAL = new GridPathElementPool<TPosition, TTileData, TContext>(50);
+        public static readonly GridPathElementPool<TPosition, TTileData, TContext> GLOBAL = new GridPathElementPool<TPosition, TTileData, TContext>(100);
     }
 }

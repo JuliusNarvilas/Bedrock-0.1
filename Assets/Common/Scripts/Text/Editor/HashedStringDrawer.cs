@@ -14,7 +14,7 @@ namespace Common.Text
         {
             m_ContentArea = pos;
             EditorGUI.BeginProperty(m_ContentArea, label, prop);
-            m_ContentArea.height = EditorGUIExtensions.DEFAULT_GUI_HEIGHT;
+            m_ContentArea.height = EditorHelpers.DEFAULT_GUI_HEIGHT;
 
             SerializedProperty textProperty = prop.FindPropertyRelative("Text");
             if (textProperty != null)
@@ -33,7 +33,7 @@ namespace Common.Text
 
         public override float GetPropertyHeight(SerializedProperty prop, GUIContent label)
         {
-            return EditorGUIExtensions.DEFAULT_GUI_LINE_HEIGHT;
+            return EditorHelpers.DEFAULT_GUI_LINE_HEIGHT;
         }
     }
 }

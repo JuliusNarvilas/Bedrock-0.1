@@ -441,7 +441,6 @@ namespace Common.Text
         /// </summary>
         public void Dispose()
         {
-            Debug.Log("TEST");
             if (m_Mesh != null)
             {
                 m_Mesh.Clear();

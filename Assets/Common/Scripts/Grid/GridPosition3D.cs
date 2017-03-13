@@ -7,11 +7,12 @@ namespace Common.Grid
     /// Immutable structure for 2D positioning coordinates.
     /// </summary>
     /// <seealso cref="System.IEquatable{Common.Grid.GridPosition3D}" />
+    [Serializable]
     public struct GridPosition3D : IEquatable<GridPosition3D>
     {
-        public readonly int X;
-        public readonly int Y;
-        public readonly int Z;
+        public int X;
+        public int Y;
+        public int Z;
 
         public GridPosition3D(int i_IndexX = 0, int i_IndexY = 0, int i_IndexZ = 0)
         {
@@ -28,6 +29,16 @@ namespace Common.Grid
         public override string ToString()
         {
             return string.Format("{{ X: {0}; Y: {1}; Z: {2}}", X, Y, Z);
+        }
+
+        public static GridPosition3D operator+ (GridPosition3D i_ObjA, GridPosition3D i_ObjB)
+        {
+            return new GridPosition3D(i_ObjA.X + i_ObjB.X, i_ObjA.Y + i_ObjB.Y, i_ObjA.Z + i_ObjB.Z);
+        }
+
+        public static GridPosition3D operator -(GridPosition3D i_ObjA, GridPosition3D i_ObjB)
+        {
+            return new GridPosition3D(i_ObjA.X - i_ObjB.X, i_ObjA.Y - i_ObjB.Y, i_ObjA.Z - i_ObjB.Z);
         }
     }
 }
