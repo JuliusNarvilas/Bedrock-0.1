@@ -228,13 +228,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 810758097}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: 0.4170978, z: -0, w: 0.90886164}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 49.303, z: 0}
 --- !u!1 &871496714
 GameObject:
   m_ObjectHideFlags: 0
@@ -354,6 +354,8 @@ MonoBehaviour:
     Y: 3
     Z: 2
   TileSize: {x: 1, y: 1.5, z: 1}
+  DrawTileData: 1
+  AddFloorToChildren: 0
 --- !u!4 &960849336
 Transform:
   m_ObjectHideFlags: 0
@@ -424,14 +426,15 @@ MonoBehaviour:
       X: 0
       Y: 0
       Z: 0
-    TileBlockerSettings: 0
-    TileSettings: 0
+    TileBlockerSettings: 4096
+    Settings: 0
   - Position:
       X: 1
       Y: 0
       Z: 0
-    TileBlockerSettings: 0
-    TileSettings: 0
+    TileBlockerSettings: 4096
+    Settings: 0
+  Connections: []
 --- !u!1 &1899926297
 GameObject:
   m_ObjectHideFlags: 0
@@ -487,17 +490,24 @@ MonoBehaviour:
       X: 0
       Y: 0
       Z: 0
-    TileBlockerSettings: 4674
-    TileSettings: 0
+    TileBlockerSettings: 4690
+    Settings: 0
   - Position:
       X: 1
       Y: 0
       Z: 0
-    TileBlockerSettings: 0
-    TileSettings: 0
+    TileBlockerSettings: 4096
+    Settings: 0
   - Position:
       X: 1
       Y: 1
       Z: 0
-    TileBlockerSettings: 0
-    TileSettings: 0
+    TileBlockerSettings: 4096
+    Settings: 0
+  Connections:
+  - Position:
+      X: 0
+      Y: 0
+      Z: 0
+    TileLocation: 0
+    Settings: 48

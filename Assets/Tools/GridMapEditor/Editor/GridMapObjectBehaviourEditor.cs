@@ -9,25 +9,38 @@ namespace Tools
     [CustomEditor(typeof(GridMapObjectBehaviour))]
     public class GridMapObjectBehaviourEditor : Editor
     {
-        private ReorderableList m_GridObjectList;
+        private ReorderableList m_GridTileList;
+        private ReorderableList m_GridConnectionsList;
         private List<SerializedProperty> m_OtherProperties;
         private GridMapObjectBehaviour m_TargetObject;
 
         // Use this for initialization
         public void OnEnable()
         {
-            m_GridObjectList = new ReorderableList(serializedObject,
+            m_GridTileList = new ReorderableList(serializedObject,
                 serializedObject.FindProperty("Tiles"),
                 true, true, true, true);
 
-            m_GridObjectList.elementHeightCallback = GetElementHeight;
-            m_GridObjectList.drawElementCallback = DrawGridObject;
-            m_GridObjectList.drawHeaderCallback = (Rect rect) =>
+            m_GridTileList.elementHeightCallback = GetTileHeight;
+            m_GridTileList.drawElementCallback = DrawTile;
+            m_GridTileList.drawHeaderCallback = (Rect rect) =>
             {
                 EditorGUI.LabelField(rect, "Tiles", EditorStyles.boldLabel);
             };
-            m_GridObjectList.onSelectCallback = UpdateSelectDraw;
-            
+            m_GridTileList.onSelectCallback = UpdateSelectDraw;
+
+            m_GridConnectionsList = new ReorderableList(serializedObject,
+                serializedObject.FindProperty("Connections"),
+                true, true, true, true);
+
+            m_GridConnectionsList.elementHeightCallback = GetConnectionHeight;
+            m_GridConnectionsList.drawElementCallback = DrawConnection;
+            m_GridConnectionsList.drawHeaderCallback = (Rect rect) =>
+            {
+                EditorGUI.LabelField(rect, "Connections", EditorStyles.boldLabel);
+            };
+            //m_GridConnectionsList.onSelectCallback = UpdateSelectDraw;
+
             m_OtherProperties = new List<SerializedProperty> {
                 serializedObject.FindProperty("Id"),
                 serializedObject.FindProperty("Offset"),
@@ -50,18 +63,32 @@ namespace Tools
             }
         }
 
-        private float GetElementHeight(int index)
+        private float GetTileHeight(int index)
         {
-            var temp = m_GridObjectList.serializedProperty.GetArrayElementAtIndex(index);
+            var temp = m_GridTileList.serializedProperty.GetArrayElementAtIndex(index);
+            return EditorGUI.GetPropertyHeight(temp);
+        }
+        private float GetConnectionHeight(int index)
+        {
+            var temp = m_GridConnectionsList.serializedProperty.GetArrayElementAtIndex(index);
             return EditorGUI.GetPropertyHeight(temp);
         }
 
-        private void DrawGridObject(Rect rect, int index, bool isActive, bool isFocused)
+        private void DrawTile(Rect rect, int index, bool isActive, bool isFocused)
         {
             const int GridObjectDisplayPadding = 2;
             rect.y += GridObjectDisplayPadding;
 
-            var element = m_GridObjectList.serializedProperty.GetArrayElementAtIndex(index);
+            var element = m_GridTileList.serializedProperty.GetArrayElementAtIndex(index);
+
+            EditorGUI.PropertyField(rect, element, true);
+        }
+        private void DrawConnection(Rect rect, int index, bool isActive, bool isFocused)
+        {
+            const int GridObjectDisplayPadding = 2;
+            rect.y += GridObjectDisplayPadding;
+
+            var element = m_GridConnectionsList.serializedProperty.GetArrayElementAtIndex(index);
 
             EditorGUI.PropertyField(rect, element, true);
         }
@@ -75,7 +102,8 @@ namespace Tools
                 EditorGUILayout.PropertyField(property);
             }
             
-            m_GridObjectList.DoLayoutList();
+            m_GridTileList.DoLayoutList();
+            m_GridConnectionsList.DoLayoutList();
 
             serializedObject.ApplyModifiedProperties();
 

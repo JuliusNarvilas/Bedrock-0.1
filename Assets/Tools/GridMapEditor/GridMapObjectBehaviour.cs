@@ -18,23 +18,33 @@ namespace Tools
         public GridPosition3D Size;
         public int ObjectSettings;
         public List<GridMapObjectTile> Tiles;
+        public List<GridMapObjectConnection> Connections;
 
         private void Start()
         {
             
         }
 
-        public GridPosition3D GetFinalPosition()
+        public GridPosition3D GetFinalGridPosition()
         {
-            return GetFinalPositionRecursive(transform.parent, Offset);
+            if (Editor == null)
+            {
+                Editor = FindObjectOfType<GridMapEditorBehaviour>();
+            }
+            if (Editor != null)
+            {
+                return GetFinalPositionRecursive(Editor.EditorMapTypeData, transform.parent, Offset);
+            }
+            return GetFinalPositionRecursive(new GridMapEditorCuboidTypeData(), transform.parent, Offset);
         }
 
-        private static GridPosition3D GetFinalPositionRecursive(Transform i_Target, GridPosition3D i_Pos)
+        private static GridPosition3D GetFinalPositionRecursive(GridMapEditorCuboidTypeData i_MapTypeData, Transform i_Target, GridPosition3D i_Pos)
         {
             var parent = i_Target.GetComponent<GridMapObjectBehaviour>();
             if(parent != null)
             {
-                return GetFinalPositionRecursive(parent.transform.parent, i_Pos + parent.Offset);
+                var rotatedPos = i_MapTypeData.RotateGridPosition(i_Pos, parent.transform.rotation);
+                return GetFinalPositionRecursive(i_MapTypeData, parent.transform.parent, rotatedPos + parent.Offset);
             }
             return i_Pos;
         }
@@ -71,7 +81,6 @@ namespace Tools
 
         public void SnapToGrid(bool fromTransform = false)
         {
-            transform.rotation = Quaternion.identity;
             transform.localScale = Vector3.one;
 
             if (Editor == null)
@@ -80,6 +89,9 @@ namespace Tools
             }
             if (Editor != null)
             {
+                var gridObjRotation = Editor.EditorMapTypeData.SnapRotationToGrid(transform.rotation);
+                transform.rotation = gridObjRotation;
+
                 Vector3 tileSize = Editor.TileSize;
                 if (fromTransform)
                 {
