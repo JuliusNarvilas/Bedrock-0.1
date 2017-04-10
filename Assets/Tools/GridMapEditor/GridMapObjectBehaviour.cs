@@ -33,12 +33,12 @@ namespace Tools
             }
             if (Editor != null)
             {
-                return GetFinalPositionRecursive(Editor.EditorMapTypeData, transform.parent, Offset);
+                return GetFinalPositionRecursive(Editor.MapTypeData, transform.parent, Offset);
             }
             return GetFinalPositionRecursive(new GridMapEditorCuboidTypeData(), transform.parent, Offset);
         }
 
-        private static GridPosition3D GetFinalPositionRecursive(GridMapEditorCuboidTypeData i_MapTypeData, Transform i_Target, GridPosition3D i_Pos)
+        private static GridPosition3D GetFinalPositionRecursive(IGridMapEditorTypeData i_MapTypeData, Transform i_Target, GridPosition3D i_Pos)
         {
             var parent = i_Target.GetComponent<GridMapObjectBehaviour>();
             if(parent != null)
@@ -89,7 +89,7 @@ namespace Tools
             }
             if (Editor != null)
             {
-                var gridObjRotation = Editor.EditorMapTypeData.SnapRotationToGrid(transform.rotation);
+                var gridObjRotation = Editor.MapTypeData.SnapRotationToGrid(transform.rotation);
                 transform.rotation = gridObjRotation;
 
                 Vector3 tileSize = Editor.TileSize;

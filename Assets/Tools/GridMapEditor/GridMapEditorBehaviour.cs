@@ -19,8 +19,8 @@ namespace Tools
 
         public GridPosition3D Size;
         public Vector3 TileSize;
-        public GridMapEditorCuboidTypeData EditorMapTypeData = new GridMapEditorCuboidTypeData();
-        public GridMapEditorTileDrawing Drawing = new GridMapEditorTileDrawing();
+        public IGridMapEditorTypeData MapTypeData = new GridMapEditorCuboidTypeData();
+        public IGridMapEditorTypeDrawing MapTypeDrawing = new GridMapEditorCuboidTypeDrawing();
         public bool DrawTileData = true;
         public bool AddFloorToChildren = false;
 
@@ -31,11 +31,7 @@ namespace Tools
         {
             if (DrawTileData)
             {
-                Drawing.DrawTiles(this, i_Obj);
-
-                GridPosition3D objOrigin = i_Obj.GetFinalGridPosition();
-                var rotatedSize = EditorMapTypeData.RotateGridPosition(i_Obj.Size, i_Obj.transform.rotation);
-                DrawAreaDisplay(objOrigin, rotatedSize);
+                MapTypeDrawing.DrawObject(this, i_Obj);
             }
         }
         
@@ -55,19 +51,6 @@ namespace Tools
                     return 0.25f;
             }
             return 0.0f;
-        }
-
-        private void DrawAreaDisplay(GridPosition3D i_FinalPosition, GridPosition3D i_Size)
-        {
-            Vector3 finalGlobalPosition = transform.position;
-            finalGlobalPosition.x += (i_FinalPosition.X) * TileSize.x;
-            finalGlobalPosition.y += (i_FinalPosition.Z) * TileSize.y;
-            finalGlobalPosition.z += (i_FinalPosition.Y) * TileSize.z;
-
-            Vector3 sizeVec = new Vector3(i_Size.X * TileSize.x, i_Size.Z * TileSize.y, i_Size.Y * TileSize.z);
-            finalGlobalPosition += sizeVec * 0.5f;
-            
-            Gizmos.DrawWireCube(finalGlobalPosition, sizeVec);
         }
         
         public void OnValidate()

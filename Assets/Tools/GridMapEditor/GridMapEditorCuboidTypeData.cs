@@ -1,13 +1,9 @@
 ﻿using Common.Grid;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace Tools
 {   
-    public class GridMapEditorCuboidTypeData
+    public class GridMapEditorCuboidTypeData : IGridMapEditorTypeData
     {
         public GridPosition3D RotateGridPosition(GridPosition3D i_Position, Quaternion i_Rotation)
         {
