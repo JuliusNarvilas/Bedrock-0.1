@@ -22,7 +22,15 @@ namespace Tools
                     return i_Position;
             }
         }
-        
+
+        public int RotateGridDirectionType(int directionType, Quaternion i_Rotation)
+        {
+            if (directionType >= 4)
+                return directionType;
+
+            int rotationSnapPoint = GetRotationSnapPoint(i_Rotation);
+            return (directionType + rotationSnapPoint) % 4;
+        }
 
         public Quaternion SnapRotationToGrid(Quaternion i_Rotation)
         {

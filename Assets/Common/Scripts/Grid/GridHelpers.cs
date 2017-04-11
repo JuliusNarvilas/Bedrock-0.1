@@ -20,8 +20,8 @@ namespace Common.Grid
     public enum GridTileLocation : int
     {
         Left = 0,
-        Right = 1,
-        Forward = 2,
+        Forward = 1,
+        Right = 2,
         Backward = 3,
         Bottom = 4,
         Top = 5
@@ -38,17 +38,17 @@ namespace Common.Grid
         LeftExtraLargeBlocker = GridTileBlockerHeight.ExtraLargeBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Left),
         LeftAnyBlocker = GridTileBlockerHeight.FullySetStride << (GridTileBlockerHeight.BitStride * GridTileLocation.Left),
 
-        RightSmallBlocker = GridTileBlockerHeight.SmallBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Right),
-        RightMediumBlocker = GridTileBlockerHeight.MediumBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Right),
-        RightLargeBlocker = GridTileBlockerHeight.LargeBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Right),
-        RightExtraLargeBlocker = GridTileBlockerHeight.ExtraLargeBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Right),
-        RightAnyBlocker = GridTileBlockerHeight.FullySetStride << (GridTileBlockerHeight.BitStride * GridTileLocation.Right),
-
         ForwardSmallBlocker = GridTileBlockerHeight.SmallBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Forward),
         ForwardMediumBlocker = GridTileBlockerHeight.MediumBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Forward),
         ForwardLargeBlocker = GridTileBlockerHeight.LargeBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Forward),
         ForwardExtraLargeBlocker = GridTileBlockerHeight.ExtraLargeBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Forward),
         ForwardAnyBlocker = GridTileBlockerHeight.FullySetStride << (GridTileBlockerHeight.BitStride * GridTileLocation.Forward),
+
+        RightSmallBlocker = GridTileBlockerHeight.SmallBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Right),
+        RightMediumBlocker = GridTileBlockerHeight.MediumBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Right),
+        RightLargeBlocker = GridTileBlockerHeight.LargeBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Right),
+        RightExtraLargeBlocker = GridTileBlockerHeight.ExtraLargeBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Right),
+        RightAnyBlocker = GridTileBlockerHeight.FullySetStride << (GridTileBlockerHeight.BitStride * GridTileLocation.Right),
 
         BackwardSmallBlocker = GridTileBlockerHeight.SmallBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Backward),
         BackwardMediumBlocker = GridTileBlockerHeight.MediumBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Backward),
@@ -74,17 +74,17 @@ namespace Common.Grid
             (int)GridTileBlockerFlags.LeftExtraLargeBlocker,
             (int)GridTileBlockerFlags.LeftAnyBlocker,
 
-            (int)GridTileBlockerFlags.RightSmallBlocker,
-            (int)GridTileBlockerFlags.RightMediumBlocker,
-            (int)GridTileBlockerFlags.RightLargeBlocker,
-            (int)GridTileBlockerFlags.RightExtraLargeBlocker,
-            (int)GridTileBlockerFlags.RightAnyBlocker,
-
             (int)GridTileBlockerFlags.ForwardSmallBlocker,
             (int)GridTileBlockerFlags.ForwardMediumBlocker,
             (int)GridTileBlockerFlags.ForwardLargeBlocker,
             (int)GridTileBlockerFlags.ForwardExtraLargeBlocker,
             (int)GridTileBlockerFlags.ForwardAnyBlocker,
+
+            (int)GridTileBlockerFlags.RightSmallBlocker,
+            (int)GridTileBlockerFlags.RightMediumBlocker,
+            (int)GridTileBlockerFlags.RightLargeBlocker,
+            (int)GridTileBlockerFlags.RightExtraLargeBlocker,
+            (int)GridTileBlockerFlags.RightAnyBlocker,
 
             (int)GridTileBlockerFlags.BackwardSmallBlocker,
             (int)GridTileBlockerFlags.BackwardMediumBlocker,

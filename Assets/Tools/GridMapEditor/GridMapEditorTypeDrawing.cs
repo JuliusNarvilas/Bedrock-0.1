@@ -49,8 +49,8 @@ namespace Tools
             {
                 var connection = i_Obj.Connections[i];
                 var adjustedTilePosition = i_Editor.MapTypeData.RotateGridPosition(connection.Position, objRotation);
-
-                DrawConnectionDisplay(rootOriginPos, i_Editor.TileSize, objRotation, objOrigin + adjustedTilePosition, (int)connection.TileLocation | (int)connection.Settings);
+                var adjustedDirectionType = i_Editor.MapTypeData.RotateGridDirectionType(((int)connection.TileLocation) & GridHelpers.GRID_TILE_LOCATION_STRIDE_MASK, objRotation);
+                DrawConnectionDisplay(rootOriginPos, i_Editor.TileSize, objRotation, objOrigin + adjustedTilePosition, adjustedDirectionType | (int)connection.Settings);
             }
 
             if (GridMapObjectBehaviour.ActiveGridObject == instanceId)
@@ -137,6 +137,12 @@ namespace Tools
                 Vector3 wallPos = (localBack * halfTileSize.z) + tileCentre;
                 drawElements.Add(new GridMapEditorDrawRef((camPos - wallPos).sqrMagnitude, () => DrawWall(wallPos, localForward, i_TileSize.z, heights.w)));
             }
+            if(((GridTileBlockerFlags)i_Settings & GridTileBlockerFlags.TopBlocker) == GridTileBlockerFlags.TopBlocker)
+            {
+                Vector3 wallPos = tileCentre;
+                wallPos.y = halfTileSize.y * 1.8f;
+                drawElements.Add(new GridMapEditorDrawRef((camPos - wallPos).sqrMagnitude, () => Gizmos.DrawCube(wallPos, new Vector3(0.85f * i_TileSize.x, 0.05f * i_TileSize.y, 0.85f * i_TileSize.z))));
+            }
 
             var orderedDraws = drawElements.OrderByDescending(x => x.Distance);
             foreach(var item in orderedDraws)
@@ -183,50 +189,35 @@ namespace Tools
 
             Vector3 halfTileSize = i_TileSize * 0.5f;
             Vector3 tileCentre = finalGlobalPosition + (i_Rotation * halfTileSize);
-            tileCentre.y = i_TileSize.y * 0.75f;
 
             GridTileLocation location = (GridTileLocation)(i_Settings & GridHelpers.GRID_TILE_LOCATION_STRIDE_MASK);
-            Vector3 locationPos = finalGlobalPosition;
+            Vector3 locationPos = tileCentre;
+            locationPos.y += i_TileSize.y * 0.25f;
 
             switch (location)
             {
                 case GridTileLocation.Left:
-                    //TODO add rotation
-                    locationPos.y += i_TileSize.y * 0.5f;
-                    locationPos.z += i_TileSize.z * 0.5f;
+                    locationPos.x -= halfTileSize.x;
                     DrawConnectionDirection(i_Settings, locationPos, Vector3.right);
                     break;
                 case GridTileLocation.Right:
-                    //TODO add rotation
-                    locationPos.x += i_TileSize.x;
-                    locationPos.y += i_TileSize.y * 0.5f;
-                    locationPos.z += i_TileSize.z * 0.5f;
+                    locationPos.x += halfTileSize.x;
                     DrawConnectionDirection(i_Settings, locationPos, Vector3.left);
                     break;
                 case GridTileLocation.Forward:
-                    //TODO add rotation
-                    locationPos.x += i_TileSize.x * 0.5f;
-                    locationPos.y += i_TileSize.y * 0.5f;
-                    locationPos.z += i_TileSize.z;
+                    locationPos.z += halfTileSize.z;
                     DrawConnectionDirection(i_Settings, locationPos, Vector3.back);
                     break;
                 case GridTileLocation.Backward:
-                    //TODO add rotation
-                    locationPos.x += i_TileSize.x * 0.5f;
-                    locationPos.y += i_TileSize.y * 0.5f;
+                    locationPos.z -= halfTileSize.z;
                     DrawConnectionDirection(i_Settings, locationPos, Vector3.forward);
                     break;
                 case GridTileLocation.Top:
-                    //TODO add rotation
-                    locationPos.x += i_TileSize.x * 0.5f;
-                    locationPos.y += i_TileSize.y;
-                    locationPos.z += i_TileSize.z * 0.5f;
+                    locationPos.y += i_TileSize.y * 0.25f;
                     DrawConnectionDirection(i_Settings, locationPos, Vector3.down);
                     break;
                 case GridTileLocation.Bottom:
-                    //TODO add rotation
-                    locationPos.x += i_TileSize.x * 0.5f;
-                    locationPos.z += i_TileSize.z * 0.5f;
+                    locationPos.y -= i_TileSize.y * 0.75f;
                     DrawConnectionDirection(i_Settings, locationPos, Vector3.up);
                     break;
             }
