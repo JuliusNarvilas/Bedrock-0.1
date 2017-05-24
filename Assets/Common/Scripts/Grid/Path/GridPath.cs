@@ -143,18 +143,17 @@ namespace Common.Grid.Path
             for (var i = 0; i < size; ++i)
             {
                 neighbourElement = GetElementOrDefault(m_ConnectedList[i].Position);
-                if(neighbourElement == null)
+                if (neighbourElement != null)
                 {
-                    continue;
-                }
-                switch (neighbourElement.PathingState)
-                {
-                    case GridPathfindingState.New:
-                        Open(neighbourElement, i_Element);
-                        break;
-                    case GridPathfindingState.Opened:
-                        oldElementChanged = Reopen(neighbourElement, i_Element) || oldElementChanged;
-                        break;
+                    switch (neighbourElement.PathingState)
+                    {
+                        case GridPathfindingState.New:
+                            Open(neighbourElement, i_Element);
+                            break;
+                        case GridPathfindingState.Opened:
+                            oldElementChanged = Reopen(neighbourElement, i_Element) || oldElementChanged;
+                            break;
+                    }
                 }
             }
             if (oldElementChanged || (openListSizeBefore > m_OpenList.Count))

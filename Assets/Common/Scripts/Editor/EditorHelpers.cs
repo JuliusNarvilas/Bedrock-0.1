@@ -165,7 +165,7 @@ namespace Common
         /// <summary>
         /// Gets the object the property represents.
         /// </summary>
-        /// <param name="prop">Serialised property.</param>
+        /// <param name="prop">Serialized property.</param>
         /// <returns>Value object.</returns>
         public static object GetTargetObject(this SerializedProperty prop)
         {

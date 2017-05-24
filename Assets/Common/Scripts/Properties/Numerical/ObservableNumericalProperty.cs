@@ -15,7 +15,7 @@ namespace Common.Properties.Numerical
     /// <typeparam name="TNumerical">The type of the numerical.</typeparam>
     /// <typeparam name="TContext">The type of the context.</typeparam>
     /// <typeparam name="TModifierReader">The type of the modifier reader.</typeparam>
-    public class ObservableNumericalProperty<TNumerical, TContext, TModifierReader> : NumericalProperty<TNumerical, TContext, TModifierReader> where TModifierReader : INumericalPropertyModifierReader<TNumerical> where TNumerical : struct
+    public class ObservableNumericalProperty<TNumerical, TContext, TModifierReader> : NumericalProperty<TNumerical, TContext, TModifierReader> where TModifierReader : INumericalPropertyModifierReader<TNumerical>
     {
         public event NumericalPropertyEventHandler<TNumerical, TContext, TModifierReader> ChangeSubscription;
 

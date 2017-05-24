@@ -8,7 +8,7 @@ namespace Common.Grid
     /// </summary>
     /// <typeparam name="TPosition">The type of the position.</typeparam>
     /// <typeparam name="TContext">The type of the context.</typeparam>
-    public abstract class GridTile<TPosition, TTileData, TContext> : IGridTileData<TPosition, TTileData, TContext>
+    public abstract class GridTile<TPosition, TTileData, TContext>
     {
         public readonly TPosition Position;
         public TTileData Data;

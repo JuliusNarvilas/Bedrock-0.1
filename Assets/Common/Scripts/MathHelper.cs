@@ -27,16 +27,6 @@ namespace Common
             return Math.Abs(i_NumberA - i_NumberB) <= i_ErrorMargin;
         }
 
-        /// <summary>
-        /// Floating point number equality comparison with the default margin of error <see cref="DEFAULT_FLOAT_EQUALITY_ERROR_MARGIN"/>.
-        /// </summary>
-        /// <param name="i_NumberA">The number a.</param>
-        /// <param name="i_NumberB">The number b.</param>
-        /// <returns>The equality result.</returns>
-        public static bool EqualsF(this float i_NumberA, float i_NumberB)
-        {
-            return EqualsWithMarginF(i_NumberA, i_NumberB, DEFAULT_FLOAT_EQUALITY_ERROR_MARGIN);
-        }
 
         /// <summary>
         /// Floating point number equality comparison with margin of error.
@@ -53,17 +43,6 @@ namespace Common
             return Math.Abs(i_NumberA - i_NumberB) <= i_ErrorMargin;
         }
 
-        /// <summary>
-        /// Floating point number equality comparison with the default margin of error <see cref="DEFAULT_FLOAT_EQUALITY_ERROR_MARGIN"/>.
-        /// </summary>
-        /// <param name="i_NumberA">The number a.</param>
-        /// <param name="i_NumberB">The number b.</param>
-        /// <returns>The equality result.</returns>
-        public static bool Equals(this double i_NumberA, double i_NumberB)
-        {
-            return EqualsWithMargin(i_NumberA, i_NumberB, DEFAULT_FLOAT_EQUALITY_ERROR_MARGIN);
-        }
-
 
         /// <summary>
         /// Comparison for a numerical value to be in a given range.
@@ -72,7 +51,7 @@ namespace Common
         /// <param name="i_Min">The inclusive minimum range value.</param>
         /// <param name="i_Max">The inclusive maximum range value.</param>
         /// <returns>Returns true is value is in range and <c>false</c> otherwise.</returns>
-        public static bool InRange(this int i_Data, int i_Min, int i_Max)
+        public static bool InRange(int i_Data, int i_Min, int i_Max)
         {
             return (i_Data >= i_Min) && (i_Data <= i_Max);
         }
@@ -84,7 +63,7 @@ namespace Common
         /// <param name="i_Min">The inclusive minimum range value.</param>
         /// <param name="i_Max">The inclusive maximum range value.</param>
         /// <returns><c>true</c> if value is in range and false otherwise.</returns>
-        public static bool InRangeF(this float i_Data, float i_Min, float i_Max)
+        public static bool InRangeF(float i_Data, float i_Min, float i_Max)
         {
             return (i_Data >= i_Min) && (i_Data <= i_Max);
         }
@@ -96,7 +75,7 @@ namespace Common
         /// <param name="i_Min">The inclusive minimum range value.</param>
         /// <param name="i_Max">The inclusive maximum range value.</param>
         /// <returns><c>true</c> if value is in range and <c>false</c> otherwise.</returns>
-        public static bool InRange(this double i_Data, double i_Min, double i_Max)
+        public static bool InRange(double i_Data, double i_Min, double i_Max)
         {
             return (i_Data >= i_Min) && (i_Data <= i_Max);
         }

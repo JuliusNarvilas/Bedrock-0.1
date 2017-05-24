@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Common.IO
+namespace Common.IO.Recources
 {
     [Serializable]
     public class ResourceReference

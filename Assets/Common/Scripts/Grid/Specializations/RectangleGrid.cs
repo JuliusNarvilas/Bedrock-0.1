@@ -54,49 +54,18 @@ namespace Common.Grid.Specializations
 
         public void GetConnected(GridPosition2D i_Position, List<GridTile<GridPosition2D, TTileData, TContext>> o_ConnectedTiles)
         {
-            //left side
-            GridTile<GridPosition2D, TTileData, TContext> tempElement = null;
-            if(TryGetTile(new GridPosition2D(i_Position.X - 1, i_Position.Y), out tempElement))
-            {
-                o_ConnectedTiles.Add(tempElement);
+            int startX = Math.Max(i_Position.X - 1, 0);
+            int startY = Math.Max(i_Position.Y - 1, 0);
+            int endX = Math.Min(i_Position.X + 2, m_SizeX);
+            int endY = Math.Min(i_Position.Y + 2, m_SizeY);
 
-                if (m_AllowMoveDiagonally)
+            for(int itX = startX; itX < endX; ++itX)
+            {
+                for(int itY = startY; itY < endY; ++itY)
                 {
-                    if (TryGetTile(new GridPosition2D(i_Position.X - 1, i_Position.Y - 1), out tempElement))
-                    {
-                        o_ConnectedTiles.Add(tempElement);
-                    }
-                    if (TryGetTile(new GridPosition2D(i_Position.X - 1, i_Position.Y + 1), out tempElement))
-                    {
-                        o_ConnectedTiles.Add(tempElement);
-                    }
+                    int tileIndex = itX * m_SizeY + itY;
+                    o_ConnectedTiles.Add(m_Tiles[tileIndex]);
                 }
-            }
-            //right side
-            if (TryGetTile(new GridPosition2D(i_Position.X + 1, i_Position.Y), out tempElement))
-            {
-                o_ConnectedTiles.Add(tempElement);
-
-                if (m_AllowMoveDiagonally)
-                {
-                    if (TryGetTile(new GridPosition2D(i_Position.X + 1, i_Position.Y - 1), out tempElement))
-                    {
-                        o_ConnectedTiles.Add(tempElement);
-                    }
-                    if (TryGetTile(new GridPosition2D(i_Position.X + 1, i_Position.Y + 1), out tempElement))
-                    {
-                        o_ConnectedTiles.Add(tempElement);
-                    }
-                }
-            }
-
-            if (TryGetTile(new GridPosition2D(i_Position.X, i_Position.Y - 1), out tempElement))
-            {
-                o_ConnectedTiles.Add(tempElement);
-            }
-            if (TryGetTile(new GridPosition2D(i_Position.X, i_Position.Y + 1), out tempElement))
-            {
-                o_ConnectedTiles.Add(tempElement);
             }
         }
 

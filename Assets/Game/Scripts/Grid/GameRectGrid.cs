@@ -4,7 +4,7 @@ using Common.Grid.Specializations;
 
 namespace Game.Grid
 {
-    public class GameRectGrid : CuboidGrid<int, GameGridChangeContext>
+    public class GameRectGrid : CuboidGrid<GameGridTileData, GameGridChangeContext>
     {
         public GameRectGrid(int i_SizeX, int i_SizeY, bool i_AllowMoveDiagonally)
         {

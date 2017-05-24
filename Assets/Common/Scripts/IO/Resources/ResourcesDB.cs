@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Common.IO
+namespace Common.IO.Recources
 {
     public class ResourcesDB : ScriptableObject, ISerializationCallbackReceiver
     {

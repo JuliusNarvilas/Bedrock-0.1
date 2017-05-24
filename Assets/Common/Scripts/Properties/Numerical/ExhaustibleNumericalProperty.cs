@@ -17,7 +17,6 @@ namespace Common.Properties.Numerical
     public class ExhaustibleNumericalProperty<TNumerical, TContext, TModifierReader> :
         NumericalProperty<TNumerical, TContext, TModifierReader>
         where TModifierReader : INumericalPropertyModifierReader<TNumerical>
-            where TNumerical : struct
     {
         /// <summary>
         /// The depletion amount tracker.

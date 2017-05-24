@@ -63,7 +63,7 @@ namespace Common.Properties.Numerical
     /// <param name="i_EventData">Data representing the change event.</param>
     public delegate void NumericalPropertyEventHandler<TNumerical, TContext, TModifierReader>
         (ref NumericalPropertyChangeEventStruct<TNumerical, TContext, TModifierReader> i_EventData)
-            where TModifierReader : INumericalPropertyModifierReader<TNumerical> where TNumerical : struct;
+            where TModifierReader : INumericalPropertyModifierReader<TNumerical>;
 
 
     /// <summary>
@@ -74,7 +74,6 @@ namespace Common.Properties.Numerical
     /// <typeparam name="TModifierReader">Reader interface for a modifier.</typeparam>
     public struct NumericalPropertyChangeEventStruct<TNumerical, TContext, TModifierReader>
         where TModifierReader : INumericalPropertyModifierReader<TNumerical>
-        where TNumerical : struct
     {
         /// <summary>
         /// The changed numerical property.
@@ -171,7 +170,7 @@ namespace Common.Properties.Numerical
     /// <typeparam name="TNumerical">Numerical property type.</typeparam>
     /// <typeparam name="TContext">Change context type.</typeparam>
     /// <typeparam name="TModifierReader">Reader interface for a modifier.</typeparam>
-    public interface INumericalPropertyModifier<TNumerical, TContext, TModifierReader> where TModifierReader : INumericalPropertyModifierReader<TNumerical> where TNumerical : struct
+    public interface INumericalPropertyModifier<TNumerical, TContext, TModifierReader> where TModifierReader : INumericalPropertyModifierReader<TNumerical>
     {
         /// <summary>
         /// Processing of the change events.
@@ -196,7 +195,7 @@ namespace Common.Properties.Numerical
     /// <typeparam name="TNumerical">Numerical property type.</typeparam>
     /// <typeparam name="TContext">Change context type.</typeparam>
     /// <typeparam name="TModifierReader">Reader interface for a modifier.</typeparam>
-    public class NumericalPropertyModifierSortComparer<TNumerical, TContext, TModifierReader> : IComparer<INumericalPropertyModifier<TNumerical, TContext, TModifierReader>> where TModifierReader : INumericalPropertyModifierReader<TNumerical> where TNumerical : struct
+    public class NumericalPropertyModifierSortComparer<TNumerical, TContext, TModifierReader> : IComparer<INumericalPropertyModifier<TNumerical, TContext, TModifierReader>> where TModifierReader : INumericalPropertyModifierReader<TNumerical>
     {
         /// <summary>
         /// Compares the specified property modifiers' orders.
@@ -219,7 +218,7 @@ namespace Common.Properties.Numerical
     /// <typeparam name="TContext">Change context type.</typeparam>
     /// <typeparam name="TModifierReader">Reader interface for a modifier.</typeparam>
     public class NumericalProperty<TNumerical, TContext, TModifierReader> :
-        Property<TNumerical> where TModifierReader : INumericalPropertyModifierReader<TNumerical> where TNumerical : struct
+        Property<TNumerical> where TModifierReader : INumericalPropertyModifierReader<TNumerical>
     {
         /// <summary>
         /// A property data interface for abstracting numerical operations for any raw data type and housing the data type's representation of zero.

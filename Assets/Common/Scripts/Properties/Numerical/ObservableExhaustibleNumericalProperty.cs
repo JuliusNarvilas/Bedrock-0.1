@@ -10,7 +10,7 @@ namespace Common.Properties.Numerical
     /// <typeparam name="TContext">The type of the context.</typeparam>
     /// <typeparam name="TModifierReader">The type of the modifier reader.</typeparam>
     /// <seealso cref="Common.Properties.Numerical.ExhaustibleNumericalProperty{TNumerical, TContext, TModifierReader}" />
-    public class ObservableExhaustibleNumericalProperty<TNumerical, TContext, TModifierReader> : ExhaustibleNumericalProperty<TNumerical, TContext, TModifierReader> where TModifierReader : INumericalPropertyModifierReader<TNumerical> where TNumerical : struct
+    public class ObservableExhaustibleNumericalProperty<TNumerical, TContext, TModifierReader> : ExhaustibleNumericalProperty<TNumerical, TContext, TModifierReader> where TModifierReader : INumericalPropertyModifierReader<TNumerical>
     {
         public event NumericalPropertyEventHandler<TNumerical, TContext, TModifierReader> ChangeSubscription;
 

@@ -48,7 +48,7 @@ namespace Common.Text
     }
 
     /// <summary>
-    /// Text style information structure in serialised data.
+    /// Text style information structure in serialized data.
     /// </summary>
     [Serializable]
     public class IntelligentTextStyleRecord
@@ -72,7 +72,7 @@ namespace Common.Text
     }
 
     /// <summary>
-    /// Text image information structure in serialised data.
+    /// Text image information structure in serialized data.
     /// </summary>
     [Serializable]
     public struct IntelligentTextImageRecord

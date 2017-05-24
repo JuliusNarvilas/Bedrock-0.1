@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Common.IO
+namespace Common.IO.Recources
 {
     [System.Serializable]
     public class ResourcesDBItem
