@@ -1,7 +1,7 @@
-﻿using Common.IO;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
+using Common.IO.Recources;
 
 namespace Common.Text
 {

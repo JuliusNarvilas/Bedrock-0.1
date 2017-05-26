@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-namespace Common.IO
+namespace Common.IO.Recources
 {
 
     [CustomEditor(typeof(ResourcesDB))]

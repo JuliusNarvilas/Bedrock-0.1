@@ -6,37 +6,49 @@ namespace Common
 {
     public class EnumFlagAttribute : PropertyAttribute
     {
-        public delegate int ConversionDelegate(int value, bool export);
+        public delegate int ConversionToFlagsDelegate(int value);
+        public delegate int ConversionToValueDelegate(int value, int newFlags);
         public string EnumName;
-        public ConversionDelegate Converter;
+        public ConversionToFlagsDelegate ConverterToFlags;
+        public ConversionToValueDelegate ConverterToValue;
 
         public EnumFlagAttribute()
         {
             EnumName = null;
-            Converter = DefaultConverter;
+            ConverterToFlags = DefaultConverterToFlags;
+            ConverterToValue = DefaultConverterToValue;
         }
 
         public EnumFlagAttribute(string name)
         {
             EnumName = name;
-            Converter = DefaultConverter;
+            ConverterToFlags = DefaultConverterToFlags;
+            ConverterToValue = DefaultConverterToValue;
         }
 
-        public EnumFlagAttribute(string name, Type converterType, string converterName)
+        public EnumFlagAttribute(string name, Type converterType, string toFlagConverterName, string toValueConverterName)
         {
             EnumName = name;
-            Converter = (ConversionDelegate)Delegate.CreateDelegate(converterType, converterType.GetMethod(converterName));
+            var toFlagsFunction = converterType.GetMethod(toFlagConverterName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+            var toValueFunction = converterType.GetMethod(toValueConverterName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+            ConverterToFlags = (ConversionToFlagsDelegate)Delegate.CreateDelegate(typeof(ConversionToFlagsDelegate), toFlagsFunction);
+            ConverterToValue = (ConversionToValueDelegate)Delegate.CreateDelegate(typeof(ConversionToValueDelegate), toValueFunction);
         }
 
-        public EnumFlagAttribute(Type converterType, string converterName)
+        public EnumFlagAttribute(Type converterType, string toFlagConverterName, string toValueConverterName)
         {
             EnumName = null;
-            var function = converterType.GetMethod(converterName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-            Converter = (ConversionDelegate)Delegate.CreateDelegate(typeof(ConversionDelegate), function);
+            var toFlagsFunction = converterType.GetMethod(toFlagConverterName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+            var toValueFunction = converterType.GetMethod(toValueConverterName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+            ConverterToFlags = (ConversionToFlagsDelegate)Delegate.CreateDelegate(typeof(ConversionToFlagsDelegate), toFlagsFunction);
+            ConverterToValue = (ConversionToValueDelegate)Delegate.CreateDelegate(typeof(ConversionToValueDelegate), toValueFunction);
         }
 
-
-        private int DefaultConverter(int value, bool export)
+        private int DefaultConverterToFlags(int value)
+        {
+            return value;
+        }
+        private int DefaultConverterToValue(int value, int newFlags)
         {
             return value;
         }

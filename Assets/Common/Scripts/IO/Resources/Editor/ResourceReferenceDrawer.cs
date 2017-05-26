@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace Common.IO
+namespace Common.IO.Recources
 {
     [CustomPropertyDrawer(typeof(ResourceReference))]
     public class ResourceReferenceDrawer : PropertyDrawer

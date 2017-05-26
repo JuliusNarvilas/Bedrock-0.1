@@ -10,7 +10,7 @@ namespace Common.Grid.Path
     }
 
     /// <summary>
-    /// Class for reprisenting a grid tile pathing data
+    /// Class for representing a grid tile pathing data
     /// </summary>
     public class GridPathElement<TPosition, TTileData, TContext>
     {

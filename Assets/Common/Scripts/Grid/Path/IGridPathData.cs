@@ -35,8 +35,7 @@ namespace Common.Grid.Path
     /// Interface for the grid pathing data caching.
     /// This provides a basic interface for supporting resizable pathing data cache when operating on a large grid section.
     /// </summary>
-    /// <typeparam name="TTile">The type of the tile.</typeparam>
-    /// <typeparam name="TTerrain">The type of the terrain.</typeparam>
+    /// <typeparam name="TTileData">The type of the tile data.</typeparam>
     /// <typeparam name="TPosition">The type of the position.</typeparam>
     /// <typeparam name="TContext">The type of the context.</typeparam>
     /// <seealso cref="System.IDisposable" />

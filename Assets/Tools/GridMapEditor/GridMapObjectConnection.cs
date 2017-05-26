@@ -13,16 +13,17 @@ namespace Tools
     {
         public GridPosition3D Position;
         public GridTileLocation TileLocation;
-        [EnumFlag(typeof(GridMapObjectConnection), "ConvertConnectionSettingsEnum")]
+        [EnumFlag(typeof(GridMapObjectConnection), "ConvertConnectionSettingsEnumToFlags", "ConvertConnectionSettingsEnumToValue")]
         public ConnectionSettings Settings;
         
 
-        private static int ConvertConnectionSettingsEnum(int i_Value, bool i_Export)
+        private static int ConvertConnectionSettingsEnumToFlags(int i_Value)
         {
-            if (i_Export)
-            {
-                return i_Value >> 3;
-            }
+            return i_Value >> 3;
+        }
+
+        private static int ConvertConnectionSettingsEnumToValue(int i_Value, int i_NewFags)
+        {
             return i_Value << 3;
         }
     }

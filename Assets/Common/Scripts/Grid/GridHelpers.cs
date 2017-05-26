@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace Common.Grid
 {
+    /// <summary>
+    /// The tile blocker height is a unique numerical identifier with <see cref="BitStride"/> indicating the maximum number of bits used to express it
+    /// </summary>
     public enum GridTileBlockerHeight : int
     {
         None = 0,
@@ -14,7 +17,15 @@ namespace Common.Grid
         LargeBlocker = 3,
         ExtraLargeBlocker = 4,
 
+        /// <summary>
+        /// Indicates the maximum number of bits that can be used for actual <see cref="GridTileBlockerHeight"/> values.
+        /// 3 bits give the range of [0;7]
+        /// </summary>
         BitStride = 3,
+        /// <summary>
+        /// The highest value within the given <see cref="BitStride"/> number of bits.
+        /// (All the available bits set to 1).
+        /// </summary>
         FullySetStride = 7
     }
     public enum GridTileLocation : int
@@ -27,6 +38,10 @@ namespace Common.Grid
         Top = 5
     }
 
+    /// <summary>
+    /// Unique enum shorthand values for blocking heights within small binary flag slots that are indexed for <see cref="GridTileLocation"/> values.
+    /// Max binary slot per <see cref="GridTileLocation"/> is defined by <see cref="GridTileBlockerHeight.BitStride"/>
+    /// </summary>
     [Flags]
     public enum GridTileBlockerFlags : int
     {
@@ -66,6 +81,10 @@ namespace Common.Grid
     {
         public const int GRID_TILE_LOCATION_STRIDE_MASK = 7;
 
+        /// <summary>
+        /// A map for associating <see cref="GridTileBlockerFlags"/> enum index to the enum value.
+        /// Used for conversion between real data and Unity's inspector simple enum interface options.
+        /// </summary>
         public static readonly int[] BLOCKER_ENUM_VALUE_MAP = new int[] {
             (int)GridTileBlockerFlags.None,
             (int)GridTileBlockerFlags.LeftSmallBlocker,
@@ -98,7 +117,11 @@ namespace Common.Grid
             (int)GridTileBlockerFlags.CustomFlagStart
         };
 
-        //Converter for unity's shity mask support
+        /// <summary>
+        /// Conversion from Unity's inspector flag options to real compressed data.
+        /// </summary>
+        /// <param name="i_IndexFlags">Flag mask indicating <see cref="GridTileBlockerFlags"/> enum index (not actual value) selections.</param>
+        /// <returns>Real compressed blocker data.</returns>
         public static int BlockerIndexFlagsToValue(int i_IndexFlags)
         {
             int result = 0;
@@ -112,16 +135,24 @@ namespace Common.Grid
             return result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="i_Value"></param>
+        /// <returns></returns>
         public static int BlockerValueToIndexFlags(int i_Value)
         {
+            bool startedAsZero = i_Value == 0;
             int result = 0;
-            for(int i = 0; i < BLOCKER_ENUM_VALUE_MAP.Length; ++i)
+            for (int i = BLOCKER_ENUM_VALUE_MAP.Length - 1; i >= 0; --i)
             {
-                if((i_Value & BLOCKER_ENUM_VALUE_MAP[i]) == BLOCKER_ENUM_VALUE_MAP[i])
+                int enumBlockerValue = BLOCKER_ENUM_VALUE_MAP[i];
+                if ((i_Value & enumBlockerValue) == enumBlockerValue)
                 {
-                    if (BLOCKER_ENUM_VALUE_MAP[i] == 0 && i_Value != 0)
+                    if (enumBlockerValue == 0 && startedAsZero)
                         continue;
                     result |= 1 << i;
+                    i_Value ^= enumBlockerValue;
                 }
             }
             return result;

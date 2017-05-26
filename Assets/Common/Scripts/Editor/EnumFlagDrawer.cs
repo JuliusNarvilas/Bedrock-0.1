@@ -1,4 +1,5 @@
 ﻿
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,21 +18,25 @@ namespace Common
                 propName = property.name;
 
             var itemNames = System.Enum.GetNames(targetEnum.GetType());
-            int exportedOriginal = flagSettings.Converter(property.intValue, true);
+            int exportedOriginal = flagSettings.ConverterToFlags(property.intValue);
 
             EditorGUI.BeginProperty(position, label, property);
 
             int newValue = EditorGUI.MaskField(position, propName, exportedOriginal, itemNames);
-            int removedFlags = (newValue & exportedOriginal) ^ exportedOriginal;
-            int importedRemovedValues = flagSettings.Converter(removedFlags, false);
-            int finalValue = flagSettings.Converter(newValue, false);
+          
+            //int removedFlags = (newValue & exportedOriginal) ^ exportedOriginal;
+            int addedValues = newValue & ~exportedOriginal;
+            
+
+            //int importedRemovedValues = flagSettings.ConverterToValue(removedFlags, 0);
+            int finalValue = flagSettings.ConverterToValue(newValue, addedValues);
             
             //making sure values for removed flags get removed as well
-            //to support enums with values reprisenting flag sets
-            if (importedRemovedValues != 0)
-            {
-                finalValue &= ~importedRemovedValues;
-            }
+            //to support enums with values representing flag sets
+            //if (importedRemovedValues != 0)
+            //{
+            //    finalValue &= ~importedRemovedValues;
+            //}
             property.intValue = finalValue;
             
             EditorGUI.EndProperty();

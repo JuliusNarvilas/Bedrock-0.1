@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Common.Grid.Path
 {
@@ -10,7 +11,7 @@ namespace Common.Grid.Path
     /// <typeparam name="TPosition">The type of the position.</typeparam>
     /// <typeparam name="TContext">The type of the context.</typeparam>
     /// <seealso cref="System.IDisposable" />
-    public class GridArea<TPosition, TTileData, TContext>
+    public class GridArea<TPosition, TTileData, TContext> : IDisposable
     {
         public readonly IGridControl<TPosition, TTileData, TContext> Grid;
         public readonly IGridPathData<TPosition, TTileData, TContext> GridPathData;
@@ -89,6 +90,7 @@ namespace Common.Grid.Path
             for (var i = 0; i < size; ++i)
             {
                 GridPathElement<TPosition, TTileData, TContext> neighbourElement;
+                //only continue if position is within GridPathData area 
                 if (GridPathData.TryGetElement(m_ConnectedList[i].Position, out neighbourElement) == GridPathDataResponse.Success)
                 {
                     switch (neighbourElement.PathingState)
@@ -103,6 +105,11 @@ namespace Common.Grid.Path
                 }
             }
             m_ConnectedList.Clear();
+        }
+
+        public void Dispose()
+        {
+            GridPathData.Dispose();
         }
     }
 }
