@@ -78,16 +78,16 @@ namespace Common.Tests.Collections
 
             for (int i = 1; i < testSize; ++i)
             {
-                Assert.That(floatList[i - 1] <= floatList[i], "Float insertion sort ascending specialisation failed.");
-                Assert.That(doubleList[i - 1] <= doubleList[i], "Double insertion sort ascending specialisation failed.");
-                Assert.That(intList[i - 1] <= intList[i], "Int insertion sort ascending specialisation failed.");
-                Assert.That(longList[i - 1] <= longList[i], "Long insertion sort ascending specialisation failed.");
-                Assert.That(shortList[i - 1] <= shortList[i], "Short insertion sort ascending specialisation failed.");
-                Assert.That(byteList[i - 1] <= byteList[i], "Byte insertion sort ascending specialisation failed.");
-                Assert.That(uintList[i - 1] <= uintList[i], "Uint insertion sort ascending specialisation failed.");
-                Assert.That(ulongList[i - 1] <= ulongList[i], "Ulong insertion sort ascending specialisation failed.");
-                Assert.That(ushortList[i - 1] <= ushortList[i], "UShort insertion sort ascending specialisation failed.");
-                Assert.That(sbyteList[i - 1] <= sbyteList[i], "Sbyte insertion sort ascending specialisation failed.");
+                Assert.That(floatList[i - 1] <= floatList[i], "Float insertion sort ascending specialization failed.");
+                Assert.That(doubleList[i - 1] <= doubleList[i], "Double insertion sort ascending specialization failed.");
+                Assert.That(intList[i - 1] <= intList[i], "Int insertion sort ascending specialization failed.");
+                Assert.That(longList[i - 1] <= longList[i], "Long insertion sort ascending specialization failed.");
+                Assert.That(shortList[i - 1] <= shortList[i], "Short insertion sort ascending specialization failed.");
+                Assert.That(byteList[i - 1] <= byteList[i], "Byte insertion sort ascending specialization failed.");
+                Assert.That(uintList[i - 1] <= uintList[i], "Uint insertion sort ascending specialization failed.");
+                Assert.That(ulongList[i - 1] <= ulongList[i], "Ulong insertion sort ascending specialization failed.");
+                Assert.That(ushortList[i - 1] <= ushortList[i], "UShort insertion sort ascending specialization failed.");
+                Assert.That(sbyteList[i - 1] <= sbyteList[i], "Sbyte insertion sort ascending specialization failed.");
 
                 Assert.That(genericList[i - 1] <= genericList[i], "Generic insertion sort ascending failed.");
             }
@@ -136,16 +136,16 @@ namespace Common.Tests.Collections
 
             for (int i = 1; i < testSize; ++i)
             {
-                Assert.That(floatList[i - 1] >= floatList[i], "Float insertion sort descending specialisation failed.");
-                Assert.That(doubleList[i - 1] >= doubleList[i], "Double insertion sort descending specialisation failed.");
-                Assert.That(intList[i - 1] >= intList[i], "Int insertion sort descending specialisation failed.");
-                Assert.That(longList[i - 1] >= longList[i], "Long insertion sort descending specialisation failed.");
-                Assert.That(shortList[i - 1] >= shortList[i], "Short insertion sort descending specialisation failed.");
-                Assert.That(byteList[i - 1] >= byteList[i], "Byte insertion sort descending specialisation failed.");
-                Assert.That(uintList[i - 1] >= uintList[i], "Uint insertion sort descending specialisation failed.");
-                Assert.That(ulongList[i - 1] >= ulongList[i], "Ulong insertion sort descending specialisation failed.");
-                Assert.That(ushortList[i - 1] >= ushortList[i], "UShort insertion sort descending specialisation failed.");
-                Assert.That(sbyteList[i - 1] >= sbyteList[i], "Sbyte insertion sort descending specialisation failed.");
+                Assert.That(floatList[i - 1] >= floatList[i], "Float insertion sort descending specialization failed.");
+                Assert.That(doubleList[i - 1] >= doubleList[i], "Double insertion sort descending specialization failed.");
+                Assert.That(intList[i - 1] >= intList[i], "Int insertion sort descending specialization failed.");
+                Assert.That(longList[i - 1] >= longList[i], "Long insertion sort descending specialization failed.");
+                Assert.That(shortList[i - 1] >= shortList[i], "Short insertion sort descending specialization failed.");
+                Assert.That(byteList[i - 1] >= byteList[i], "Byte insertion sort descending specialization failed.");
+                Assert.That(uintList[i - 1] >= uintList[i], "Uint insertion sort descending specialization failed.");
+                Assert.That(ulongList[i - 1] >= ulongList[i], "Ulong insertion sort descending specialization failed.");
+                Assert.That(ushortList[i - 1] >= ushortList[i], "UShort insertion sort descending specialization failed.");
+                Assert.That(sbyteList[i - 1] >= sbyteList[i], "Sbyte insertion sort descending specialization failed.");
 
                 Assert.That(genericList[i - 1] >= genericList[i], "Generic insertion sort descending failed.");
             }

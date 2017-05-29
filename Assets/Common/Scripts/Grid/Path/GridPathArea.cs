@@ -4,14 +4,15 @@ using System.Collections.Generic;
 namespace Common.Grid.Path
 {
     /// <summary>
-    /// Grid pathfinding functionality.
+    /// A grid pathfinding scanner from a given origin position for a specified area.
+    /// Introduced to help AI understand the available movement in an area.
     /// </summary>
     /// <typeparam name="TTile">The type of the tile.</typeparam>
     /// <typeparam name="TTerrain">The type of the terrain.</typeparam>
     /// <typeparam name="TPosition">The type of the position.</typeparam>
     /// <typeparam name="TContext">The type of the context.</typeparam>
     /// <seealso cref="System.IDisposable" />
-    public class GridArea<TPosition, TTileData, TContext> : IDisposable
+    public class GridPathArea<TPosition, TTileData, TContext> : IDisposable
     {
         public readonly IGridControl<TPosition, TTileData, TContext> Grid;
         public readonly IGridPathData<TPosition, TTileData, TContext> GridPathData;
@@ -23,7 +24,7 @@ namespace Common.Grid.Path
         private readonly Queue<GridPathElement<TPosition, TTileData, TContext>> m_OpenQueue = new Queue<GridPathElement<TPosition, TTileData, TContext>>();
         private readonly List<GridTile<TPosition, TTileData, TContext>> m_ConnectedList = new List<GridTile<TPosition, TTileData, TContext>>();
 
-        public GridArea(
+        public GridPathArea(
             IGridControl<TPosition, TTileData, TContext> i_Grid,
             IGridPathData<TPosition, TTileData, TContext> i_PathData,
             TPosition i_Min, TPosition i_Max, TPosition i_Origin,

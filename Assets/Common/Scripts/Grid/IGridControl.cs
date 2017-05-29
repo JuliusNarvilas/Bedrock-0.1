@@ -21,7 +21,7 @@ namespace Common.Grid
         /// <param name="i_Origin">The origin pathing origin.</param>
         /// <param name="i_Context">The context.</param>
         /// <returns></returns>
-        GridArea<TPosition, TTileData, TContext> GetPathArea(TPosition i_Min, TPosition i_Max, TPosition i_Origin, TContext i_Context);
+        GridPathArea<TPosition, TTileData, TContext> GetPathArea(TPosition i_Min, TPosition i_Max, TPosition i_Origin, TContext i_Context);
 
         /// <summary>
         /// Tries to get a tile at given position.

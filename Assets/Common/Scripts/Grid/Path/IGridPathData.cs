@@ -10,28 +10,6 @@ namespace Common.Grid.Path
     }
 
     /// <summary>
-    /// A manager interface that maintains <see cref="IGridPathData{TPosition, TTileData, TContext}"/> instances for reusability.
-    /// </summary>
-    /// <typeparam name="TTile">The type of the tile.</typeparam>
-    /// <typeparam name="TTerrain">The type of the terrain.</typeparam>
-    /// <typeparam name="TPosition">The type of the position.</typeparam>
-    /// <typeparam name="TContext">The type of the context.</typeparam>
-    public interface IGridPathDataProvider<TPosition, TTileData, TContext>
-    {
-        /// <summary>
-        /// Gets the grid path data.
-        /// </summary>
-        /// <returns>Grid pathing data cache.</returns>
-        IGridPathData<TPosition, TTileData, TContext> GetGridPathData();
-
-        /// <summary>
-        /// Recycles the specified path data.
-        /// </summary>
-        /// <param name="i_Data">The pathing data cache.</param>
-        void Recycle(IGridPathData<TPosition, TTileData, TContext> i_Data);
-    }
-
-    /// <summary>
     /// Interface for the grid pathing data caching.
     /// This provides a basic interface for supporting resizable pathing data cache when operating on a large grid section.
     /// </summary>
@@ -68,5 +46,10 @@ namespace Common.Grid.Path
         /// Cleans this instance for later pathing use.
         /// </summary>
         void Clean();
+
+        /// <summary>
+        /// Called by the <see cref="GridPathDataProvider{TPosition, TTileData, TContext}"/> when it decides to get rid of this instance from being cached.
+        /// </summary>
+        void OnDestroy();
     }
 }

@@ -166,7 +166,6 @@ namespace Common.Grid.Path
         private void Finish()
         {
             //clean unused elements
-            int openListElementCount = m_OpenList.Count;
             m_OpenList.Clear();
 
             int maxPathTileCount = m_ClosedList.Count;

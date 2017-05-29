@@ -1,6 +1,6 @@
 ﻿using Common.Properties.Numerical;
 using Common.Properties.Numerical.Data;
-using Common.Properties.Numerical.Specialisations;
+using Common.Properties.Numerical.Specializations;
 using NUnit.Framework;
 using System;
 

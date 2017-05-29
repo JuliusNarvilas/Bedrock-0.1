@@ -26,6 +26,7 @@ namespace Common.Grid.Specializations
 
         public int GetHeuristicDistance(GridPosition2D i_From, GridPosition2D i_To)
         {
+            //http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html
             int xDiff = Math.Abs(i_To.X - i_From.X);
             int yDiff = Math.Abs(i_To.Y - i_From.Y);
             
@@ -35,7 +36,7 @@ namespace Common.Grid.Specializations
             }
             else
             {
-                return xDiff + yDiff;
+                return (int)(m_NonDiagonalHeuristicFactor * (xDiff + yDiff) + 0.5f);
             }
         }
         
@@ -63,8 +64,16 @@ namespace Common.Grid.Specializations
             {
                 for(int itY = startY; itY < endY; ++itY)
                 {
-                    int tileIndex = itX * m_SizeY + itY;
-                    o_ConnectedTiles.Add(m_Tiles[tileIndex]);
+                    if (m_AllowMoveDiagonally)
+                    {
+                        int tileIndex = itX * m_SizeY + itY;
+                        o_ConnectedTiles.Add(m_Tiles[tileIndex]);
+                    }
+                    else if((itX != startX && itX != endX) || (itY != startY && itY != endY))
+                    {
+                        int tileIndex = itX * m_SizeY + itY;
+                        o_ConnectedTiles.Add(m_Tiles[tileIndex]);
+                    }
                 }
             }
         }
@@ -83,11 +92,11 @@ namespace Common.Grid.Specializations
             return new GridPath<GridPosition2D, TTileData, TContext>(this, pathData, i_Start, i_End, i_Context);
         }
 
-        public GridArea<GridPosition2D, TTileData, TContext> GetPathArea(GridPosition2D i_Min, GridPosition2D i_Max, GridPosition2D i_Origin, TContext i_Context)
+        public GridPathArea<GridPosition2D, TTileData, TContext> GetPathArea(GridPosition2D i_Min, GridPosition2D i_Max, GridPosition2D i_Origin, TContext i_Context)
         {
             var pathData = GridPathData2DProvider<TTileData, TContext>.GLOBAL.GetGridPathData();
             pathData.Set(this, i_Min, i_Max);
-            return new GridArea<GridPosition2D, TTileData, TContext>(this, pathData, i_Min, i_Max, i_Origin, i_Context);
+            return new GridPathArea<GridPosition2D, TTileData, TContext>(this, pathData, i_Min, i_Max, i_Origin, i_Context);
         }
     }
 }

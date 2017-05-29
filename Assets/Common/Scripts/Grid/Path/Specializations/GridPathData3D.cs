@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 namespace Common.Grid.Path.Specializations
 {
+    /// <summary>
+    /// A specialization of <see cref="IGridPathData{TPosition, TTileData, TContext}"/> for 3D grid pathing data management.
+    /// </summary>
+    /// <typeparam name="TTileData">Scenario specific tile data type.</typeparam>
+    /// <typeparam name="TContext">Scenario specific context information for processing data.</typeparam>
     public class GridPathData3D<TTileData, TContext> : IGridPathData<GridPosition3D, TTileData, TContext>
     {
         private List<GridPathElement<GridPosition3D, TTileData, TContext>> m_Data = new List<GridPathElement<GridPosition3D, TTileData, TContext>>();
@@ -150,6 +155,15 @@ namespace Common.Grid.Path.Specializations
             for (int i = 0; i < count; ++i)
             {
                 m_Data[i].Clear();
+            }
+        }
+
+        public void OnDestroy()
+        {
+            if (m_Data != null)
+            {
+                GridPathElementPool<GridPosition3D, TTileData, TContext>.GLOBAL.RecycleMultiple(m_Data);
+                m_Data = null;
             }
         }
     }

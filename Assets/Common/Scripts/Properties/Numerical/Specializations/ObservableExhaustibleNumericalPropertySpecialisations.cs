@@ -1,6 +1,6 @@
 ﻿using Common.Properties.Numerical.Data;
 
-namespace Common.Properties.Numerical.Specialisations
+namespace Common.Properties.Numerical.Specializations
 {
     public class ObservableExhaustibleNumericalPropertyInt<TContex> : ObservableExhaustibleNumericalProperty<int, TContex, INumericalPropertyModifierReader<int>>
     {

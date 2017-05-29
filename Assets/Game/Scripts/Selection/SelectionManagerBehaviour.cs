@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using Common.Properties.Numerical.Specialisations;
+using Common.Properties.Numerical.Specializations;
 
 public class SelectionManagerBehaviour : MonoBehaviour
 {

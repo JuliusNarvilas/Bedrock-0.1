@@ -159,10 +159,9 @@ namespace Common.Grid
         }
     }
 
-    public interface IGridObjectReference<TPosition, TTileData, TContext>
-    {
-        GridObject<TPosition, TTileData, TContext> GetGridobject();
-    }
+
+    /**
+    TODO: GridObject Serialization stuff
 
     public abstract class GridObject<TPosition, TTileData, TContext>
     {
@@ -178,4 +177,5 @@ namespace Common.Grid
 
         public abstract void Damage(IGridControl<TPosition, TTileData, TContext> i_Grid, TPosition i_Position, TContext i_Context);
     }
+    **/
 }

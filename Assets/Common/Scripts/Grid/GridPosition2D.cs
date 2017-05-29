@@ -4,7 +4,7 @@ using System;
 namespace Common.Grid
 {
     /// <summary>
-    /// Immutable structure for 2D positioning coordinates.
+    /// Structure for 2D positioning coordinates.
     /// </summary>
     /// <seealso cref="System.IEquatable{Common.Grid.GridPosition2D}" />
     [Serializable]

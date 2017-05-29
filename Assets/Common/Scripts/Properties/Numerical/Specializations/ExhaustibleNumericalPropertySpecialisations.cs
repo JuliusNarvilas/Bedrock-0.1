@@ -1,6 +1,6 @@
 ﻿using Common.Properties.Numerical.Data;
 
-namespace Common.Properties.Numerical.Specialisations
+namespace Common.Properties.Numerical.Specializations
 {
     public class ExhaustibleNumericalPropertyInt<TContext, TModifierReader> : ExhaustibleNumericalProperty<int, TContext, TModifierReader> where TModifierReader : INumericalPropertyModifierReader<int>
     {

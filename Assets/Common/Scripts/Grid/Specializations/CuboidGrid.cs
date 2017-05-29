@@ -15,6 +15,7 @@ namespace Common.Grid.Specializations
         protected bool m_AllowMoveDiagonally = true;
         protected float m_NonDiagonalHeuristicFactor = 1.0f;
         protected float m_DiagonalHeuristicFactor = (float)Math.Sqrt(2.0);
+        protected float m_Diagonal3DHeuristicFactor = (float)Math.Sqrt(3.0);
 
         public int GetSizeX()
         {
@@ -33,14 +34,30 @@ namespace Common.Grid.Specializations
         {
             int xDiff = Math.Abs(i_To.X - i_From.X);
             int yDiff = Math.Abs(i_To.Y - i_From.Y);
+            int zDiff = Math.Abs(i_To.Z - i_From.Z);
 
             if (m_AllowMoveDiagonally)
             {
-                return (int)(m_NonDiagonalHeuristicFactor * (xDiff + yDiff) + (m_DiagonalHeuristicFactor - 2.0f * m_NonDiagonalHeuristicFactor) * Math.Min(xDiff, yDiff) + 0.5f);
+                int smallestDiff = Math.Min(xDiff, yDiff);
+                int smallDiff = xDiff + yDiff - smallestDiff;
+                if (smallestDiff > zDiff)
+                {
+                    smallDiff = smallestDiff;
+                    smallestDiff = zDiff;
+                }
+                else if (smallDiff > zDiff)
+                {
+                    smallDiff = zDiff;
+                }
+
+                return (int)(m_NonDiagonalHeuristicFactor * (xDiff + yDiff + zDiff) +
+                    (m_Diagonal3DHeuristicFactor - 3.0f * m_NonDiagonalHeuristicFactor) * smallestDiff +
+                    (m_DiagonalHeuristicFactor - 2.0f * m_NonDiagonalHeuristicFactor) * smallDiff
+                    + 0.5f);
             }
             else
             {
-                return xDiff + yDiff;
+                return (int)(m_NonDiagonalHeuristicFactor * (xDiff + yDiff + zDiff) + 0.5f);
             }
         }
 
@@ -59,50 +76,32 @@ namespace Common.Grid.Specializations
 
         public void GetConnected(GridPosition3D i_Position, List<GridTile<GridPosition3D, TTileData, TContext>> o_ConnectedTiles)
         {
-            //TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            //left side
-            GridTile<GridPosition3D, TTileData, TContext> tempElement = null;
-            if (TryGetTile(new GridPosition3D(i_Position.X - 1, i_Position.Y), out tempElement))
-            {
-                o_ConnectedTiles.Add(tempElement);
+            int startX = Math.Max(i_Position.X - 1, 0);
+            int startY = Math.Max(i_Position.Y - 1, 0);
+            int startZ = Math.Max(i_Position.Z - 1, 0);
+            int endX = Math.Min(i_Position.X + 2, m_SizeX);
+            int endY = Math.Min(i_Position.Y + 2, m_SizeY);
+            int endZ = Math.Min(i_Position.Z + 2, m_SizeZ);
+            int xStride = m_SizeY * m_SizeZ;
 
-                if (m_AllowMoveDiagonally)
+            for (int itX = startX; itX < endX; ++itX)
+            {
+                for (int itY = startY; itY < endY; ++itY)
                 {
-                    if (TryGetTile(new GridPosition3D(i_Position.X - 1, i_Position.Y - 1), out tempElement))
+                    for (int itZ = startZ; itZ < endZ; ++itZ)
                     {
-                        o_ConnectedTiles.Add(tempElement);
-                    }
-                    if (TryGetTile(new GridPosition3D(i_Position.X - 1, i_Position.Y + 1), out tempElement))
-                    {
-                        o_ConnectedTiles.Add(tempElement);
+                        if (m_AllowMoveDiagonally)
+                        {
+                            int tileIndex = itX * xStride + itY * m_SizeZ + itZ;
+                            o_ConnectedTiles.Add(m_Tiles[tileIndex]);
+                        }
+                        else if ((itX != startX && itX != endX) || (itY != startY && itY != endY) || (itZ != startZ && itZ != endZ))
+                        {
+                            int tileIndex = itX * xStride + itY * m_SizeZ + itZ;
+                            o_ConnectedTiles.Add(m_Tiles[tileIndex]);
+                        }
                     }
                 }
-            }
-            //right side
-            if (TryGetTile(new GridPosition3D(i_Position.X + 1, i_Position.Y), out tempElement))
-            {
-                o_ConnectedTiles.Add(tempElement);
-
-                if (m_AllowMoveDiagonally)
-                {
-                    if (TryGetTile(new GridPosition3D(i_Position.X + 1, i_Position.Y - 1), out tempElement))
-                    {
-                        o_ConnectedTiles.Add(tempElement);
-                    }
-                    if (TryGetTile(new GridPosition3D(i_Position.X + 1, i_Position.Y + 1), out tempElement))
-                    {
-                        o_ConnectedTiles.Add(tempElement);
-                    }
-                }
-            }
-
-            if (TryGetTile(new GridPosition3D(i_Position.X, i_Position.Y - 1), out tempElement))
-            {
-                o_ConnectedTiles.Add(tempElement);
-            }
-            if (TryGetTile(new GridPosition3D(i_Position.X, i_Position.Y + 1), out tempElement))
-            {
-                o_ConnectedTiles.Add(tempElement);
             }
         }
 
@@ -120,11 +119,11 @@ namespace Common.Grid.Specializations
             return new GridPath<GridPosition3D, TTileData, TContext>(this, pathData, i_Start, i_End, i_Context);
         }
 
-        public GridArea<GridPosition3D, TTileData, TContext> GetPathArea(GridPosition3D i_Min, GridPosition3D i_Max, GridPosition3D i_Origin, TContext i_Context)
+        public GridPathArea<GridPosition3D, TTileData, TContext> GetPathArea(GridPosition3D i_Min, GridPosition3D i_Max, GridPosition3D i_Origin, TContext i_Context)
         {
             var pathData = GridPathData3DProvider<TTileData, TContext>.GLOBAL.GetGridPathData();
             pathData.Set(this, i_Min, i_Max);
-            return new GridArea<GridPosition3D, TTileData, TContext>(this, pathData, i_Min, i_Max, i_Origin, i_Context);
+            return new GridPathArea<GridPosition3D, TTileData, TContext>(this, pathData, i_Min, i_Max, i_Origin, i_Context);
         }
     }
 }

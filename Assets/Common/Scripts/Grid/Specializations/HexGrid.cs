@@ -32,7 +32,7 @@ namespace Common.Grid.Specializations
             throw new NotImplementedException();
         }
 
-        public GridArea<GridPosition2D, TTileData, TContext> GetPathArea(GridPosition2D i_Min, GridPosition2D i_Max, GridPosition2D i_Origin, TContext i_Context)
+        public GridPathArea<GridPosition2D, TTileData, TContext> GetPathArea(GridPosition2D i_Min, GridPosition2D i_Max, GridPosition2D i_Origin, TContext i_Context)
         {
             throw new NotImplementedException();
         }

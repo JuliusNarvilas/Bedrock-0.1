@@ -3,10 +3,13 @@ using System.Collections.Generic;
 
 namespace Common.Grid.Path
 {
+    /// <summary>
+    /// A pool of reusable <see cref="GridPathElement{TPosition, TTileData, TContext}"/> instances.
+    /// </summary>
     public class GridPathElementPool<TPosition, TTileData, TContext>
     {
         private readonly object m_SyncLock = new object();
-        private readonly List<GridPathElement<TPosition, TTileData, TContext>> m_Data = new List<GridPathElement<TPosition, TTileData, TContext>>();
+        private readonly List<GridPathElement<TPosition, TTileData, TContext>> m_Data;
 
         public GridPathElementPool(int i_Capacity)
         {
@@ -89,6 +92,6 @@ namespace Common.Grid.Path
             i_Data.Clear();
         }
 
-        public static readonly GridPathElementPool<TPosition, TTileData, TContext> GLOBAL = new GridPathElementPool<TPosition, TTileData, TContext>(100);
+        public static readonly GridPathElementPool<TPosition, TTileData, TContext> GLOBAL = new GridPathElementPool<TPosition, TTileData, TContext>(200);
     }
 }

@@ -1,0 +1,12 @@
+﻿
+Intelligent text
+*test intelligent text convas renderer crash bug
+*change content providing for intelligent text to support non resource based content
+*seperate intelligent text core generation functionality for swapping to non unity font based solutions if required
+	*thinking about adding dynamic font support by rendering letters to a texture manually
+
+Grid
+*Add serialization
+*Add map generation
+*Add unit tests
+*Add fog of war helpers

@@ -1,5 +1,5 @@
 ﻿
-namespace Common.Properties.Numerical.Specialisations
+namespace Common.Properties.Numerical.Specializations
 {
 
     public class NumericalPropertyModifierReader<T> : INumericalPropertyModifierReader<T>
