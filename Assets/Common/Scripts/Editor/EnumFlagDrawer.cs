@@ -25,11 +25,11 @@ namespace Common
             int newValue = EditorGUI.MaskField(position, propName, exportedOriginal, itemNames);
           
             //int removedFlags = (newValue & exportedOriginal) ^ exportedOriginal;
-            int addedValues = newValue & ~exportedOriginal;
+            int addedFlags = newValue & ~exportedOriginal;
             
 
             //int importedRemovedValues = flagSettings.ConverterToValue(removedFlags, 0);
-            int finalValue = flagSettings.ConverterToValue(newValue, addedValues);
+            int finalValue = flagSettings.ConverterToValue(newValue, addedFlags);
             
             //making sure values for removed flags get removed as well
             //to support enums with values representing flag sets

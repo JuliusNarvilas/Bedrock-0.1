@@ -17,12 +17,5 @@ namespace Game.Grid
         Setting4 = Setting1 | Setting2
     }
 
-    [Serializable]
-    public class GameGridObject : GridObject<GridPosition3D, GameGridTileData, GameGridChangeContext>
-    {
-        public override void Damage(IGridControl<GridPosition3D, GameGridTileData, GameGridChangeContext> i_Grid, GridPosition3D i_Position, GameGridChangeContext i_Context)
-        {
-            throw new NotImplementedException();
-        }
-    }
+
 }

@@ -6,7 +6,12 @@ Intelligent text
 	*thinking about adding dynamic font support by rendering letters to a texture manually
 
 Grid
+*remove height data for connected tiles (+ doesn't work when using non 4 sided grid)
 *Add serialization
 *Add map generation
 *Add unit tests
 *Add fog of war helpers
+
+
+General:
+*Add generic loading from asset bundles, resources or streaming assets

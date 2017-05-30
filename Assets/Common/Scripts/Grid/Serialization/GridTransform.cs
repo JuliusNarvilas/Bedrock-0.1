@@ -5,7 +5,10 @@ using System.Text;
 
 namespace Common.Grid.Serialization
 {
-    public class GridTransform
+    [Serializable]
+    public struct GridTransform
     {
+        public GridPosition3D Translation;
+        public int OrientationId;
     }
 }
