@@ -2,7 +2,7 @@
 
 namespace Common.Grid.Path
 {
-    public enum GridPathfindingState
+    public enum EGridPathfindingState
     {
         New,
         Opened,
@@ -12,12 +12,12 @@ namespace Common.Grid.Path
     /// <summary>
     /// Class for representing a grid tile pathing data
     /// </summary>
-    public class GridPathElement<TPosition, TTileData, TContext>
+    public class GridPathElement<TPosition, TContext, TTile> : IPoolable where TTile : GridTile<TPosition, TContext, TTile>
     {
         /// <summary>
         /// The tile data that is accessible to users.
         /// </summary>
-        public GridTile<TPosition, TTileData, TContext> Tile;
+        public TTile Tile;
         /// <summary>
         /// The approximate distance to the destination (must not be an underestimate).
         /// </summary>
@@ -33,12 +33,12 @@ namespace Common.Grid.Path
         /// <summary>
         /// Current pathing inspection state.
         /// </summary>
-        public GridPathfindingState PathingState = GridPathfindingState.New;
+        public EGridPathfindingState PathingState = EGridPathfindingState.New;
 
         /// <summary>
         /// The parent element
         /// </summary>
-        public GridPathElement<TPosition, TTileData, TContext> Parent;
+        public GridPathElement<TPosition, TContext, TTile> Parent;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GridElement"/> class.
@@ -49,13 +49,13 @@ namespace Common.Grid.Path
         /// <summary>
         /// Method for cleaning up pathing data back to default state.
         /// </summary>
-        public void Clear()
+        public void PoolingClear()
         {
-            Tile = default(GridTile<TPosition, TTileData, TContext>);
+            Tile = default(TTile);
             HeuristicDistance = 0;
             PathCost = 0;
             FValue = 0;
-            PathingState = GridPathfindingState.New;
+            PathingState = EGridPathfindingState.New;
             Parent = null;
         }
 
@@ -63,7 +63,7 @@ namespace Common.Grid.Path
         /// Copies given instance.
         /// </summary>
         /// <param name="i_Other">The other instance to copy.</param>
-        public void Set(GridPathElement<TPosition, TTileData, TContext> i_Other)
+        public void Set(GridPathElement<TPosition, TContext, TTile> i_Other)
         {
             HeuristicDistance = i_Other.HeuristicDistance;
             PathCost = i_Other.PathCost;
@@ -72,7 +72,7 @@ namespace Common.Grid.Path
             Parent = i_Other.Parent;
         }
 
-        public class FValueComparer : IComparer<GridPathElement<TPosition, TTileData, TContext>>
+        public class FValueComparer : IComparer<GridPathElement<TPosition, TContext, TTile>>
         {
             private int m_Modifier;
 
@@ -81,7 +81,7 @@ namespace Common.Grid.Path
                 m_Modifier = i_Ascending ? 1 : -1;
             }
 
-            public int Compare(GridPathElement<TPosition, TTileData, TContext> i_A, GridPathElement<TPosition, TTileData, TContext> i_B)
+            public int Compare(GridPathElement<TPosition, TContext, TTile> i_A, GridPathElement<TPosition, TContext, TTile> i_B)
             {
                 return i_A.FValue.CompareTo(i_B.FValue) * m_Modifier;
             }

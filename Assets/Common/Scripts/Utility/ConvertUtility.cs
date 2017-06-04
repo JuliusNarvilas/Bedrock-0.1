@@ -21,23 +21,25 @@ namespace Common.Utility
                    (Mathf.RoundToInt(color.g * 255) << 8) +
                    Mathf.RoundToInt(color.b * 255);
         }
-
+        
         public static Color ToColor(int value)
         {
-            var a = (float)(value >> 24 & 0xFF) / 255f;
-            var r = (float)(value >> 16 & 0xFF) / 255f;
-            var g = (float)(value >> 8 & 0xFF) / 255f;
-            var b = (float)(value & 0xFF) / 255f;
+            const float toColorFraction = 1.0f / 255.0f;
+            var a = (float)(value >> 24 & 0xFF) * toColorFraction;
+            var r = (float)(value >> 16 & 0xFF) * toColorFraction;
+            var g = (float)(value >> 8 & 0xFF) * toColorFraction;
+            var b = (float)(value & 0xFF) * toColorFraction;
             return new Color(r, g, b, a);
         }
 
 
         public static Color ToColor(Color32 value)
         {
-            return new Color((float)value.r / 255f,
-                             (float)value.g / 255f,
-                             (float)value.b / 255f,
-                             (float)value.a / 255f);
+            const float toColorFraction = 1.0f / 255.0f;
+            return new Color((float)value.r * toColorFraction,
+                             (float)value.g * toColorFraction,
+                             (float)value.b * toColorFraction,
+                             (float)value.a * toColorFraction);
         }
 
         public static Color ToColor(Vector3 value)

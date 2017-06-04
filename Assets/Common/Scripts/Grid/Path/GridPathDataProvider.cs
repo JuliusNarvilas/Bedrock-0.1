@@ -7,15 +7,14 @@ namespace Common.Grid.Path
     /// A basic class for implementing a provider of <see cref="IGridPathData{TPosition, TTileData, TContext}"/> data.
     /// </summary>
     /// <typeparam name="TPosition">The type of the position.</typeparam>
-    /// <typeparam name="TTileData">The type of the tile data.</typeparam>
     /// <typeparam name="TContext">The type of the context.</typeparam>
-    public abstract class GridPathDataProvider<TPosition, TTileData, TContext>
+    public abstract class GridPathDataProvider<TPosition, TContext, TTile> where TTile : GridTile<TPosition, TContext, TTile>
     {
         private const int DEFAULT_PATH_DATA_CAPACITY = 5;
         private readonly object m_SyncLock = new object();
-        private readonly List<IGridPathData<TPosition, TTileData, TContext>> m_Data = new List<IGridPathData<TPosition, TTileData, TContext>>(DEFAULT_PATH_DATA_CAPACITY);
+        private readonly List<IGridPathData<TPosition, TContext, TTile>> m_Data = new List<IGridPathData<TPosition, TContext, TTile>>(DEFAULT_PATH_DATA_CAPACITY);
 
-        public IGridPathData<TPosition, TTileData, TContext> GetGridPathData()
+        public IGridPathData<TPosition, TContext, TTile> GetGridPathData()
         {
             lock (m_SyncLock)
             {
@@ -29,9 +28,9 @@ namespace Common.Grid.Path
             return Create();
         }
 
-        protected abstract IGridPathData<TPosition, TTileData, TContext> Create();
+        protected abstract IGridPathData<TPosition, TContext, TTile> Create();
 
-        public void Recycle(IGridPathData<TPosition, TTileData, TContext> i_Data)
+        public void Recycle(IGridPathData<TPosition, TContext, TTile> i_Data)
         {
             i_Data.Clean();
             lock (m_SyncLock)

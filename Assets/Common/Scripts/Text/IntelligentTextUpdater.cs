@@ -4,7 +4,7 @@ namespace Common.Text
 {
     public class IntelligentTextUpdater : IntelligentText
     {
-        public enum UpdateType
+        public enum ETextUpdateType
         {
             /// <summary>
             /// Rebuilds the mesh.
@@ -23,7 +23,7 @@ namespace Common.Text
         private float m_TimeAccumulator = 0;
 
         public float UpdateTimer = 0;
-        public UpdateType Type = UpdateType.Update;
+        public ETextUpdateType Type = ETextUpdateType.Update;
         public bool ScaledTime = true;
 
         private void Update()
@@ -34,13 +34,13 @@ namespace Common.Text
                 m_TimeAccumulator -= UpdateTimer;
                 switch(Type)
                 {
-                    case UpdateType.Update:
+                    case ETextUpdateType.Update:
                         UpdateText();
                         break;
-                    case UpdateType.Rebuild:
+                    case ETextUpdateType.Rebuild:
                         RebuildText();
                         break;
-                    case UpdateType.Refresh:
+                    case ETextUpdateType.Refresh:
                         Refresh();
                         break;
                 }

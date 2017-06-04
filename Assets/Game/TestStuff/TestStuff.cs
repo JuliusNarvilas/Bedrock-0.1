@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public enum TestEnum
+public enum ETestEnum
 {
     TestEnum1,
     TestEnum2,
@@ -13,7 +13,7 @@ public enum TestEnum
 public class TestListElement
 {
     public string m_id;
-    public TestEnum m_type;
+    public ETestEnum m_type;
     public int m_quantity;
 }
 

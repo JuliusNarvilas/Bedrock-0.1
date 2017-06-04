@@ -58,18 +58,18 @@ namespace Common.IO.Recources
         [SerializeField, HideInInspector]
         public bool UpdateAutomatically = false;
 
-        internal ResourcesDBItem root = new ResourcesDBItem("", "", ResourcesDBItem.Type.Folder, "");
+        internal ResourcesDBItem root = new ResourcesDBItem("", "", ResourcesDBItem.EDirectoryType.Folder, "");
 
         public int FileCount { get { return m_FileCount; } }
         public int FolderCount { get { return m_FolderCount; } }
 
         public static ResourcesDBItem GetFolder(string i_Path)
         {
-            return Instance.root.GetChild(i_Path, ResourcesDBItem.Type.Folder);
+            return Instance.root.GetChild(i_Path, ResourcesDBItem.EDirectoryType.Folder);
         }
         public static IEnumerable<ResourcesDBItem> GetAllAssets(string i_Name, System.Type i_AssetType = null)
         {
-            return Instance.root.GetChilds(i_Name, ResourcesDBItem.Type.Asset, true, i_AssetType);
+            return Instance.root.GetChilds(i_Name, ResourcesDBItem.EDirectoryType.Asset, true, i_AssetType);
         }
         public static IEnumerable<ResourcesDBItem> GetAllAssets<T>(string i_Name) where T : UnityEngine.Object
         {
@@ -77,7 +77,7 @@ namespace Common.IO.Recources
         }
         public static ResourcesDBItem GetAsset(string i_Name, System.Type i_AssetType = null)
         {
-            return Instance.root.GetChilds(i_Name, ResourcesDBItem.Type.Asset, true, i_AssetType).FirstOrDefault();
+            return Instance.root.GetChilds(i_Name, ResourcesDBItem.EDirectoryType.Asset, true, i_AssetType).FirstOrDefault();
         }
 
         private static int IndexAfterResources(string i_Path, int i_StartingIndex = 0)
@@ -104,7 +104,7 @@ namespace Common.IO.Recources
             return -1;
         }
 
-        public static ResourcesDBItem GetByPath(string i_Path, ResourcesDBItem.Type i_ResourceType = ResourcesDBItem.Type.Any)
+        public static ResourcesDBItem GetByPath(string i_Path, ResourcesDBItem.EDirectoryType i_ResourceType = ResourcesDBItem.EDirectoryType.Any)
         {
             if(string.IsNullOrEmpty(i_Path))
             {
@@ -118,7 +118,7 @@ namespace Common.IO.Recources
             return GetByResourcesPath(i_Path, i_ResourceType);
         }
 
-        public static ResourcesDBItem GetByResourcesPath(string i_Path, ResourcesDBItem.Type i_ResourceType = ResourcesDBItem.Type.Any)
+        public static ResourcesDBItem GetByResourcesPath(string i_Path, ResourcesDBItem.EDirectoryType i_ResourceType = ResourcesDBItem.EDirectoryType.Any)
         {
             return Instance.root.GetChild(i_Path, i_ResourceType);
         }
@@ -170,7 +170,7 @@ namespace Common.IO.Recources
             for(int i = 0; i < size; ++i)
             {
                 folder = directories[i];
-                m_Items.Add(new ResourcesDBItem(folder.Name, relFolder, ResourcesDBItem.Type.Folder, string.Empty));
+                m_Items.Add(new ResourcesDBItem(folder.Name, relFolder, ResourcesDBItem.EDirectoryType.Folder, string.Empty));
                 AddFileList(folder, i_Prefix);
             }
 
@@ -192,7 +192,7 @@ namespace Common.IO.Recources
                     continue;
                 }
                 string type = obj.GetType().AssemblyQualifiedName;
-                m_Items.Add(new ResourcesDBItem(file.Name, relFolder, ResourcesDBItem.Type.Asset, type));
+                m_Items.Add(new ResourcesDBItem(file.Name, relFolder, ResourcesDBItem.EDirectoryType.Asset, type));
             }
             Resources.UnloadUnusedAssets();
         }
@@ -218,13 +218,13 @@ namespace Common.IO.Recources
             m_FileCount = 0;
 
             size = m_Items.Count;
-            ResourcesDBItem.Type resourceType;
+            ResourcesDBItem.EDirectoryType resourceType;
             for (int i = 0; i < size; ++i)
             {
                 resourceType = m_Items[i].ResourcesType;
-                if (resourceType == ResourcesDBItem.Type.Folder)
+                if (resourceType == ResourcesDBItem.EDirectoryType.Folder)
                     m_FolderCount++;
-                else if (resourceType == ResourcesDBItem.Type.Asset)
+                else if (resourceType == ResourcesDBItem.EDirectoryType.Asset)
                     m_FileCount++;
             }
             if (i_SetDirty)

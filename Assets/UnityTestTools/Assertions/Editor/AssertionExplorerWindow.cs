@@ -17,18 +17,18 @@ namespace UnityTest
         [SerializeField]
         private string m_FilterText = "";
         [SerializeField]
-        private FilterType m_FilterType;
+        private EFilterType m_FilterType;
         [SerializeField]
         private List<string> m_FoldMarkers = new List<string>();
         [SerializeField]
-        private GroupByType m_GroupBy;
+        private EGroupByType m_GroupBy;
         [SerializeField]
         private Vector2 m_ScrollPosition = Vector2.zero;
         private DateTime m_NextReload = DateTime.Now;
         [SerializeField]
         private static bool s_ShouldReload;
         [SerializeField]
-        private ShowType m_ShowType;
+        private EShowType m_ShowType;
 
         public AssertionExplorerWindow()
         {
@@ -78,9 +78,9 @@ namespace UnityTest
 
         private IEnumerable<AssertionComponent> FilterResults(List<AssertionComponent> assertionComponents, string text)
         {
-            if (m_ShowType == ShowType.ShowDisabled)
+            if (m_ShowType == EShowType.ShowDisabled)
                 assertionComponents = assertionComponents.Where(c => !c.enabled).ToList();
-            else if (m_ShowType == ShowType.ShowEnabled)
+            else if (m_ShowType == EShowType.ShowEnabled)
                 assertionComponents = assertionComponents.Where(c => c.enabled).ToList();
 
             if (string.IsNullOrEmpty(text))
@@ -88,20 +88,20 @@ namespace UnityTest
 
             switch (m_FilterType)
             {
-                case FilterType.ComparerName:
+                case EFilterType.ComparerName:
                     return assertionComponents.Where(c => c.Action.GetType().Name.ToLower().Contains(text));
-                case FilterType.AttachedGameObject:
+                case EFilterType.AttachedGameObject:
                     return assertionComponents.Where(c => c.gameObject.name.ToLower().Contains(text));
-                case FilterType.FirstComparedGameObjectPath:
+                case EFilterType.FirstComparedGameObjectPath:
                     return assertionComponents.Where(c => c.Action.thisPropertyPath.ToLower().Contains(text));
-                case FilterType.FirstComparedGameObject:
+                case EFilterType.FirstComparedGameObject:
                     return assertionComponents.Where(c => c.Action.go != null
                                                      && c.Action.go.name.ToLower().Contains(text));
-                case FilterType.SecondComparedGameObjectPath:
+                case EFilterType.SecondComparedGameObjectPath:
                     return assertionComponents.Where(c =>
                                                      c.Action is ComparerBase
                                                      && (c.Action as ComparerBase).otherPropertyPath.ToLower().Contains(text));
-                case FilterType.SecondComparedGameObject:
+                case EFilterType.SecondComparedGameObject:
                     return assertionComponents.Where(c =>
                                                      c.Action is ComparerBase
                                                      && (c.Action as ComparerBase).other != null
@@ -121,13 +121,13 @@ namespace UnityTest
         {
             switch (m_GroupBy)
             {
-                case GroupByType.Comparer:
+                case EGroupByType.Comparer:
                     return m_GroupByComparerRenderer;
-                case GroupByType.ExecutionMethod:
+                case EGroupByType.ExecutionMethod:
                     return m_GroupByExecutionMethodRenderer;
-                case GroupByType.GameObjects:
+                case EGroupByType.GameObjects:
                     return m_GroupByGoRenderer;
-                case GroupByType.Tests:
+                case EGroupByType.Tests:
                     return m_GroupByTestsRenderer;
                 default:
                     return m_GroupByNothingRenderer;
@@ -138,14 +138,14 @@ namespace UnityTest
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
             EditorGUILayout.LabelField("Group by:", Styles.toolbarLabel, GUILayout.MaxWidth(60));
-            m_GroupBy = (GroupByType)EditorGUILayout.EnumPopup(m_GroupBy, EditorStyles.toolbarPopup, GUILayout.MaxWidth(150));
+            m_GroupBy = (EGroupByType)EditorGUILayout.EnumPopup(m_GroupBy, EditorStyles.toolbarPopup, GUILayout.MaxWidth(150));
 
             GUILayout.FlexibleSpace();
 
-            m_ShowType = (ShowType)EditorGUILayout.EnumPopup(m_ShowType, EditorStyles.toolbarPopup, GUILayout.MaxWidth(100));
+            m_ShowType = (EShowType)EditorGUILayout.EnumPopup(m_ShowType, EditorStyles.toolbarPopup, GUILayout.MaxWidth(100));
 
             EditorGUILayout.LabelField("Filter by:", Styles.toolbarLabel, GUILayout.MaxWidth(50));
-            m_FilterType = (FilterType)EditorGUILayout.EnumPopup(m_FilterType, EditorStyles.toolbarPopup, GUILayout.MaxWidth(100));
+            m_FilterType = (EFilterType)EditorGUILayout.EnumPopup(m_FilterType, EditorStyles.toolbarPopup, GUILayout.MaxWidth(100));
             m_FilterText = GUILayout.TextField(m_FilterText, "ToolbarSeachTextField", GUILayout.MaxWidth(100));
             if (GUILayout.Button(GUIContent.none, string.IsNullOrEmpty(m_FilterText) ? "ToolbarSeachCancelButtonEmpty" : "ToolbarSeachCancelButton", GUILayout.ExpandWidth(false)))
                 m_FilterText = "";
@@ -160,7 +160,7 @@ namespace UnityTest
             return w as AssertionExplorerWindow;
         }
 
-        private enum FilterType
+        private enum EFilterType
         {
             ComparerName,
             FirstComparedGameObject,
@@ -170,14 +170,14 @@ namespace UnityTest
             AttachedGameObject
         }
 
-        private enum ShowType
+        private enum EShowType
         {
             ShowAll,
             ShowEnabled,
             ShowDisabled
         }
 
-        private enum GroupByType
+        private enum EGroupByType
         {
             Nothing,
             Comparer,

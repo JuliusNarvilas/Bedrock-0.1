@@ -1,9 +1,11 @@
 ﻿using Common.Grid.Path;
+using Common.Grid.Physics;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Common.Grid
 {
-    public interface IGridControl<TPosition, TTileData, TContext>
+    public interface IGridControl<TPosition, TContext, TTile> where TTile : GridTile<TPosition, TContext, TTile>
     {
         /// <summary>
         /// Gets the path.
@@ -11,7 +13,7 @@ namespace Common.Grid
         /// <param name="i_Start">The start position.</param>
         /// <param name="i_End">The end position.</param>
         /// <returns></returns>
-        GridPath<TPosition, TTileData, TContext> GetPath(TPosition i_Start, TPosition i_End, TContext i_Context);
+        GridPath<TPosition, TContext, TTile> GetPath(TPosition i_Start, TPosition i_End, TContext i_Context);
 
         /// <summary>
         /// Gets the path area.
@@ -21,7 +23,7 @@ namespace Common.Grid
         /// <param name="i_Origin">The origin pathing origin.</param>
         /// <param name="i_Context">The context.</param>
         /// <returns></returns>
-        GridPathArea<TPosition, TTileData, TContext> GetPathArea(TPosition i_Min, TPosition i_Max, TPosition i_Origin, TContext i_Context);
+        GridPathArea<TPosition, TContext, TTile> GetPathArea(TPosition i_Min, TPosition i_Max, TPosition i_Origin, TContext i_Context);
 
         /// <summary>
         /// Tries to get a tile at given position.
@@ -29,7 +31,7 @@ namespace Common.Grid
         /// <param name="i_Position">The position.</param>
         /// <param name="o_Tile">The tile result.</param>
         /// <returns>True if a tile was found and false otherwise (usually because position is outside grid bounds)</returns>
-        bool TryGetTile(TPosition i_Position, out GridTile<TPosition, TTileData, TContext> o_Tile);
+        bool TryGetTile(TPosition i_Position, out TTile o_Tile);
 
         /// <summary>
         /// Gets the heuristic distance.
@@ -44,6 +46,8 @@ namespace Common.Grid
         /// </summary>
         /// <param name="i_Position">The position.</param>
         /// <param name="o_ConnectedTiles">The connected tiles.</param>
-        void GetConnected(TPosition i_Position, List<GridTile<TPosition, TTileData, TContext>> o_ConnectedTiles);
+        void GetConnected(TPosition i_Position, List<TTile> o_ConnectedTiles);
+
+        bool TryGetTilePhysicalData(TPosition i_Position, out GridTilePhysicalData o_Tile);
     }
 }

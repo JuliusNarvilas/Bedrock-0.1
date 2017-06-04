@@ -54,22 +54,22 @@ public class TestListElementDrawer : PropertyDrawer
         EditorGUI.indentLevel = 2;
         contentPosition = EditorGUI.IndentedRect(contentPosition);
 
-        SerializedProperty typeProp = SelectEnumByInt(prop, "m_type", "RewardType", typeof(TestEnum));
+        SerializedProperty typeProp = SelectEnumByInt(prop, "m_type", "RewardType", typeof(ETestEnum));
         if(typeProp == null)
         {
             return;
         }
 
-        TestEnum typePropEnum = (TestEnum)typeProp.enumValueIndex;
+        ETestEnum typePropEnum = (ETestEnum)typeProp.enumValueIndex;
         switch (typePropEnum)
         {
-            case TestEnum.TestEnum1:
+            case ETestEnum.TestEnum1:
                 m_displayAction = DanceCardDisplay;
                 break;
-            case TestEnum.TestEnum2:
+            case ETestEnum.TestEnum2:
                 m_displayAction = StringDataDisplay;
                 break;
-            case TestEnum.TestEnum3:
+            case ETestEnum.TestEnum3:
                 m_displayAction = CurrencyDisplay;
                 break;
             default:
@@ -140,7 +140,7 @@ public class TestListElementDrawer : PropertyDrawer
 
     private void CurrencyDisplay(SerializedProperty prop)
     {
-        SelectEnumByName(prop, "m_id", "Currency Type", typeof(TestEnum));
+        SelectEnumByName(prop, "m_id", "Currency Type", typeof(ETestEnum));
         
         SerializedProperty matchedProperty = prop.FindPropertyRelative("m_quantity");
         if (matchedProperty == null)

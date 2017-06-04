@@ -115,7 +115,7 @@ namespace Common.Text
     /// <summary>
     /// Vertical alignment setting for positioning items inserted into intelligent text.
     /// </summary>
-    public enum IntelligentTextTransformAnchor
+    public enum EIntelligentTextTransformAnchor
     {
         /// <summary>
         /// Align vertical positioning on the line top point and overflow downwards.
@@ -141,6 +141,6 @@ namespace Common.Text
         public float scale;
         public Vector2 offset;
         public float rotation;
-        public IntelligentTextTransformAnchor pivot;
+        public EIntelligentTextTransformAnchor pivot;
     }
 }

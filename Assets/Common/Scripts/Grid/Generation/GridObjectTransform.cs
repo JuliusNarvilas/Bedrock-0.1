@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Common.Grid.Generation
 {
-    public enum GridObjectSquareRotation : int
+    public enum EGridObjectSquareRotation : int
     {
         Deg0,
         Deg90,
@@ -14,7 +14,7 @@ namespace Common.Grid.Generation
         Deg270
     }
 
-    public enum GridObjectHexRotation : int
+    public enum EGridObjectHexRotation : int
     {
         Deg0,
         Deg60,
@@ -28,36 +28,36 @@ namespace Common.Grid.Generation
     public struct GridObjectTransform
     {
         public GridPosition3D GridPosition;
-        public GridObjectSquareRotation GridRotation;
+        public EGridObjectSquareRotation GridRotation;
 
-        public void SetRotationInPlace(GridObjectSquareRotation i_NewRotation, GridPosition3D i_OriginalSize)
+        public void SetRotationInPlace(EGridObjectSquareRotation i_NewRotation, GridPosition3D i_OriginalSize)
         {
             GridPosition3D finalPosition = GridPosition;
             //revert current rotation
             switch(GridRotation)
             {
-                case GridObjectSquareRotation.Deg90:
+                case EGridObjectSquareRotation.Deg90:
                     finalPosition.Y -= i_OriginalSize.X;
                     break;
-                case GridObjectSquareRotation.Deg180:
+                case EGridObjectSquareRotation.Deg180:
                     finalPosition.X -= i_OriginalSize.X;
                     finalPosition.Y -= i_OriginalSize.Y;
                     break;
-                case GridObjectSquareRotation.Deg270:
+                case EGridObjectSquareRotation.Deg270:
                     finalPosition.X -= i_OriginalSize.Y;
                     break;
             }
             //apply new rotation
             switch (i_NewRotation)
             {
-                case GridObjectSquareRotation.Deg90:
+                case EGridObjectSquareRotation.Deg90:
                     finalPosition.Y += i_OriginalSize.X;
                     break;
-                case GridObjectSquareRotation.Deg180:
+                case EGridObjectSquareRotation.Deg180:
                     finalPosition.X += i_OriginalSize.X;
                     finalPosition.Y += i_OriginalSize.Y;
                     break;
-                case GridObjectSquareRotation.Deg270:
+                case EGridObjectSquareRotation.Deg270:
                     finalPosition.X += i_OriginalSize.Y;
                     break;
             }

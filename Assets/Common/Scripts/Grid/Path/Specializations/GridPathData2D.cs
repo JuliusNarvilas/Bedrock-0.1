@@ -4,25 +4,24 @@ using System.Collections.Generic;
 namespace Common.Grid.Path.Specializations
 {
     /// <summary>
-    /// A specialization of <see cref="IGridPathData{TPosition, TTileData, TContext}"/> for 2D grid pathing data management.
+    /// A specialization of <see cref="IGridPathData{TPosition, TContext, TTile}"/> for 2D grid pathing data management.
     /// </summary>
-    /// <typeparam name="TTileData">Scenario specific tile data type.</typeparam>
     /// <typeparam name="TContext">Scenario specific context information for processing data.</typeparam>
-    public class GridPathData2D<TTileData, TContext> : IGridPathData<GridPosition2D, TTileData, TContext>
+    public class GridPathData2D<TContext, TTile> : IGridPathData<GridPosition2D, TContext, TTile> where TTile : GridTile<GridPosition2D, TContext, TTile>
     {
-        private List<GridPathElement<GridPosition2D, TTileData, TContext>> m_Data = new List<GridPathElement<GridPosition2D, TTileData, TContext>>();
+        private List<GridPathElement<GridPosition2D, TContext, TTile>> m_Data = new List<GridPathElement<GridPosition2D, TContext, TTile>>();
         private GridPosition2D m_Min = new GridPosition2D();
         private GridPosition2D m_Max = new GridPosition2D();
-        private IGridControl<GridPosition2D, TTileData, TContext> m_Source;
-        private readonly GridPathDataProvider<GridPosition2D, TTileData, TContext> m_Origin;
+        private IGridControl<GridPosition2D, TContext, TTile> m_Source;
+        private readonly GridPathDataProvider<GridPosition2D, TContext, TTile> m_Origin;
 
-        public GridPathData2D(GridPathDataProvider<GridPosition2D, TTileData, TContext> i_Origin)
+        public GridPathData2D(GridPathDataProvider<GridPosition2D, TContext, TTile> i_Origin)
         {
             Log.DebugAssert(i_Origin != null, "GridPathData2D constructed with no origin");
             m_Origin = i_Origin;
         }
         
-        public bool Set(IGridControl<GridPosition2D, TTileData, TContext> i_Source, GridPosition2D i_Min, GridPosition2D i_Max)
+        public bool Set(IGridControl<GridPosition2D, TContext, TTile> i_Source, GridPosition2D i_Min, GridPosition2D i_Max)
         {
             m_Source = i_Source;
             m_Min = i_Min;
@@ -30,9 +29,9 @@ namespace Common.Grid.Path.Specializations
 
             if (m_Data.Count < 1)
             {
-                m_Data.Add(GridPathElementPool<GridPosition2D, TTileData, TContext>.GLOBAL.Get());
+                m_Data.Add(GridPathElementPool<GridPosition2D, TContext, TTile>.GLOBAL.Get());
             }
-            GridTile<GridPosition2D, TTileData, TContext> tile;
+            TTile tile;
             if (m_Source.TryGetTile(i_Min, out tile))
             {
                 m_Data[0].Tile = tile;
@@ -44,7 +43,7 @@ namespace Common.Grid.Path.Specializations
 
         public bool Grow(GridPosition2D i_EnvelopPos)
         {
-            GridTile<GridPosition2D, TTileData, TContext> tile;
+            TTile tile;
             if (m_Source.TryGetTile(i_EnvelopPos, out tile))
             {
                 GridPosition2D newMin = new GridPosition2D(
@@ -65,14 +64,14 @@ namespace Common.Grid.Path.Specializations
                     int newDataCount = newSizeX * newSizeY;
                     int oldDataCount = oldSizeX * oldSizeY;
                     int addedDataCount = newDataCount - m_Data.Count;
-                    var oldData = new List<GridPathElement<GridPosition2D, TTileData, TContext>>(oldDataCount);
+                    var oldData = new List<GridPathElement<GridPosition2D, TContext, TTile>>(oldDataCount);
 
                     //fill in required new data elements
                     if (m_Data.Capacity < newDataCount)
                     {
                         m_Data.Capacity = newDataCount;
                     }
-                    GridPathElementPool<GridPosition2D, TTileData, TContext>.GLOBAL.GetMultiple(addedDataCount, m_Data);
+                    GridPathElementPool<GridPosition2D, TContext, TTile>.GLOBAL.GetMultiple(addedDataCount, m_Data);
 
                     //record old data to map elements into a new position afterwards
                     for (int i = 0; i < oldDataCount; ++i)
@@ -99,7 +98,7 @@ namespace Common.Grid.Path.Specializations
                             else
                             {
                                 var newElement = m_Data[freeElementIndex++];
-                                GridTile<GridPosition2D, TTileData, TContext> tempTile;
+                                TTile tempTile;
                                 m_Source.TryGetTile(new GridPosition2D(itX, itY), out tempTile);
                                 newElement.Tile = tempTile;
                                 m_Data[newIndex] = newElement;
@@ -115,23 +114,23 @@ namespace Common.Grid.Path.Specializations
             return false;
         }
 
-        public GridPathDataResponse TryGetElement(GridPosition2D i_Pos, out GridPathElement<GridPosition2D, TTileData, TContext> o_Value)
+        public EGridPathDataResponse TryGetElement(GridPosition2D i_Pos, out GridPathElement<GridPosition2D, TContext, TTile> o_Value)
         {
             if (m_Min.X <= i_Pos.X && m_Max.X >= i_Pos.X && m_Min.Y <= i_Pos.Y && m_Max.Y >= i_Pos.Y)
             {
                 int strideX = m_Max.Y - m_Min.Y + 1;
                 int index = strideX * (i_Pos.X - m_Min.X) + (i_Pos.Y - m_Min.Y);
                 o_Value = m_Data[index];
-                return GridPathDataResponse.Success;
+                return EGridPathDataResponse.Success;
             }
 
             o_Value = null;
-            GridTile<GridPosition2D, TTileData, TContext> tile;
+            TTile tile;
             if (m_Source.TryGetTile(i_Pos, out tile))
             {
-                return GridPathDataResponse.OutOfDataRange;
+                return EGridPathDataResponse.OutOfDataRange;
             }
-            return GridPathDataResponse.InvalidPosition;
+            return EGridPathDataResponse.InvalidPosition;
         }
 
         public void Dispose()
@@ -144,7 +143,7 @@ namespace Common.Grid.Path.Specializations
             int count = m_Data.Count;
             for (int i = 0; i < count; ++i)
             {
-                m_Data[i].Clear();
+                m_Data[i].PoolingClear();
             }
         }
 
@@ -152,7 +151,7 @@ namespace Common.Grid.Path.Specializations
         {
             if (m_Data != null)
             {
-                GridPathElementPool<GridPosition2D, TTileData, TContext>.GLOBAL.RecycleMultiple(m_Data);
+                GridPathElementPool<GridPosition2D, TContext, TTile>.GLOBAL.RecycleMultiple(m_Data);
                 m_Data = null;
             }
         }

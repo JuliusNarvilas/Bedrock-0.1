@@ -12,9 +12,8 @@ namespace Tools
     public class GridMapObjectConnection
     {
         public GridPosition3D Position;
-        public GridTileLocation TileLocation;
         [EnumFlag(typeof(GridMapObjectConnection), "ConvertConnectionSettingsEnumToFlags", "ConvertConnectionSettingsEnumToValue")]
-        public ConnectionSettings Settings;
+        public EConnectionSettings Settings;
         
 
         private static int ConvertConnectionSettingsEnumToFlags(int i_Value)

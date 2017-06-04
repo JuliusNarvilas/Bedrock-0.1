@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Common.Text
 {
-    public enum IntelligentTextDataType
+    public enum EIntelligentTextDataType
     {
         None,
         Group,
@@ -35,7 +35,7 @@ namespace Common.Text
         /// <summary>
         /// Intelligent text section type.
         /// </summary>
-        public readonly IntelligentTextDataType Type;
+        public readonly EIntelligentTextDataType Type;
         /// <summary>
         /// The interactor identifier.
         /// </summary>
@@ -53,13 +53,13 @@ namespace Common.Text
         {
             Bounds = new List<Bounds>();
             Id = i_Id;
-            Type = IntelligentTextDataType.None;
+            Type = EIntelligentTextDataType.None;
             InteractorId = null;
             Children = new List<IntelligentTextDataNode>();
             MeshModifier = new List<IIntelligentTextMeshModifier>();
         }
 
-        protected IntelligentTextDataNode(int i_Id, string i_InteractorId, IntelligentTextDataType i_Type, List<IntelligentTextDataNode> i_Children)
+        protected IntelligentTextDataNode(int i_Id, string i_InteractorId, EIntelligentTextDataType i_Type, List<IntelligentTextDataNode> i_Children)
         {
             Id = i_Id;
             Type = i_Type;
@@ -114,7 +114,7 @@ namespace Common.Text
         public string Text;
 
         public IntelligentTextDataTextNode(int i_Id, string i_InteractorId, string i_Text) :
-            base(i_Id, i_InteractorId, IntelligentTextDataType.Text, null)
+            base(i_Id, i_InteractorId, EIntelligentTextDataType.Text, null)
         {
             Text = i_Text;
         }
@@ -172,7 +172,7 @@ namespace Common.Text
         public IntelligentTextTransform Transform;
 
         public IntelligentTextDataImageNode(int i_Id, string i_InteractorId, IntelligentTextImage i_Image, IntelligentTextTransform i_Transform) :
-            base(i_Id, i_InteractorId, IntelligentTextDataType.Image, null)
+            base(i_Id, i_InteractorId, EIntelligentTextDataType.Image, null)
         {
             ImageData = i_Image;
             Transform = i_Transform;
@@ -234,15 +234,15 @@ namespace Common.Text
             Vector3 startVert = new Vector3();
             switch(Transform.pivot)
             {
-                case IntelligentTextTransformAnchor.Top:
+                case EIntelligentTextTransformAnchor.Top:
                     startVert = meshData.Verts[startVertIndex + 3];
                     startVert.y -= imageSize.y - matchedLine.Height;
                     break;
-                case IntelligentTextTransformAnchor.Center:
+                case EIntelligentTextTransformAnchor.Center:
                     startVert = meshData.Verts[startVertIndex + 3];
                     startVert.y -= (imageSize.y - matchedLine.Height) * 0.5f;
                     break;
-                case IntelligentTextTransformAnchor.Bottom:
+                case EIntelligentTextTransformAnchor.Bottom:
                     startVert = meshData.Verts[startVertIndex + 3];
                     break;
             }
@@ -279,7 +279,7 @@ namespace Common.Text
     public class IntelligentTextDataGroupNode : IntelligentTextDataNode
     {
         public IntelligentTextDataGroupNode(int i_Id, string i_InteractorId) :
-            base(i_Id, i_InteractorId, IntelligentTextDataType.Group, new List<IntelligentTextDataNode>())
+            base(i_Id, i_InteractorId, EIntelligentTextDataType.Group, new List<IntelligentTextDataNode>())
         { }
 
         public override bool Merge(IntelligentTextDataNode i_Node)

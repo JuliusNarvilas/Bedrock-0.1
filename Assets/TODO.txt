@@ -15,3 +15,24 @@ Grid
 
 General:
 *Add generic loading from asset bundles, resources or streaming assets
+
+
+
+Grid Generation Notes:
+*Define areas in map:
+	*Max replicas specification
+	*Can rotate
+	*Connections
+	*Margin from edge (to make sure connections should fit)
+	*Environment descriptors
+	*define empty areas to assign back to parent area generation
+	*fitting area descriptors to fit stuff inside buildings and other areas
+	*placement can trigger internal area population/generation call
+		*Generation selectors (with order settings (order largest first by default))
+		*can override cascading generation to manually apply population of stuff on a its next overall generation step
+
+Connection
+* type: required / optional / available = forced connection / possible connection with chance? / available connection locations
+*areas with
+	*chance
+	*bounds

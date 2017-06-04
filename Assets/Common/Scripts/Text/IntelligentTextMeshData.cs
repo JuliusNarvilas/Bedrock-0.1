@@ -10,14 +10,14 @@ namespace Common.Text
     /// </summary>
     public class IntelligentTextForeignItemProperties
     {
-        public IntelligentTextTransformAnchor Anchor;
+        public EIntelligentTextTransformAnchor Anchor;
         public int CharIndex;
         public float Height;
 
         public float BottomYResult;
         public int LineIndexResult;
 
-        public IntelligentTextForeignItemProperties(IntelligentTextTransformAnchor i_Anchor, int i_CharIndex, float i_Height)
+        public IntelligentTextForeignItemProperties(EIntelligentTextTransformAnchor i_Anchor, int i_CharIndex, float i_Height)
         {
             Anchor = i_Anchor;
             CharIndex = i_CharIndex;
@@ -280,7 +280,7 @@ namespace Common.Text
                 {
                     switch (foreignItem.Anchor)
                     {
-                        case IntelligentTextTransformAnchor.Top:
+                        case EIntelligentTextTransformAnchor.Top:
                             {
                                 float paddingIncrease = foreignItem.Height - line.Height - line.PaddingBottom;
                                 if(paddingIncrease > MIN_PADDING_INCREASE)
@@ -289,7 +289,7 @@ namespace Common.Text
                                 }
                             }
                             break;
-                        case IntelligentTextTransformAnchor.Center:
+                        case EIntelligentTextTransformAnchor.Center:
                             {
                                 float lineHalfHeight = line.Height * 0.5f;
                                 float foreignItemHalfHeight = foreignItem.Height * 0.5f;
@@ -305,7 +305,7 @@ namespace Common.Text
                                 }
                             }
                             break;
-                        case IntelligentTextTransformAnchor.Bottom:
+                        case EIntelligentTextTransformAnchor.Bottom:
                             {
                                 float paddingIncrease = foreignItem.Height - line.Height - line.PaddingTop;
                                 if(paddingIncrease > MIN_PADDING_INCREASE)

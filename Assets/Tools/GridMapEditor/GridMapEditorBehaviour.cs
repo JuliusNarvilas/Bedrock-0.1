@@ -22,7 +22,6 @@ namespace Tools
         public IGridMapEditorTypeData MapTypeData = new GridMapEditorCuboidTypeData();
         public IGridMapEditorTypeDrawing MapTypeDrawing = new GridMapEditorCuboidTypeDrawing();
         public bool DrawTileData = true;
-        public bool AddFloorToChildren = false;
 
         private Vector3 m_LastTileSize;
         
@@ -36,19 +35,26 @@ namespace Tools
         }
         
 
-        public static float GetBlockerDirectionHeight(GridTileBlockerFlags blockerFlags, GridTileLocation location)
+        public static float GetBlockerHeight(EGridTileSettings settingsFlags)
         {
-            int stride = (int)GridTileBlockerHeight.BitStride * (int)location;
-            if ((((int)GridTileBlockerHeight.FullySetStride << stride) & (int)blockerFlags) != 0)
+            var blockerFlags = EGridTileSettings.BlockerFullySetStride & settingsFlags;
+
+            switch(blockerFlags)
             {
-                if ((((int)GridTileBlockerHeight.ExtraLargeBlocker << stride) & (int)blockerFlags) == ((int)GridTileBlockerHeight.ExtraLargeBlocker << stride))
-                    return 1.0f;
-                else if ((((int)GridTileBlockerHeight.LargeBlocker << stride) & (int)blockerFlags) == ((int)GridTileBlockerHeight.LargeBlocker << stride))
-                    return 0.75f;
-                else if ((((int)GridTileBlockerHeight.MediumBlocker << stride) & (int)blockerFlags) == ((int)GridTileBlockerHeight.MediumBlocker << stride))
-                    return 0.5f;
-                else if ((((int)GridTileBlockerHeight.SmallBlocker << stride) & (int)blockerFlags) == ((int)GridTileBlockerHeight.SmallBlocker << stride))
-                    return 0.25f;
+                case EGridTileSettings.None:
+                    break;
+                case EGridTileSettings.BlockerExtraSmall:
+                    return 1.0f / 6.0f;
+                case EGridTileSettings.BlockerSmall:
+                    return 2.0f / 6.0f;
+                case EGridTileSettings.BlockerMedium:
+                    return 3.0f / 6.0f;
+                case EGridTileSettings.BlockerMediumLarge:
+                    return 4.0f / 6.0f;
+                case EGridTileSettings.BlockerLarge:
+                    return 5.0f / 6.0f;
+                case EGridTileSettings.BlockerExtraLarge:
+                    return 6.0f / 6.0f;
             }
             return 0.0f;
         }
@@ -67,48 +73,7 @@ namespace Tools
                 }
             }
 
-            if(AddFloorToChildren)
-            {
-                AddFloorToChildren = false;
-                if(gridMapObjects == null)
-                {
-                    gridMapObjects = GetComponentsInChildren<GridMapObjectBehaviour>();
-                }
-                
-                foreach (var gridObject in gridMapObjects)
-                {
-                    if(gridObject.isActiveAndEnabled)
-                    {
-                        var size = gridObject.Size;
-                        var fillTracker = new bool[size.X * size.Y];
-                        foreach (var tile in gridObject.Tiles)
-                        {
-                            var pos = tile.Position;
-                            if (pos.Z == 0)
-                            {
-                                int index = size.X * pos.Y + pos.X;
-                                fillTracker[index] = true;
-                                tile.TileBlockerSettings |= GridTileBlockerFlags.BottomBlocker;
-                            }
-                        }
-
-
-                        for (int itX = 0; itX < size.X; ++itX)
-                        {
-                            for(int itY = 0; itY < size.Y; ++itY)
-                            {
-                                if(!fillTracker[size.X * itY + itX])
-                                {
-                                    var temp = new GridMapObjectTile();
-                                    temp.Position = new GridPosition3D(itX, itY, 0);
-                                    temp.TileBlockerSettings |= GridTileBlockerFlags.BottomBlocker;
-                                    gridObject.Tiles.Add(temp);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            
         }
 
 

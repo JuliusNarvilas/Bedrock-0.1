@@ -2,18 +2,25 @@
 using System.Collections.Generic;
 using Common.Grid.Path;
 using Common.Grid.Path.Specializations;
+using Common.Grid.Physics;
+using UnityEngine;
+using Common.Grid.Physics.Specializations;
 
 namespace Common.Grid.Specializations
 {
-    public class RectangleGrid<TTileData, TContext> : IGridControl<GridPosition2D, TTileData, TContext>
+    public class RectangleGrid<TContext, TTile> : IGridControl<GridPosition2D, TContext, TTile> where TTile : GridTile<GridPosition2D, TContext, TTile>
     {
-        protected readonly List<GridTile<GridPosition2D, TTileData, TContext>> m_Tiles = new List<GridTile<GridPosition2D, TTileData, TContext>>();
+        protected readonly List<TTile> m_Tiles = new List<TTile>();
 
         protected int m_SizeX;
         protected int m_SizeY;
         protected bool m_AllowMoveDiagonally = true;
         protected float m_NonDiagonalHeuristicFactor = 1.0f;
         protected float m_DiagonalHeuristicFactor = (float)Math.Sqrt(2.0);
+
+        protected Vector3 m_TileSize;
+        protected Vector3 m_GridOrigin;
+        protected GridTilePhysicalShape m_TilePhysicalShape;
 
         public int GetSizeX()
         {
@@ -22,6 +29,11 @@ namespace Common.Grid.Specializations
         public int GetSizeY()
         {
             return m_SizeY;
+        }
+
+        public RectangleGrid()
+        {
+            m_TilePhysicalShape = new RectangleGridTilePhysicalShape(m_TileSize);
         }
 
         public int GetHeuristicDistance(GridPosition2D i_From, GridPosition2D i_To)
@@ -40,7 +52,7 @@ namespace Common.Grid.Specializations
             }
         }
         
-        public bool TryGetTile(GridPosition2D i_Position, out GridTile<GridPosition2D, TTileData, TContext> o_Tile)
+        public bool TryGetTile(GridPosition2D i_Position, out TTile o_Tile)
         {
             if (i_Position.X >= 0 && i_Position.X < m_SizeX && i_Position.Y >= 0 && i_Position.Y < m_SizeY)
             {
@@ -53,7 +65,7 @@ namespace Common.Grid.Specializations
         }
 
 
-        public void GetConnected(GridPosition2D i_Position, List<GridTile<GridPosition2D, TTileData, TContext>> o_ConnectedTiles)
+        public void GetConnected(GridPosition2D i_Position, List<TTile> o_ConnectedTiles)
         {
             int startX = Math.Max(i_Position.X - 1, 0);
             int startY = Math.Max(i_Position.Y - 1, 0);
@@ -78,10 +90,10 @@ namespace Common.Grid.Specializations
             }
         }
 
-        public GridPath<GridPosition2D, TTileData, TContext> GetPath(GridPosition2D i_Start, GridPosition2D i_End, TContext i_Context)
+        public GridPath<GridPosition2D, TContext, TTile> GetPath(GridPosition2D i_Start, GridPosition2D i_End, TContext i_Context)
         {
             const int pathingDataMargin = 4;
-            var pathData = GridPathData2DProvider<TTileData, TContext>.GLOBAL.GetGridPathData();
+            var pathData = GridPathData2DProvider<TContext, TTile>.GLOBAL.GetGridPathData();
 
             int minX = Math.Max(i_Start.X - pathingDataMargin, 0);
             int minY = Math.Max(i_Start.Y - pathingDataMargin, 0);
@@ -89,14 +101,24 @@ namespace Common.Grid.Specializations
             int maxY = Math.Min(i_End.Y - pathingDataMargin, m_SizeY - 1);
 
             pathData.Set(this, new GridPosition2D(minX, minY), new GridPosition2D(maxX, maxY));
-            return new GridPath<GridPosition2D, TTileData, TContext>(this, pathData, i_Start, i_End, i_Context);
+            return new GridPath<GridPosition2D, TContext, TTile>(this, pathData, i_Start, i_End, i_Context);
         }
 
-        public GridPathArea<GridPosition2D, TTileData, TContext> GetPathArea(GridPosition2D i_Min, GridPosition2D i_Max, GridPosition2D i_Origin, TContext i_Context)
+        public GridPathArea<GridPosition2D, TContext, TTile> GetPathArea(GridPosition2D i_Min, GridPosition2D i_Max, GridPosition2D i_Origin, TContext i_Context)
         {
-            var pathData = GridPathData2DProvider<TTileData, TContext>.GLOBAL.GetGridPathData();
+            var pathData = GridPathData2DProvider<TContext, TTile>.GLOBAL.GetGridPathData();
             pathData.Set(this, i_Min, i_Max);
-            return new GridPathArea<GridPosition2D, TTileData, TContext>(this, pathData, i_Min, i_Max, i_Origin, i_Context);
+            return new GridPathArea<GridPosition2D, TContext, TTile>(this, pathData, i_Min, i_Max, i_Origin, i_Context);
+        }
+
+        public bool TryGetTilePhysicalData(GridPosition2D i_Position, out GridTilePhysicalData o_Tile)
+        {
+            Vector3 worldPos = new Vector3();
+            worldPos.x = m_GridOrigin.x + i_Position.X * m_TileSize.x;
+            worldPos.y = m_GridOrigin.y + i_Position.Y * m_TileSize.y;
+            worldPos.z = m_GridOrigin.z;
+            o_Tile = new GridTilePhysicalData(worldPos, m_TilePhysicalShape);
+            return true;
         }
     }
 }

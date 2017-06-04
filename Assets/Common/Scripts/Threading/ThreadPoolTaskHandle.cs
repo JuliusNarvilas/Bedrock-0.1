@@ -5,7 +5,7 @@ namespace Common.Threading
 {
     public interface IThreadPoolTaskHandle
     {
-        ThreadedTaskState State { get; }
+        EThreadedTaskState State { get; }
         Exception GetException();
     }
 
@@ -18,7 +18,7 @@ namespace Common.Threading
             m_TaskLink = i_TaskLink;
         }
 
-        public ThreadedTaskState State
+        public EThreadedTaskState State
         {
             get { return m_TaskLink.State; }
         }
@@ -59,7 +59,7 @@ namespace Common.Threading
             m_TaskLink = new ThreadPoolJobTask(() => { m_Result = i_Funk.Invoke(); }, i_MaxRuntime, i_Priority);
         }
 
-        public ThreadedTaskState State
+        public EThreadedTaskState State
         {
             get { return m_TaskLink.State; }
         }

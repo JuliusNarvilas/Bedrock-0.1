@@ -4,25 +4,24 @@ using System.Collections.Generic;
 namespace Common.Grid.Path.Specializations
 {
     /// <summary>
-    /// A specialization of <see cref="IGridPathData{TPosition, TTileData, TContext}"/> for 3D grid pathing data management.
+    /// A specialization of <see cref="IGridPathData{TPosition, TContext, TTile}"/> for 3D grid pathing data management.
     /// </summary>
-    /// <typeparam name="TTileData">Scenario specific tile data type.</typeparam>
     /// <typeparam name="TContext">Scenario specific context information for processing data.</typeparam>
-    public class GridPathData3D<TTileData, TContext> : IGridPathData<GridPosition3D, TTileData, TContext>
+    public class GridPathData3D<TContext, TTile> : IGridPathData<GridPosition3D, TContext, TTile> where TTile : GridTile<GridPosition3D, TContext, TTile>
     {
-        private List<GridPathElement<GridPosition3D, TTileData, TContext>> m_Data = new List<GridPathElement<GridPosition3D, TTileData, TContext>>();
+        private List<GridPathElement<GridPosition3D, TContext, TTile>> m_Data = new List<GridPathElement<GridPosition3D, TContext, TTile>>();
         private GridPosition3D m_Min = new GridPosition3D();
         private GridPosition3D m_Max = new GridPosition3D();
-        private IGridControl<GridPosition3D, TTileData, TContext> m_Source;
-        private readonly GridPathDataProvider<GridPosition3D, TTileData, TContext> m_Origin;
+        private IGridControl<GridPosition3D, TContext, TTile> m_Source;
+        private readonly GridPathDataProvider<GridPosition3D, TContext, TTile> m_Origin;
 
-        public GridPathData3D(GridPathDataProvider<GridPosition3D, TTileData, TContext> i_Origin)
+        public GridPathData3D(GridPathDataProvider<GridPosition3D, TContext, TTile> i_Origin)
         {
             Log.DebugAssert(i_Origin != null, "GridPathData3D constructed with no origin");
             m_Origin = i_Origin;
         }
 
-        public bool Set(IGridControl<GridPosition3D, TTileData, TContext> i_Source, GridPosition3D i_Min, GridPosition3D i_Max)
+        public bool Set(IGridControl<GridPosition3D, TContext, TTile> i_Source, GridPosition3D i_Min, GridPosition3D i_Max)
         {
             m_Source = i_Source;
             m_Min = i_Min;
@@ -30,9 +29,9 @@ namespace Common.Grid.Path.Specializations
 
             if (m_Data.Count < 1)
             {
-                m_Data.Add(new GridPathElement<GridPosition3D, TTileData, TContext>());
+                m_Data.Add(new GridPathElement<GridPosition3D, TContext, TTile>());
             }
-            GridTile<GridPosition3D, TTileData, TContext> tile;
+            TTile tile;
             if (m_Source.TryGetTile(i_Min, out tile))
             {
                 m_Data[0].Tile = tile;
@@ -44,7 +43,7 @@ namespace Common.Grid.Path.Specializations
 
         public bool Grow(GridPosition3D i_EnvelopPos)
         {
-            GridTile<GridPosition3D, TTileData, TContext> tile;
+            TTile tile;
             if (m_Source.TryGetTile(i_EnvelopPos, out tile))
             {
                 GridPosition3D newMin = new GridPosition3D(
@@ -66,7 +65,7 @@ namespace Common.Grid.Path.Specializations
                     int oldSizeZ = m_Max.Z - m_Min.Z;
                     int newDataCount = newSizeX * newSizeY * newSizeZ;
                     int oldDataCount = oldSizeX * oldSizeY * oldSizeZ;
-                    var oldData = new List<GridPathElement<GridPosition3D, TTileData, TContext>>(oldDataCount);
+                    var oldData = new List<GridPathElement<GridPosition3D, TContext, TTile>>(oldDataCount);
 
                     //fill in required new data elements
                     if (m_Data.Capacity < newDataCount)
@@ -75,7 +74,7 @@ namespace Common.Grid.Path.Specializations
                     }
                     for (int i = m_Data.Count; i < newDataCount; ++i)
                     {
-                        m_Data.Add(new GridPathElement<GridPosition3D, TTileData, TContext>());
+                        m_Data.Add(new GridPathElement<GridPosition3D, TContext, TTile>());
                     }
                     //record old data to map elements into a new position afterwards
                     for (int i = 0; i < oldDataCount; ++i)
@@ -107,7 +106,7 @@ namespace Common.Grid.Path.Specializations
                                 else
                                 {
                                     var newElement = m_Data[freeElementIndex++];
-                                    GridTile<GridPosition3D, TTileData, TContext> tempTile;
+                                    TTile tempTile;
                                     m_Source.TryGetTile(new GridPosition3D(itX, itY, itZ), out tempTile);
                                     newElement.Tile = tempTile;
                                     m_Data[newIndex] = newElement;
@@ -124,7 +123,7 @@ namespace Common.Grid.Path.Specializations
             return false;
         }
 
-        public GridPathDataResponse TryGetElement(GridPosition3D i_Pos, out GridPathElement<GridPosition3D, TTileData, TContext> o_Value)
+        public EGridPathDataResponse TryGetElement(GridPosition3D i_Pos, out GridPathElement<GridPosition3D, TContext, TTile> o_Value)
         {
             if (m_Min.X <= i_Pos.X && m_Max.X >= i_Pos.X && m_Min.Y <= i_Pos.Y && m_Max.Y >= i_Pos.Y && m_Min.Z <= i_Pos.Z && m_Max.Z >= i_Pos.Z)
             {
@@ -132,16 +131,16 @@ namespace Common.Grid.Path.Specializations
                 int strideY = (m_Max.Z - m_Min.Z + 1);
                 int index = strideX * (i_Pos.X - m_Min.X) + strideY * (i_Pos.Y - m_Min.Y) + (i_Pos.Z - m_Min.Z);
                 o_Value = m_Data[index];
-                return GridPathDataResponse.Success;
+                return EGridPathDataResponse.Success;
             }
 
             o_Value = null;
-            GridTile<GridPosition3D, TTileData, TContext> tile;
+            TTile tile;
             if (m_Source.TryGetTile(i_Pos, out tile))
             {
-                return GridPathDataResponse.OutOfDataRange;
+                return EGridPathDataResponse.OutOfDataRange;
             }
-            return GridPathDataResponse.InvalidPosition;
+            return EGridPathDataResponse.InvalidPosition;
         }
 
         public void Dispose()
@@ -154,7 +153,7 @@ namespace Common.Grid.Path.Specializations
             int count = m_Data.Count;
             for (int i = 0; i < count; ++i)
             {
-                m_Data[i].Clear();
+                m_Data[i].PoolingClear();
             }
         }
 
@@ -162,7 +161,7 @@ namespace Common.Grid.Path.Specializations
         {
             if (m_Data != null)
             {
-                GridPathElementPool<GridPosition3D, TTileData, TContext>.GLOBAL.RecycleMultiple(m_Data);
+                GridPathElementPool<GridPosition3D, TContext, TTile>.GLOBAL.RecycleMultiple(m_Data);
                 m_Data = null;
             }
         }

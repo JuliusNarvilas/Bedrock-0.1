@@ -7,7 +7,7 @@ namespace Common.IO.Recources
     [System.Serializable]
     public class ResourcesDBItem
     {
-        public enum Type
+        public enum EDirectoryType
         {
             Unknown = 0,
             Any = 0,
@@ -34,7 +34,7 @@ namespace Common.IO.Recources
         private string m_Path;
 
         [SerializeField]
-        private Type m_Type = Type.Unknown;
+        private EDirectoryType m_Type = EDirectoryType.Unknown;
 
         [SerializeField]
         private string m_ObjectTypeName;
@@ -59,17 +59,17 @@ namespace Common.IO.Recources
 
         public string ResourcesPath { get { return string.IsNullOrEmpty(m_Path) ? m_Name : m_Path + "/" + m_Name; } }
 
-        public Type ResourcesType { get { return m_Type; } }
+        public EDirectoryType ResourcesType { get { return m_Type; } }
 
         public ResourcesDBItem Parent { get { return m_Parent; } }
 
         public ResourcesDBItem()
         {
-            if (m_Type == Type.Folder)
+            if (m_Type == EDirectoryType.Folder)
                 m_Children = new Dictionary<string, ResourcesDBItem>();
         }
 
-        public ResourcesDBItem(string i_FileName, string i_Path, Type i_Type, string i_ObjectType)
+        public ResourcesDBItem(string i_FileName, string i_Path, EDirectoryType i_Type, string i_ObjectType)
         {
             m_Ext = System.IO.Path.GetExtension(i_FileName);
             m_Name = System.IO.Path.ChangeExtension(i_FileName, null);
@@ -78,13 +78,13 @@ namespace Common.IO.Recources
             m_Type = i_Type;
             m_ObjectTypeName = i_ObjectType;
             m_ObjectType = System.Type.GetType(m_ObjectTypeName);
-            if (m_Type == Type.Folder)
+            if (m_Type == EDirectoryType.Folder)
                 m_Children = new Dictionary<string, ResourcesDBItem>();
         }
 
-        public ResourcesDBItem GetChild(string i_Path, Type i_ResourceType = Type.Any)
+        public ResourcesDBItem GetChild(string i_Path, EDirectoryType i_ResourceType = EDirectoryType.Any)
         {
-            if (m_Type != Type.Folder)
+            if (m_Type != EDirectoryType.Folder)
                 return null;
 
             string childPath = i_Path;
@@ -102,14 +102,14 @@ namespace Common.IO.Recources
                 return null;
             if (i_Path.Length > 0)
                 return item.GetChild(i_Path, i_ResourceType);
-            if (i_ResourceType != Type.Unknown && item.m_Type != i_ResourceType)
+            if (i_ResourceType != EDirectoryType.Unknown && item.m_Type != i_ResourceType)
                 return null;
             return item;
         }
 
-        public IEnumerable<ResourcesDBItem> GetChilds(string i_Name, Type i_ResourceType = Type.Any, bool i_SearchSubFolders = false, System.Type i_AssetType = null)
+        public IEnumerable<ResourcesDBItem> GetChilds(string i_Name, EDirectoryType i_ResourceType = EDirectoryType.Any, bool i_SearchSubFolders = false, System.Type i_AssetType = null)
         {
-            if (m_Type == Type.Asset) // assets don't have childs
+            if (m_Type == EDirectoryType.Asset) // assets don't have childs
                 yield break;
 
             bool checkName = !string.IsNullOrEmpty(i_Name);
@@ -117,7 +117,7 @@ namespace Common.IO.Recources
             var items = m_Children.Values;
             foreach (var item in items)
             {
-                if (i_ResourceType != Type.Any && item.m_Type != i_ResourceType)
+                if (i_ResourceType != EDirectoryType.Any && item.m_Type != i_ResourceType)
                     continue;
                 if (checkName && i_Name != item.Name)
                     continue;
@@ -127,7 +127,7 @@ namespace Common.IO.Recources
             }
             if (i_SearchSubFolders)
             {
-                foreach (var folder in items.Where(i => i.m_Type == Type.Folder))
+                foreach (var folder in items.Where(i => i.m_Type == EDirectoryType.Folder))
                 {
                     foreach (var item in folder.GetChilds(i_Name, i_ResourceType, i_SearchSubFolders, i_AssetType))
                         yield return item;
@@ -196,7 +196,7 @@ namespace Common.IO.Recources
                 m_Parent = ResourcesDB.GetFolder(m_Path);
             if (m_Parent != null)
                 m_Parent.m_Children.Add(m_Name, this);
-            if (m_Type == Type.Folder)
+            if (m_Type == EDirectoryType.Folder)
             {
                 m_Children = new Dictionary<string, ResourcesDBItem>();
             }

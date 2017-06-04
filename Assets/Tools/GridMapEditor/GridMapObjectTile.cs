@@ -12,9 +12,9 @@ namespace Tools
         public GridPosition3D Position;
 
         [EnumFlag(typeof(GridMapObjectTile), "ConvertBlockerEnumToFlags", "ConvertBlockerEnumToValue")]
-        public GridTileBlockerFlags TileBlockerSettings;
+        public EGridTileSettings TileBlockerSettings;
         [EnumFlag]
-        public GameGridObjectSettings Settings;
+        public EGameGridObjectSettings Settings;
 
         private static int ConvertBlockerEnumToFlags(int i_Value)
         {
@@ -25,21 +25,26 @@ namespace Tools
             var temp = GridHelpers.BlockerIndexFlagsToValue(i_Value);
             var newForceVals = GridHelpers.BlockerIndexFlagsToValue(i_NewValue);
             int replacerMask = 0;
-            if((newForceVals & (int)GridTileBlockerFlags.LeftAnyBlocker) != 0)
+            //combine 
+            if((newForceVals & (int)EGridTileSettings.BlockerExtraSmall) != 0)
             {
-                replacerMask |= (int)GridTileBlockerFlags.LeftAnyBlocker;
+                replacerMask |= (int)EGridTileSettings.BlockerExtraSmall;
             }
-            if ((newForceVals & (int)GridTileBlockerFlags.RightAnyBlocker) != 0)
+            if ((newForceVals & (int)EGridTileSettings.BlockerSmall) != 0)
             {
-                replacerMask |= (int)GridTileBlockerFlags.RightAnyBlocker;
+                replacerMask |= (int)EGridTileSettings.BlockerSmall;
             }
-            if ((newForceVals & (int)GridTileBlockerFlags.ForwardAnyBlocker) != 0)
+            if ((newForceVals & (int)EGridTileSettings.BlockerMedium) != 0)
             {
-                replacerMask |= (int)GridTileBlockerFlags.ForwardAnyBlocker;
+                replacerMask |= (int)EGridTileSettings.BlockerMedium;
             }
-            if ((newForceVals & (int)GridTileBlockerFlags.BackwardAnyBlocker) != 0)
+            if ((newForceVals & (int)EGridTileSettings.BlockerLarge) != 0)
             {
-                replacerMask |= (int)GridTileBlockerFlags.BackwardAnyBlocker;
+                replacerMask |= (int)EGridTileSettings.BlockerLarge;
+            }
+            if ((newForceVals & (int)EGridTileSettings.BlockerExtraLarge) != 0)
+            {
+                replacerMask |= (int)EGridTileSettings.BlockerExtraLarge;
             }
 
             return temp & ~replacerMask | newForceVals;

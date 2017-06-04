@@ -1,126 +1,57 @@
 ﻿
-using System;
-using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
 
 namespace Common.Grid
 {
     /// <summary>
-    /// The tile blocker height is a unique numerical identifier with <see cref="BitStride"/> indicating the maximum number of bits used to express it
+    /// Available settings for tile blocker height and other options.
     /// </summary>
-    public enum GridTileBlockerHeight : int
+    public enum EGridTileSettings : int
     {
         None = 0,
-        SmallBlocker = 1,
-        MediumBlocker = 2,
-        LargeBlocker = 3,
-        ExtraLargeBlocker = 4,
+        BlockerExtraSmall = 1,
+        BlockerSmall = 2,
+        BlockerMedium = 3,
+        BlockerMediumLarge = 4,
+        BlockerLarge = 5,
+        BlockerExtraLarge = 6,
 
         /// <summary>
-        /// Indicates the maximum number of bits that can be used for actual <see cref="GridTileBlockerHeight"/> values.
+        /// Indicates the maximum number of bits that can be used for actual <see cref="EGridTileSettings"/> values.
         /// 3 bits give the range of [0;7]
         /// </summary>
-        BitStride = 3,
+        BlockerBitStride = 3,
         /// <summary>
-        /// The highest value within the given <see cref="BitStride"/> number of bits.
+        /// The highest value within the given <see cref="BlockerBitStride"/> number of bits.
         /// (All the available bits set to 1).
         /// </summary>
-        FullySetStride = 7
-    }
-    public enum GridTileLocation : int
-    {
-        Left = 0,
-        Forward = 1,
-        Right = 2,
-        Backward = 3,
-        Bottom = 4,
-        Top = 5
-    }
+        BlockerFullySetStride = 7,
 
-    /// <summary>
-    /// Unique enum shorthand values for blocking heights within small binary flag slots that are indexed for <see cref="GridTileLocation"/> values.
-    /// Max binary slot per <see cref="GridTileLocation"/> is defined by <see cref="GridTileBlockerHeight.BitStride"/>
-    /// </summary>
-    [Flags]
-    public enum GridTileBlockerFlags : int
-    {
-        None = 0,
-
-        LeftSmallBlocker = GridTileBlockerHeight.SmallBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Left),
-        LeftMediumBlocker = GridTileBlockerHeight.MediumBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Left),
-        LeftLargeBlocker = GridTileBlockerHeight.LargeBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Left),
-        LeftExtraLargeBlocker = GridTileBlockerHeight.ExtraLargeBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Left),
-        LeftAnyBlocker = GridTileBlockerHeight.FullySetStride << (GridTileBlockerHeight.BitStride * GridTileLocation.Left),
-
-        ForwardSmallBlocker = GridTileBlockerHeight.SmallBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Forward),
-        ForwardMediumBlocker = GridTileBlockerHeight.MediumBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Forward),
-        ForwardLargeBlocker = GridTileBlockerHeight.LargeBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Forward),
-        ForwardExtraLargeBlocker = GridTileBlockerHeight.ExtraLargeBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Forward),
-        ForwardAnyBlocker = GridTileBlockerHeight.FullySetStride << (GridTileBlockerHeight.BitStride * GridTileLocation.Forward),
-
-        RightSmallBlocker = GridTileBlockerHeight.SmallBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Right),
-        RightMediumBlocker = GridTileBlockerHeight.MediumBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Right),
-        RightLargeBlocker = GridTileBlockerHeight.LargeBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Right),
-        RightExtraLargeBlocker = GridTileBlockerHeight.ExtraLargeBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Right),
-        RightAnyBlocker = GridTileBlockerHeight.FullySetStride << (GridTileBlockerHeight.BitStride * GridTileLocation.Right),
-
-        BackwardSmallBlocker = GridTileBlockerHeight.SmallBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Backward),
-        BackwardMediumBlocker = GridTileBlockerHeight.MediumBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Backward),
-        BackwardLargeBlocker = GridTileBlockerHeight.LargeBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Backward),
-        BackwardExtraLargeBlocker = GridTileBlockerHeight.ExtraLargeBlocker << (GridTileBlockerHeight.BitStride * GridTileLocation.Backward),
-        BackwardAnyBlocker = GridTileBlockerHeight.FullySetStride << (GridTileBlockerHeight.BitStride * GridTileLocation.Backward),
-
-        BottomBlocker = 1 << (GridTileBlockerHeight.BitStride * GridTileLocation.Bottom),
-        TopBlocker = BottomBlocker << 1,
-
-        CustomFlagStart = TopBlocker << 1
+        
+        CustomSettingsStart = 1 << (BlockerBitStride + 1)
     }
 
     public static class GridHelpers
     {
-        public const int GRID_TILE_LOCATION_STRIDE_MASK = 7;
-
         /// <summary>
-        /// A map for associating <see cref="GridTileBlockerFlags"/> enum index to the enum value.
+        /// A map for associating <see cref="GridTileSettings"/> enum index to the enum value.
         /// Used for conversion between real data and Unity's inspector simple enum interface options.
         /// </summary>
         public static readonly int[] BLOCKER_ENUM_VALUE_MAP = new int[] {
-            (int)GridTileBlockerFlags.None,
-            (int)GridTileBlockerFlags.LeftSmallBlocker,
-            (int)GridTileBlockerFlags.LeftMediumBlocker,
-            (int)GridTileBlockerFlags.LeftLargeBlocker,
-            (int)GridTileBlockerFlags.LeftExtraLargeBlocker,
-            (int)GridTileBlockerFlags.LeftAnyBlocker,
+            (int)EGridTileSettings.None,
+            (int)EGridTileSettings.BlockerExtraSmall,
+            (int)EGridTileSettings.BlockerSmall,
+            (int)EGridTileSettings.BlockerMedium,
+            (int)EGridTileSettings.BlockerMediumLarge,
+            (int)EGridTileSettings.BlockerLarge,
+            (int)EGridTileSettings.BlockerExtraLarge,
 
-            (int)GridTileBlockerFlags.ForwardSmallBlocker,
-            (int)GridTileBlockerFlags.ForwardMediumBlocker,
-            (int)GridTileBlockerFlags.ForwardLargeBlocker,
-            (int)GridTileBlockerFlags.ForwardExtraLargeBlocker,
-            (int)GridTileBlockerFlags.ForwardAnyBlocker,
-
-            (int)GridTileBlockerFlags.RightSmallBlocker,
-            (int)GridTileBlockerFlags.RightMediumBlocker,
-            (int)GridTileBlockerFlags.RightLargeBlocker,
-            (int)GridTileBlockerFlags.RightExtraLargeBlocker,
-            (int)GridTileBlockerFlags.RightAnyBlocker,
-
-            (int)GridTileBlockerFlags.BackwardSmallBlocker,
-            (int)GridTileBlockerFlags.BackwardMediumBlocker,
-            (int)GridTileBlockerFlags.BackwardLargeBlocker,
-            (int)GridTileBlockerFlags.BackwardExtraLargeBlocker,
-            (int)GridTileBlockerFlags.BackwardAnyBlocker,
-
-            (int)GridTileBlockerFlags.BottomBlocker,
-            (int)GridTileBlockerFlags.TopBlocker,
-
-            (int)GridTileBlockerFlags.CustomFlagStart
+            (int)EGridTileSettings.CustomSettingsStart
         };
 
         /// <summary>
         /// Conversion from Unity's inspector flag options to real compressed data.
         /// </summary>
-        /// <param name="i_IndexFlags">Flag mask indicating <see cref="GridTileBlockerFlags"/> enum index (not actual value) selections.</param>
+        /// <param name="i_IndexFlags">Flag mask indicating <see cref="GridTileSettings"/> enum index (not actual value) selections.</param>
         /// <returns>Real compressed blocker data.</returns>
         public static int BlockerIndexFlagsToValue(int i_IndexFlags)
         {

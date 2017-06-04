@@ -12,7 +12,7 @@ namespace Common.Text
         /// <summary>
         /// The text type mode this bahaviour is using.
         /// </summary>
-        protected enum RenderMode
+        protected enum ERenderMode
         {
             ConvasRenderer,
             MeshRenderer,
@@ -56,7 +56,7 @@ namespace Common.Text
         }
 
         
-        protected RenderMode m_RenderMode = RenderMode.Unknown;
+        protected ERenderMode m_RenderMode = ERenderMode.Unknown;
         protected IntelligentTextParser m_Parser = new IntelligentTextParser();
 
         public string Text
@@ -74,16 +74,16 @@ namespace Common.Text
         /// </summary>
         private void InitialiseRenderMode()
         {
-            m_RenderMode = RenderMode.Unknown;
+            m_RenderMode = ERenderMode.Unknown;
             if (GetComponent<CanvasRenderer>() != null)
             {
-                m_RenderMode = RenderMode.ConvasRenderer;
+                m_RenderMode = ERenderMode.ConvasRenderer;
             }
             else
             {
                 if (GetComponent<MeshRenderer>() != null)
                 {
-                    m_RenderMode = RenderMode.MeshRenderer;
+                    m_RenderMode = ERenderMode.MeshRenderer;
                     var meshFilter = GetComponent<MeshFilter>();
                     if (meshFilter == null)
                     {
@@ -96,11 +96,11 @@ namespace Common.Text
 
             switch (m_RenderMode)
             {
-                case RenderMode.ConvasRenderer:
-                case RenderMode.MeshRenderer:
+                case ERenderMode.ConvasRenderer:
+                case ERenderMode.MeshRenderer:
                     break;
-                case RenderMode.Unknown:
-                    m_RenderMode = RenderMode.ConvasRenderer;
+                case ERenderMode.Unknown:
+                    m_RenderMode = ERenderMode.ConvasRenderer;
                     gameObject.AddComponent<CanvasRenderer>();
                     break;
             }
@@ -111,7 +111,7 @@ namespace Common.Text
         /// </summary>
         public void RebuildText()
         {
-            if (m_RenderMode == RenderMode.Unknown || m_RenderMode == RenderMode.Invalid)
+            if (m_RenderMode == ERenderMode.Unknown || m_RenderMode == ERenderMode.Invalid)
             {
                 InitialiseRenderMode();
             }
@@ -125,7 +125,7 @@ namespace Common.Text
         /// </summary>
         public void UpdateText()
         {
-            if(m_RenderMode == RenderMode.Unknown || m_RenderMode == RenderMode.Invalid)
+            if(m_RenderMode == ERenderMode.Unknown || m_RenderMode == ERenderMode.Invalid)
             {
                 InitialiseRenderMode();
             }
@@ -141,7 +141,7 @@ namespace Common.Text
         {
             switch (m_RenderMode)
             {
-                case RenderMode.ConvasRenderer:
+                case ERenderMode.ConvasRenderer:
                     {
                         var materials = m_Parser.Materials;
                         var canvasRenderer = GetComponent<CanvasRenderer>();
@@ -154,7 +154,7 @@ namespace Common.Text
                         }
                     }
                     break;
-                case RenderMode.MeshRenderer:
+                case ERenderMode.MeshRenderer:
                     {
                         var meshFilter = GetComponent<MeshFilter>();
                         var meshRenderer = GetComponent<MeshRenderer>();
@@ -211,7 +211,7 @@ namespace Common.Text
         {
             if (!Application.isPlaying)
             {
-                m_RenderMode = RenderMode.Unknown;
+                m_RenderMode = ERenderMode.Unknown;
                 Refresh();
             }
         }

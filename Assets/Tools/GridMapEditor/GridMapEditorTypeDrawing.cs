@@ -49,8 +49,8 @@ namespace Tools
             {
                 var connection = i_Obj.Connections[i];
                 var adjustedTilePosition = i_Editor.MapTypeData.RotateGridPosition(connection.Position, objRotation);
-                var adjustedDirectionType = i_Editor.MapTypeData.RotateGridDirectionType(((int)connection.TileLocation) & GridHelpers.GRID_TILE_LOCATION_STRIDE_MASK, objRotation);
-                DrawConnectionDisplay(rootOriginPos, i_Editor.TileSize, objRotation, objOrigin + adjustedTilePosition, adjustedDirectionType | (int)connection.Settings);
+                //var adjustedDirectionType = i_Editor.MapTypeData.RotateGridDirectionType(((int)connection.TileLocation) & GridHelpers.GRID_TILE_LOCATION_STRIDE_MASK, objRotation);
+                //DrawConnectionDisplay(rootOriginPos, i_Editor.TileSize, objRotation, objOrigin + adjustedTilePosition, adjustedDirectionType | (int)connection.Settings);
             }
 
             if (GridMapObjectBehaviour.ActiveGridObject == instanceId)
@@ -78,8 +78,7 @@ namespace Tools
             finalGlobalPosition.x += i_FinalPosition.X * i_TileSize.x;
             finalGlobalPosition.y += i_FinalPosition.Z * i_TileSize.y;
             finalGlobalPosition.z += i_FinalPosition.Y * i_TileSize.z;
-
-            Vector4 heights = GetHeights((GridTileBlockerFlags)i_Settings) * i_TileSize.y;
+            
             Vector3 halfTileSize = i_TileSize * 0.5f;
             Vector3 tileCentre = finalGlobalPosition + (i_Rotation * halfTileSize);
             tileCentre.y = 0;
@@ -101,48 +100,14 @@ namespace Tools
             drawElements.Add(new GridMapEditorDrawRef(
                 (camPos - tileCentre).sqrMagnitude,
                 () => {
-                    bool existsBottomBlocker = (i_Settings & (int)GridTileBlockerFlags.BottomBlocker) == (int)GridTileBlockerFlags.BottomBlocker;
                     Color lastColor = Gizmos.color;
-                    if(existsBottomBlocker)
-                    {
-                        if (i_Selected)
-                            Gizmos.color = GridMapEditorBehaviour.SELECTED_TILE_COLOR;
-                        else
-                            Gizmos.color = GridMapEditorBehaviour.NORMAL_TILE_COLOR;
-                    }
+                    if (i_Selected)
+                        Gizmos.color = GridMapEditorBehaviour.SELECTED_EMPTY_TILE_COLOR;
                     else
-                    {
-                        if (i_Selected)
-                            Gizmos.color = GridMapEditorBehaviour.SELECTED_EMPTY_TILE_COLOR;
-                        else
-                            Gizmos.color = GridMapEditorBehaviour.EMPTY_TILE_COLOR;
-                    }
+                        Gizmos.color = GridMapEditorBehaviour.EMPTY_TILE_COLOR;
                     Gizmos.DrawCube(tileCentre, new Vector3(0.85f * i_TileSize.x, 0.05f * i_TileSize.y, 0.85f * i_TileSize.z));
                     Gizmos.color = lastColor;
                 }));
-
-            {
-                Vector3 wallPos = (localLeft * halfTileSize.x) + tileCentre;
-                drawElements.Add(new GridMapEditorDrawRef((camPos - wallPos).sqrMagnitude, () => DrawWall(wallPos, localRight, i_TileSize.x, heights.x)));
-            }
-            {
-                Vector3 wallPos = (localForward * halfTileSize.z) + tileCentre;
-                drawElements.Add(new GridMapEditorDrawRef((camPos - wallPos).sqrMagnitude, () => DrawWall(wallPos, localBack, i_TileSize.z, heights.y)));
-            }
-            {
-                Vector3 wallPos = (localRight * halfTileSize.x) + tileCentre;
-                drawElements.Add(new GridMapEditorDrawRef((camPos - wallPos).sqrMagnitude, () => DrawWall(wallPos, localLeft, i_TileSize.x, heights.z)));
-            }
-            {
-                Vector3 wallPos = (localBack * halfTileSize.z) + tileCentre;
-                drawElements.Add(new GridMapEditorDrawRef((camPos - wallPos).sqrMagnitude, () => DrawWall(wallPos, localForward, i_TileSize.z, heights.w)));
-            }
-            if(((GridTileBlockerFlags)i_Settings & GridTileBlockerFlags.TopBlocker) == GridTileBlockerFlags.TopBlocker)
-            {
-                Vector3 wallPos = tileCentre;
-                wallPos.y = halfTileSize.y * 1.8f;
-                drawElements.Add(new GridMapEditorDrawRef((camPos - wallPos).sqrMagnitude, () => Gizmos.DrawCube(wallPos, new Vector3(0.85f * i_TileSize.x, 0.05f * i_TileSize.y, 0.85f * i_TileSize.z))));
-            }
 
             var orderedDraws = drawElements.OrderByDescending(x => x.Distance);
             foreach(var item in orderedDraws)
@@ -168,69 +133,14 @@ namespace Tools
             }
         }
 
-        private static Vector4 GetHeights(GridTileBlockerFlags blockerFlags)
-        {
-            Vector4 heights;
-            heights.x = GridMapEditorBehaviour.GetBlockerDirectionHeight(blockerFlags, GridTileLocation.Left);
-            heights.y = GridMapEditorBehaviour.GetBlockerDirectionHeight(blockerFlags, GridTileLocation.Forward);
-            heights.z = GridMapEditorBehaviour.GetBlockerDirectionHeight(blockerFlags, GridTileLocation.Right);
-            heights.w = GridMapEditorBehaviour.GetBlockerDirectionHeight(blockerFlags, GridTileLocation.Backward);
-
-            return heights;
-        }
-
-        private void DrawConnectionDisplay(Vector3 i_Origin, Vector3 i_TileSize, Quaternion i_Rotation, GridPosition3D i_FinalPosition, int i_Settings)
-        {
-            Gizmos.color = Color.black;
-            Vector3 finalGlobalPosition = i_Origin;
-            finalGlobalPosition.x += i_FinalPosition.X * i_TileSize.x;
-            finalGlobalPosition.y += i_FinalPosition.Z * i_TileSize.y;
-            finalGlobalPosition.z += i_FinalPosition.Y * i_TileSize.z;
-
-            Vector3 halfTileSize = i_TileSize * 0.5f;
-            Vector3 tileCentre = finalGlobalPosition + (i_Rotation * halfTileSize);
-
-            GridTileLocation location = (GridTileLocation)(i_Settings & GridHelpers.GRID_TILE_LOCATION_STRIDE_MASK);
-            Vector3 locationPos = tileCentre;
-            locationPos.y += i_TileSize.y * 0.25f;
-
-            switch (location)
-            {
-                case GridTileLocation.Left:
-                    locationPos.x -= halfTileSize.x;
-                    DrawConnectionDirection(i_Settings, locationPos, Vector3.right);
-                    break;
-                case GridTileLocation.Right:
-                    locationPos.x += halfTileSize.x;
-                    DrawConnectionDirection(i_Settings, locationPos, Vector3.left);
-                    break;
-                case GridTileLocation.Forward:
-                    locationPos.z += halfTileSize.z;
-                    DrawConnectionDirection(i_Settings, locationPos, Vector3.back);
-                    break;
-                case GridTileLocation.Backward:
-                    locationPos.z -= halfTileSize.z;
-                    DrawConnectionDirection(i_Settings, locationPos, Vector3.forward);
-                    break;
-                case GridTileLocation.Top:
-                    locationPos.y += i_TileSize.y * 0.25f;
-                    DrawConnectionDirection(i_Settings, locationPos, Vector3.down);
-                    break;
-                case GridTileLocation.Bottom:
-                    locationPos.y -= i_TileSize.y * 0.75f;
-                    DrawConnectionDirection(i_Settings, locationPos, Vector3.up);
-                    break;
-            }
-        }
-
 
         private static void DrawConnectionDirection(int i_Settings, Vector3 i_LocationPos, Vector3 i_InwardDirection)
         {
             Vector3 scaledDirection = i_InwardDirection * 0.5f;
 
-            if ((i_Settings & (int)ConnectionSettings.Inward) != 0)
+            if ((i_Settings & (int)EConnectionSettings.Inward) != 0)
                 DrawHelper.DrawArrow.ForGizmo(i_LocationPos, scaledDirection);
-            if ((i_Settings & (int)ConnectionSettings.Outward) != 0)
+            if ((i_Settings & (int)EConnectionSettings.Outward) != 0)
                 DrawHelper.DrawArrow.ForGizmo(i_LocationPos + scaledDirection, scaledDirection * -1.0f);
         }
     }

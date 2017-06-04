@@ -3,7 +3,7 @@ using Common.Properties.Numerical.Specializations;
 
 public class SelectionManagerBehaviour : MonoBehaviour
 {
-    public enum SelectableState
+    public enum ESelectableState
     {
         None,
         Selecting,
@@ -12,7 +12,7 @@ public class SelectionManagerBehaviour : MonoBehaviour
 
     private GameObject m_LastSelectableGameObject = null;
     private ISelectable m_InspectedSelectableComponent = null;
-    private SelectableState m_SelectableState = SelectableState.None;
+    private ESelectableState m_SelectableState = ESelectableState.None;
 
     static private SelectionManagerBehaviour s_Instance = null;
     
@@ -23,7 +23,7 @@ public class SelectionManagerBehaviour : MonoBehaviour
     }
 
 
-    public SelectableState GetSelectableState()
+    public ESelectableState GetSelectableState()
     {
         return m_SelectableState;
     }
@@ -62,7 +62,7 @@ public class SelectionManagerBehaviour : MonoBehaviour
             m_LastSelectableGameObject = null;
             m_InspectedSelectableComponent.OnDeselected();
             m_InspectedSelectableComponent = null;
-            m_SelectableState = SelectableState.None;
+            m_SelectableState = ESelectableState.None;
         }
         return true;
     }
@@ -92,10 +92,10 @@ public class SelectionManagerBehaviour : MonoBehaviour
                 m_InspectedSelectableComponent = inspectedSelectable;
                 if (IsSelected())
                 {
-                    if (m_SelectableState != SelectableState.Selected)
+                    if (m_SelectableState != ESelectableState.Selected)
                     {
                         Common.Log.DebugLog("{0} selected.", hitGameObject.name);
-                        m_SelectableState = SelectableState.Selected;
+                        m_SelectableState = ESelectableState.Selected;
                         m_InspectedSelectableComponent.OnSelected();
                     }
                 }
@@ -104,7 +104,7 @@ public class SelectionManagerBehaviour : MonoBehaviour
                     //activate new
                     m_LastSelectableGameObject = hitGameObject;
                     Common.Log.DebugLog("{0} selecting.", hitGameObject.name);
-                    m_SelectableState = SelectableState.Selecting;
+                    m_SelectableState = ESelectableState.Selecting;
                     m_InspectedSelectableComponent.OnSelecting();
                 }
             }

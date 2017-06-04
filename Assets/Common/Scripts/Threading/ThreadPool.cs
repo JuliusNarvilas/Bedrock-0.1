@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Common.Threading
 {
-    public enum ThreadedTaskState
+    public enum EThreadedTaskState
     {
         InProgress,
         Aborted,
@@ -85,7 +85,7 @@ namespace Common.Threading
                     m_Thread.Abort();
                     if (m_Task != null)
                     {
-                        m_Task.State = ThreadedTaskState.Aborted;
+                        m_Task.State = EThreadedTaskState.Aborted;
                     }
                 }
                 catch
@@ -124,12 +124,12 @@ namespace Common.Threading
                         {
                             m_Task.RunStartTimestamp = DateTime.UtcNow;
                             m_Task.RunFunc.Invoke();
-                            m_Task.State = ThreadedTaskState.Succeeded;
+                            m_Task.State = EThreadedTaskState.Succeeded;
                         }
                         catch (Exception e)
                         {
                             m_Task.Exception = e;
-                            m_Task.State = ThreadedTaskState.Errored;
+                            m_Task.State = EThreadedTaskState.Errored;
                         }
                         finally
                         {

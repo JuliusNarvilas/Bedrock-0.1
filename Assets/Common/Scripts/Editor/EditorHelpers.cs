@@ -11,7 +11,7 @@ namespace Common
         public const float DEFAULT_GUI_LINE_HEIGHT = 18;
         public const float DEFAULT_GUI_HEIGHT = 16;
         
-        public enum EnumStringCasing
+        public enum EStringCasing
         {
             /// <summary>
             /// Matches string with casing and serializes to string with original enum casing.
@@ -60,7 +60,7 @@ namespace Common
             string i_Name,
             string i_DisplayName,
             Type i_EnumType,
-            EnumStringCasing i_Casing = EnumStringCasing.LoosePreserve,
+            EStringCasing i_Casing = EStringCasing.LoosePreserve,
             Func<string, bool, string> i_Converter = null
         )
         {
@@ -83,12 +83,12 @@ namespace Common
                 {
                     switch (i_Casing)
                     {
-                        case EnumStringCasing.Strict:
+                        case EStringCasing.Strict:
                             selectedEnum = (Enum)Enum.Parse(i_EnumType, conversion(oldSelectedId, false), false);
                             break;
-                        case EnumStringCasing.LoosePreserve:
-                        case EnumStringCasing.LooseUpper:
-                        case EnumStringCasing.LooseLower:
+                        case EStringCasing.LoosePreserve:
+                        case EStringCasing.LooseUpper:
+                        case EStringCasing.LooseLower:
                         default:
                             selectedEnum = (Enum)Enum.Parse(i_EnumType, conversion(oldSelectedId, false), true);
                             break;
@@ -109,14 +109,14 @@ namespace Common
             string resultString = selectedEnum.ToString();
             switch (i_Casing)
             {
-                case EnumStringCasing.Strict:
-                case EnumStringCasing.LoosePreserve:
+                case EStringCasing.Strict:
+                case EStringCasing.LoosePreserve:
                     matchedProperty.stringValue = conversion(resultString, true);
                     break;
-                case EnumStringCasing.LooseUpper:
+                case EStringCasing.LooseUpper:
                     matchedProperty.stringValue = conversion(resultString.ToUpper(), true);
                     break;
-                case EnumStringCasing.LooseLower:
+                case EStringCasing.LooseLower:
                     matchedProperty.stringValue = conversion(resultString.ToLower(), true);
                     break;
                 default:

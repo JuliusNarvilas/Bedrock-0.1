@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Common.Grid.Generation
 {
-    public enum ConnectionSettings : int
+    public enum EConnectionSettings : int
     {
         Required = 1 << 3, //8
         Inward = 1 << 4,
