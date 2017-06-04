@@ -377,7 +377,6 @@ MonoBehaviour:
     Z: 2
   TileSize: {x: 1, y: 1.5, z: 1}
   DrawTileData: 1
-  AddFloorToChildren: 0
 --- !u!4 &960849336
 Transform:
   m_ObjectHideFlags: 0
@@ -448,13 +447,13 @@ MonoBehaviour:
       X: 0
       Y: 0
       Z: 0
-    TileBlockerSettings: 4096
+    TileBlockerSettings: 0
     Settings: 0
   - Position:
       X: 1
       Y: 0
       Z: 0
-    TileBlockerSettings: 4096
+    TileBlockerSettings: 0
     Settings: 0
   Connections: []
 --- !u!1 &1899926297
@@ -531,5 +530,4 @@ MonoBehaviour:
       X: 0
       Y: 0
       Z: 0
-    TileLocation: 0
     Settings: 48

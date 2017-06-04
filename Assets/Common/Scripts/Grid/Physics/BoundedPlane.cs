@@ -5,9 +5,9 @@ namespace Common.Grid.Physics
 {
     public struct BoundedPlane
     {
-        public Vector3 Min;
-        public Vector3 Max;
-        public Vector3 Normal;
+        public readonly Vector3 Min;
+        public readonly Vector3 Max;
+        public readonly Vector3 Normal;
 
         public BoundedPlane(Vector3 i_Min, Vector3 i_Max, Vector3 i_Normal)
         {

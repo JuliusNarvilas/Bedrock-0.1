@@ -145,7 +145,108 @@ namespace Common.Grid.Specializations
             worldPos.y = m_GridOrigin.y + i_Position.Y * m_TileSize.y;
             worldPos.z = m_GridOrigin.z + i_Position.Z * m_TileSize.z;
             o_Tile = new GridTilePhysicalData(worldPos, m_TilePhysicalShape);
-            return true;
+            return i_Position.X >= 0 && i_Position.X < m_SizeX && i_Position.Y >= 0 && i_Position.Y < m_SizeY && i_Position.Z >= 0 && i_Position.Z < m_SizeZ;
         }
+
+        public void GetIntersectionsBetween(
+            GridPosition3D i_Source, GridPosition3D i_Target,
+            List<GridTileRayIntersection<GridPosition3D, TContext, TTile>> o_TilesBetweenPositions,
+            Vector3 i_SourceOffset = new Vector3(), Vector3 i_TargetOffset = new Vector3())
+        {
+            GridTilePhysicalData sourceData;
+            if (TryGetTilePhysicalData(i_Source, out sourceData))
+            {
+                GridTilePhysicalData targetData;
+                if (TryGetTilePhysicalData(i_Source, out targetData))
+                {
+                    var line = i_Target - i_Source;
+                    int xDirection = line.X >= 0 ? 1 : -1;
+                    int yDirection = line.Y >= 0 ? 1 : -1;
+                    int zDirection = line.Y >= 0 ? 1 : -1;
+
+                    Vector3 rayOrigin = sourceData.Position + i_SourceOffset;
+                    rayOrigin.y += sourceData.Shape.Height * 0.5f;
+                    Vector3 rayTarget = targetData.Position + i_TargetOffset;
+                    rayTarget.y += targetData.Shape.Height * 0.5f;
+                    Vector3 rayDirection = rayTarget - rayOrigin;
+                    rayDirection.Normalize();
+
+                    int xLast = i_Source.X;
+                    int yLast = i_Source.Y;
+                    int zLast = i_Source.Z;
+                    int xNext = i_Source.X + xDirection;
+                    int yNext = i_Source.Y + yDirection;
+                    int zNext = i_Source.Z + zDirection;
+                    int axis = 0;
+                    const int AXIS_COUNT = 3;
+                    GridTilePhysicalData physicalData;
+                    TTile tempTile;
+                    Vector3 intersection;
+                    GridPosition3D testLocation = new GridPosition3D(xNext, yLast, zLast);
+                    bool intersectionFound = false;
+
+                    while (xLast != i_Target.X && yLast != i_Target.Y && zLast != i_Target.Z)
+                    {
+                        switch(axis)
+                        {
+                            case 0:
+                                testLocation = new GridPosition3D(xNext, yLast, zLast);
+                                break;
+                            case 1:
+                                testLocation = new GridPosition3D(xLast, yNext, zLast);
+                                break;
+                            case 2:
+                                testLocation = new GridPosition3D(xLast, yLast, zNext);
+                                break;
+                        }
+                        if (TryGetTilePhysicalData(testLocation, out physicalData))
+                        {
+                            if (physicalData.Intersects(rayOrigin, rayDirection, out intersection))
+                            {
+                                intersectionFound = true;
+                                if (TryGetTile(testLocation, out tempTile))
+                                {
+                                    o_TilesBetweenPositions.Add(new GridTileRayIntersection<GridPosition3D, TContext, TTile>(tempTile, physicalData, intersection));
+                                }
+                                switch (axis)
+                                {
+                                    case 0:
+                                        xLast = xNext;
+                                        xNext += xDirection;
+                                        break;
+                                    case 1:
+                                        yLast = yNext;
+                                        yNext += yDirection;
+                                        break;
+                                    case 2:
+                                        zLast = zNext;
+                                        zNext += zDirection;
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                axis = ++axis % AXIS_COUNT;
+                                if (axis == 0 && intersectionFound)
+                                {
+                                    intersectionFound = false;
+                                }
+                                else
+                                {
+                                    Log.ProductionLogError("GetTilesBetweenPositions() Abort: Scanning failed to progress. An offset out of tile shape bounds was likely used.");
+                                    return;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Log.ProductionLogError("GetTilesBetweenPositions() Abort: Tile physical data for location " + testLocation + " was not found");
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }

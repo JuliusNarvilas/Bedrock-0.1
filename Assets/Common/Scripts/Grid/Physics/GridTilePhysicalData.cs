@@ -5,8 +5,8 @@ namespace Common.Grid.Physics
 {
     public struct GridTilePhysicalData
     {
-        public Vector3 Position;
-        public GridTilePhysicalShape Shape;
+        public readonly Vector3 Position;
+        public readonly GridTilePhysicalShape Shape;
 
         public GridTilePhysicalData(Vector3 i_Position, GridTilePhysicalShape i_Shape)
         {

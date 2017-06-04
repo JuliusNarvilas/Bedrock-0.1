@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Common.Grid.Path;
 using Common.Grid.Physics;
+using UnityEngine;
 
 namespace Common.Grid.Specializations
 {
@@ -39,6 +40,11 @@ namespace Common.Grid.Specializations
         }
 
         public bool TryGetTilePhysicalData(GridPosition2D i_Position, out GridTilePhysicalData o_Tile)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetIntersectionsBetween(GridPosition2D i_Source, GridPosition2D i_Target, List<GridTileRayIntersection<GridPosition2D, TContext, TTile>> o_TilesBetweenPositions, Vector3 i_SourceOffset = default(Vector3), Vector3 i_TargetOffset = default(Vector3))
         {
             throw new NotImplementedException();
         }

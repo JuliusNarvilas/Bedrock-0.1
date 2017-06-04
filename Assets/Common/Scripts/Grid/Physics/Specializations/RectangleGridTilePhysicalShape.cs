@@ -5,14 +5,13 @@ namespace Common.Grid.Physics.Specializations
 {
     public class RectangleGridTilePhysicalShape : GridTilePhysicalShape
     {
-        public RectangleGridTilePhysicalShape(Vector3 i_TileSize)
+        public RectangleGridTilePhysicalShape(Vector3 i_TileSize) : base(4, i_TileSize.y)
         {
             Vector3 minPos = new Vector3(i_TileSize.x * -0.5f, 0, i_TileSize.z * -0.5f);
             Vector3 xVec = new Vector3(i_TileSize.x, 0, 0);
             Vector3 yVec = new Vector3(0, i_TileSize.y, 0);
             Vector3 zVec = new Vector3(0, 0, i_TileSize.z);
-
-            Planes = new BoundedPlane[4];
+            
             //left
             Planes[0] = new BoundedPlane(minPos, minPos + yVec + zVec, -xVec);
             //right

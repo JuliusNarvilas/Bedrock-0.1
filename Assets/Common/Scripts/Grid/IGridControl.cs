@@ -49,5 +49,21 @@ namespace Common.Grid
         void GetConnected(TPosition i_Position, List<TTile> o_ConnectedTiles);
 
         bool TryGetTilePhysicalData(TPosition i_Position, out GridTilePhysicalData o_Tile);
+
+        /// <summary>
+        /// Populates a list of intersection data between two tiles.
+        /// Intersections are tested using a simple ray cast
+        /// and the source tile does not appear in the intersaction results
+        /// as the ray only hits the back face of the origin tile shape.
+        /// </summary>
+        /// <param name="i_Source">Position of the source tile.</param>
+        /// <param name="i_Target">Position of the target tile.</param>
+        /// <param name="o_TilesBetweenPositions">List that is populated with results.</param>
+        /// <param name="i_SourceOffset">Offset within the source tile. Must be within the tile shape bounds!</param>
+        /// <param name="i_TargetOffset">Offset within the target tile. Must be within the tile shape bounds!</param>
+        void GetIntersectionsBetween(
+            TPosition i_Source, TPosition i_Target,
+            List<GridTileRayIntersection<TPosition, TContext, TTile>> o_TilesBetweenPositions,
+            Vector3 i_SourceOffset = new Vector3(), Vector3 i_TargetOffset = new Vector3());
     }
 }
