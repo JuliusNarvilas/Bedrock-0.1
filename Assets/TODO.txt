@@ -1,16 +1,19 @@
-﻿
-Intelligent text
+
+Intelligent Text:
 *test intelligent text convas renderer crash bug
 *change content providing for intelligent text to support non resource based content
 *seperate intelligent text core generation functionality for swapping to non unity font based solutions if required
 	*thinking about adding dynamic font support by rendering letters to a texture manually
+*make sure read-write flag is off for text meshes
+*when instantiating renderers make sure cast shadows, receive shadows, use light probes and reflection probes is off
+*Check to change Lists to Arrays where possible to reduce function calls
 
-Grid
-*remove height data for connected tiles (+ doesn't work when using non 4 sided grid)
+Grid:
 *Add serialization
 *Add map generation
 *Add unit tests
 *Add fog of war helpers
+*Check to change Lists to Arrays where possible to reduce function calls
 
 
 General:
