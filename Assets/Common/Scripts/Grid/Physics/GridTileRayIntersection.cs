@@ -7,9 +7,9 @@ namespace Common.Grid.Physics
     {
         public readonly TTile Tile;
         public readonly GridTilePhysicalData PhysicalData;
-        public readonly Vector3 Intersection;
+        public readonly TileIntersection Intersection;
 
-        public GridTileRayIntersection(TTile i_Tile, GridTilePhysicalData i_PhysicaData, Vector3 i_Intersection)
+        public GridTileRayIntersection(TTile i_Tile, GridTilePhysicalData i_PhysicaData, TileIntersection i_Intersection)
         {
             Tile = i_Tile;
             PhysicalData = i_PhysicaData;

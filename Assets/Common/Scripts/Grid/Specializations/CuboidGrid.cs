@@ -39,7 +39,7 @@ namespace Common.Grid.Specializations
 
         public CuboidGrid()
         {
-            m_TilePhysicalShape = new CuboidGridTilePhysicalShape(m_TileSize);
+            m_TilePhysicalShape = new RectangleGridTilePhysicalShape(m_TileSize);
         }
 
         public int GetHeuristicDistance(GridPosition3D i_From, GridPosition3D i_To)
@@ -75,14 +75,19 @@ namespace Common.Grid.Specializations
 
         public bool TryGetTile(GridPosition3D i_Position, out TTile o_Tile)
         {
+#if !GRID_COORDINATE_SAFETY_DISABLE
             if (i_Position.X >= 0 && i_Position.X < m_SizeX && i_Position.Y >= 0 && i_Position.Y < m_SizeY && i_Position.Z >= 0 && i_Position.Z < m_SizeZ)
             {
+#endif
                 int tilesIndex = i_Position.X * m_SizeY + i_Position.Y;
                 o_Tile = m_Tiles[tilesIndex];
                 return true;
+
+#if !GRID_COORDINATE_SAFETY_DISABLE
             }
             o_Tile = null;
             return false;
+#endif
         }
 
 
@@ -145,7 +150,12 @@ namespace Common.Grid.Specializations
             worldPos.y = m_GridOrigin.y + i_Position.Y * m_TileSize.y;
             worldPos.z = m_GridOrigin.z + i_Position.Z * m_TileSize.z;
             o_Tile = new GridTilePhysicalData(worldPos, m_TilePhysicalShape);
+
+#if !GRID_COORDINATE_SAFETY_DISABLE
             return i_Position.X >= 0 && i_Position.X < m_SizeX && i_Position.Y >= 0 && i_Position.Y < m_SizeY && i_Position.Z >= 0 && i_Position.Z < m_SizeZ;
+#else
+            return true;
+#endif
         }
 
         public void GetIntersectionsBetween(
@@ -165,9 +175,9 @@ namespace Common.Grid.Specializations
                     int zDirection = line.Y >= 0 ? 1 : -1;
 
                     Vector3 rayOrigin = sourceData.Position + i_SourceOffset;
-                    rayOrigin.y += sourceData.Shape.Height * 0.5f;
+                    rayOrigin.y += sourceData.Shape.EdgeFaces[0].VerticalLength * 0.5f;
                     Vector3 rayTarget = targetData.Position + i_TargetOffset;
-                    rayTarget.y += targetData.Shape.Height * 0.5f;
+                    rayTarget.y += targetData.Shape.EdgeFaces[0].VerticalLength * 0.5f;
                     Vector3 rayDirection = rayTarget - rayOrigin;
                     rayDirection.Normalize();
 
@@ -181,7 +191,7 @@ namespace Common.Grid.Specializations
                     const int AXIS_COUNT = 3;
                     GridTilePhysicalData physicalData;
                     TTile tempTile;
-                    Vector3 intersection;
+                    TileIntersection intersection;
                     GridPosition3D testLocation = new GridPosition3D(xNext, yLast, zLast);
                     bool intersectionFound = false;
 
@@ -201,7 +211,8 @@ namespace Common.Grid.Specializations
                         }
                         if (TryGetTilePhysicalData(testLocation, out physicalData))
                         {
-                            if (physicalData.Intersects(rayOrigin, rayDirection, out intersection))
+                            physicalData.Intersects(rayOrigin, rayDirection, out intersection);
+                            if (intersection.IntersectionType != TileIntersectionType.None)
                             {
                                 intersectionFound = true;
                                 if (TryGetTile(testLocation, out tempTile))
@@ -233,14 +244,14 @@ namespace Common.Grid.Specializations
                                 }
                                 else
                                 {
-                                    Log.ProductionLogError("GetTilesBetweenPositions() Abort: Scanning failed to progress. An offset out of tile shape bounds was likely used.");
+                                    Log.ProductionLogError("GetIntersectionsBetween() Abort: Scanning failed to progress. An offset out of tile shape bounds was likely used.");
                                     return;
                                 }
                             }
                         }
                         else
                         {
-                            Log.ProductionLogError("GetTilesBetweenPositions() Abort: Tile physical data for location " + testLocation + " was not found");
+                            Log.ProductionLogError("GetIntersectionsBetween() Abort: Tile physical data for location " + testLocation + " was not found");
                             return;
                         }
                     }

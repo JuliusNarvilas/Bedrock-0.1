@@ -15,6 +15,8 @@ namespace Common.Grid
         /// A modifier to pathing heuristics to make this tile seem more expensive to move through.
         /// </summary>
         public float PathingDangerFactor;
+
+        public int Settings;
         
         public GridTile(TPosition i_Position)
         {

@@ -54,14 +54,18 @@ namespace Common.Grid.Specializations
         
         public bool TryGetTile(GridPosition2D i_Position, out TTile o_Tile)
         {
+#if !GRID_COORDINATE_SAFETY_DISABLE
             if (i_Position.X >= 0 && i_Position.X < m_SizeX && i_Position.Y >= 0 && i_Position.Y < m_SizeY)
             {
+#endif
                 int tilesIndex = i_Position.X * m_SizeY + i_Position.Y;
                 o_Tile = m_Tiles[tilesIndex];
                 return true;
+#if !GRID_COORDINATE_SAFETY_DISABLE
             }
             o_Tile = null;
             return false;
+#endif
         }
 
 
@@ -118,7 +122,12 @@ namespace Common.Grid.Specializations
             worldPos.y = m_GridOrigin.y + i_Position.Y * m_TileSize.y;
             worldPos.z = m_GridOrigin.z;
             o_Tile = new GridTilePhysicalData(worldPos, m_TilePhysicalShape);
+
+#if !GRID_COORDINATE_SAFETY_DISABLE
             return i_Position.X >= 0 && i_Position.X < m_SizeX && i_Position.Y >= 0 && i_Position.Y < m_SizeY;
+#else
+            return true;
+#endif
         }
 
         public void GetIntersectionsBetween(
@@ -137,9 +146,9 @@ namespace Common.Grid.Specializations
                     int yDirection = line.Y >= 0 ? 1 : -1;
 
                     Vector3 rayOrigin = sourceData.Position + i_SourceOffset;
-                    rayOrigin.y += sourceData.Shape.Height * 0.5f;
+                    rayOrigin.y += sourceData.Shape.EdgeFaces[0].VerticalLength * 0.5f;
                     Vector3 rayTarget = targetData.Position + i_TargetOffset;
-                    rayTarget.y += targetData.Shape.Height * 0.5f;
+                    rayTarget.y += targetData.Shape.EdgeFaces[0].VerticalLength * 0.5f;
                     Vector3 rayDirection = rayTarget - rayOrigin;
                     rayDirection.Normalize();
 
@@ -151,7 +160,7 @@ namespace Common.Grid.Specializations
                     const int AXIS_COUNT = 2;
                     GridTilePhysicalData physicalData;
                     TTile tempTile;
-                    Vector3 intersection;
+                    TileIntersection intersection;
                     GridPosition2D testLocation = new GridPosition2D(xNext, yLast);
                     bool intersectionFound = false;
 
@@ -171,7 +180,8 @@ namespace Common.Grid.Specializations
                         }
                         if (TryGetTilePhysicalData(testLocation, out physicalData))
                         {
-                            if (physicalData.Intersects(rayOrigin, rayDirection, out intersection))
+                            physicalData.Intersects(rayOrigin, rayDirection, out intersection);
+                            if (intersection.IntersectionType != TileIntersectionType.None)
                             {
                                 intersectionFound = true;
                                 if (TryGetTile(testLocation, out tempTile))
@@ -199,14 +209,14 @@ namespace Common.Grid.Specializations
                                 }
                                 else
                                 {
-                                    Log.ProductionLogError("GetTilesBetweenPositions() Abort: Scanning failed to progress. An offset out of tile shape bounds was likely used.");
+                                    Log.ProductionLogError("GetIntersectionsBetween() Abort: Scanning failed to progress. An offset out of tile shape bounds was likely used.");
                                     return;
                                 }
                             }
                         }
                         else
                         {
-                            Log.ProductionLogError("GetTilesBetweenPositions() Abort: Tile physical data for location " + testLocation + " was not found");
+                            Log.ProductionLogError("GetIntersectionsBetween() Abort: Tile physical data for location " + testLocation + " was not found");
                             return;
                         }
                     }
