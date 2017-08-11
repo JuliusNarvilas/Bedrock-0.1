@@ -26,7 +26,7 @@ namespace Common.Grid
         public override string ToString()
         {
             return string.Format(
-                "GridTile: { Position: {0} }",
+                "GridTile: {{ Position: {0} }}",
                 Position.ToString()
                 );
         }

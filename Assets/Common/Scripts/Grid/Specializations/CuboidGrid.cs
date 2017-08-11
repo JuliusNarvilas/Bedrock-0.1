@@ -10,12 +10,12 @@ namespace Common.Grid.Specializations
 {
     public class CuboidGrid<TContext, TTile> : IGridControl<GridPosition3D, TContext, TTile> where TTile : GridTile<GridPosition3D, TContext, TTile>
     {
-        protected readonly List<TTile> m_Tiles = new List<TTile>();
+        protected readonly List<TTile> m_Tiles;
 
         protected int m_SizeX;
         protected int m_SizeY;
         protected int m_SizeZ;
-        protected bool m_AllowMoveDiagonally = true;
+        protected bool m_AllowMoveDiagonally = false;
         protected float m_NonDiagonalHeuristicFactor = 1.0f;
         protected float m_DiagonalHeuristicFactor = (float)Math.Sqrt(2.0);
         protected float m_Diagonal3DHeuristicFactor = (float)Math.Sqrt(3.0);
@@ -37,8 +37,15 @@ namespace Common.Grid.Specializations
             return m_SizeZ;
         }
 
-        public CuboidGrid()
+        public CuboidGrid(int i_SizeX, int i_SizeY, int i_SizeZ, Vector3 i_TileSize)
         {
+            m_SizeX = i_SizeX;
+            m_SizeY = i_SizeY;
+            m_SizeZ = i_SizeZ;
+
+            m_Tiles = new List<TTile>(m_SizeX * m_SizeY * m_SizeZ);
+
+            m_TileSize = i_TileSize;
             m_TilePhysicalShape = new RectangleGridTilePhysicalShape(m_TileSize);
         }
 
@@ -79,7 +86,7 @@ namespace Common.Grid.Specializations
             if (i_Position.X >= 0 && i_Position.X < m_SizeX && i_Position.Y >= 0 && i_Position.Y < m_SizeY && i_Position.Z >= 0 && i_Position.Z < m_SizeZ)
             {
 #endif
-                int tilesIndex = i_Position.X * m_SizeY + i_Position.Y;
+                int tilesIndex = i_Position.X * (m_SizeY * m_SizeZ) + i_Position.Y * m_SizeZ + i_Position.Z;
                 o_Tile = m_Tiles[tilesIndex];
                 return true;
 
@@ -100,6 +107,7 @@ namespace Common.Grid.Specializations
             int endY = Math.Min(i_Position.Y + 2, m_SizeY);
             int endZ = Math.Min(i_Position.Z + 2, m_SizeZ);
             int xStride = m_SizeY * m_SizeZ;
+            int originTileIndex = i_Position.X * xStride + i_Position.Y * m_SizeZ + i_Position.Z;
 
             for (int itX = startX; itX < endX; ++itX)
             {
@@ -110,12 +118,26 @@ namespace Common.Grid.Specializations
                         if (m_AllowMoveDiagonally)
                         {
                             int tileIndex = itX * xStride + itY * m_SizeZ + itZ;
-                            o_ConnectedTiles.Add(m_Tiles[tileIndex]);
+                            if (tileIndex != originTileIndex)
+                            {
+                                o_ConnectedTiles.Add(m_Tiles[tileIndex]);
+                            }
                         }
-                        else if ((itX != startX && itX != endX) || (itY != startY && itY != endY) || (itZ != startZ && itZ != endZ))
+                        else
                         {
-                            int tileIndex = itX * xStride + itY * m_SizeZ + itZ;
-                            o_ConnectedTiles.Add(m_Tiles[tileIndex]);
+                            int matchingAxisCount = 0;
+                            if(itX == i_Position.X)
+                                ++matchingAxisCount;
+                            if(itY == i_Position.Y)
+                                ++matchingAxisCount;
+                            if(itZ == i_Position.Z)
+                                ++matchingAxisCount;
+
+                            if(matchingAxisCount == 2)
+                            {
+                                int tileIndex = itX * xStride + itY * m_SizeZ + itZ;
+                                o_ConnectedTiles.Add(m_Tiles[tileIndex]);
+                            }
                         }
                     }
                 }
@@ -129,10 +151,12 @@ namespace Common.Grid.Specializations
 
             int minX = Math.Max(i_Start.X - pathingDataMargin, 0);
             int minY = Math.Max(i_Start.Y - pathingDataMargin, 0);
-            int maxX = Math.Min(i_End.X - pathingDataMargin, m_SizeX - 1);
-            int maxY = Math.Min(i_End.Y - pathingDataMargin, m_SizeY - 1);
+            int minZ = Math.Max(i_Start.Z - pathingDataMargin, 0);
+            int maxX = Math.Min(i_End.X + pathingDataMargin, m_SizeX - 1);
+            int maxY = Math.Min(i_End.Y + pathingDataMargin, m_SizeY - 1);
+            int maxZ = Math.Min(i_End.Z + pathingDataMargin, m_SizeZ - 1);
 
-            pathData.Set(this, new GridPosition3D(minX, minY), new GridPosition3D(maxX, maxY));
+            pathData.Set(this, new GridPosition3D(minX, minY, minZ), new GridPosition3D(maxX, maxY, maxZ));
             return new GridPath<GridPosition3D, TContext, TTile>(this, pathData, i_Start, i_End, i_Context);
         }
 
@@ -157,6 +181,7 @@ namespace Common.Grid.Specializations
             return true;
 #endif
         }
+
 
         public void GetIntersectionsBetween(
             GridPosition3D i_Source, GridPosition3D i_Target,

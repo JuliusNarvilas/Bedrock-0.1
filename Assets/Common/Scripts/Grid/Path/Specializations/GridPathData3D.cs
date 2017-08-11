@@ -11,7 +11,7 @@ namespace Common.Grid.Path.Specializations
     {
         private List<GridPathElement<GridPosition3D, TContext, TTile>> m_Data = new List<GridPathElement<GridPosition3D, TContext, TTile>>();
         private GridPosition3D m_Min = new GridPosition3D();
-        private GridPosition3D m_Max = new GridPosition3D();
+        private GridPosition3D m_Max = new GridPosition3D(-1, -1, -1);
         private IGridControl<GridPosition3D, TContext, TTile> m_Source;
         private readonly GridPathDataProvider<GridPosition3D, TContext, TTile> m_Origin;
 
@@ -48,21 +48,23 @@ namespace Common.Grid.Path.Specializations
             {
                 GridPosition3D newMin = new GridPosition3D(
                         Math.Min(m_Min.X, i_EnvelopPos.X),
-                        Math.Min(m_Min.Y, i_EnvelopPos.Y)
+                        Math.Min(m_Min.Y, i_EnvelopPos.Y),
+                        Math.Min(m_Min.Z, i_EnvelopPos.Z)
                     );
                 GridPosition3D newMax = new GridPosition3D(
                         Math.Max(m_Max.X, i_EnvelopPos.X),
-                        Math.Max(m_Max.Y, i_EnvelopPos.Y)
+                        Math.Max(m_Max.Y, i_EnvelopPos.Y),
+                        Math.Max(m_Max.Z, i_EnvelopPos.Z)
                     );
 
                 if (!m_Min.Equals(newMin) || !m_Max.Equals(newMax))
                 {
-                    int newSizeX = newMax.X - newMin.X;
-                    int newSizeY = newMax.Y - newMin.Y;
-                    int newSizeZ = newMax.Z - newMin.Z;
-                    int oldSizeX = m_Max.X - m_Min.X;
-                    int oldSizeY = m_Max.Y - m_Min.Y;
-                    int oldSizeZ = m_Max.Z - m_Min.Z;
+                    int newSizeX = newMax.X - newMin.X + 1;
+                    int newSizeY = newMax.Y - newMin.Y + 1;
+                    int newSizeZ = newMax.Z - newMin.Z + 1;
+                    int oldSizeX = m_Max.X - m_Min.X + 1;
+                    int oldSizeY = m_Max.Y - m_Min.Y + 1;
+                    int oldSizeZ = m_Max.Z - m_Min.Z + 1;
                     int newDataCount = newSizeX * newSizeY * newSizeZ;
                     int oldDataCount = oldSizeX * oldSizeY * oldSizeZ;
                     var oldData = new List<GridPathElement<GridPosition3D, TContext, TTile>>(oldDataCount);
@@ -91,7 +93,7 @@ namespace Common.Grid.Path.Specializations
                     for (int itX = newMin.X; itX <= newMax.X; ++itX)
                     {
                         bool inOldXRange = m_Min.X <= itX && m_Max.X >= itX;
-                        for (int itY = newMin.Y; itY < newMax.Y; ++itY)
+                        for (int itY = newMin.Y; itY <= newMax.Y; ++itY)
                         {
                             bool inOldYRange = m_Min.Y <= itY && m_Max.Y >= itY;
                             for (int itZ = newMin.Z; itZ <= newMax.Z; ++itZ)
@@ -106,9 +108,7 @@ namespace Common.Grid.Path.Specializations
                                 else
                                 {
                                     var newElement = m_Data[freeElementIndex++];
-                                    TTile tempTile;
-                                    m_Source.TryGetTile(new GridPosition3D(itX, itY, itZ), out tempTile);
-                                    newElement.Tile = tempTile;
+                                    m_Source.TryGetTile(new GridPosition3D(itX, itY, itZ), out newElement.Tile);
                                     m_Data[newIndex] = newElement;
                                 }
                             }

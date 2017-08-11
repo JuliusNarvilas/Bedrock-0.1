@@ -102,9 +102,9 @@ namespace Common.Collections
                     while (requireSort)
                     {
                         i_List[readIndex + 1] = i_List[readIndex];
-                        requireSort = (readIndex > 0) && comparer.Compare(i_List[--readIndex], examinedValue) > 0;
+                        requireSort = (--readIndex >= 0) && comparer.Compare(i_List[readIndex], examinedValue) > 0;
                     }
-                    i_List[readIndex] = examinedValue;
+                    i_List[++readIndex] = examinedValue;
                 }
             }
         }

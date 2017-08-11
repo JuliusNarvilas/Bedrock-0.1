@@ -156,7 +156,7 @@ namespace Common.Grid.Path
                     }
                 }
             }
-            if (oldElementChanged || (openListSizeBefore > m_OpenList.Count))
+            if (oldElementChanged || (openListSizeBefore != m_OpenList.Count))
             {
                 m_OpenList.InsertionSort(GridPathElement<TPosition, TContext, TTile>.FValueComparer.Descending);
             }

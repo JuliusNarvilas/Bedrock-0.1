@@ -65,6 +65,7 @@ namespace Common.Grid.Path
         /// <param name="i_Other">The other instance to copy.</param>
         public void Set(GridPathElement<TPosition, TContext, TTile> i_Other)
         {
+            Tile = i_Other.Tile;
             HeuristicDistance = i_Other.HeuristicDistance;
             PathCost = i_Other.PathCost;
             FValue = i_Other.FValue;

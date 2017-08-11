@@ -19,7 +19,7 @@ public class GameGridManager : MonoBehaviour
 
     private void Awake()
     {
-        Grid = new GameRectGrid(m_SizeX, m_SizeY, m_AllowDiagonal);
+        Grid = new GameRectGrid(m_SizeX, m_SizeY, 0, m_AllowDiagonal);
 
         /*
         for (int i = 0; i < m_SizeX; ++i)

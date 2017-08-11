@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace Common.Grid.Physics
 {
+    [Flags]
     public enum ETileSurfaceSimpleBlockerType
     {
         None = 0,
@@ -19,6 +17,7 @@ namespace Common.Grid.Physics
     /// <summary>
     /// Available settings for tile blocker height and other options.
     /// </summary>
+    [Flags]
     public enum ETileEdgeSimpleBlockerType
     {
         None = 0,
@@ -28,6 +27,11 @@ namespace Common.Grid.Physics
         BlockerMediumLarge = 4,
         BlockerLarge = 5,
         BlockerExtraLarge = 6,
+
+        /// <summary>
+        /// Largest blocker to automate calculation of available blocking options
+        /// </summary>
+        MaxBlocker = BlockerExtraLarge,
 
         /// <summary>
         /// Indicates the maximum number of bits that can be used for actual <see cref="ETileEdgeSimpleBlockerType"/> values.
@@ -46,57 +50,104 @@ namespace Common.Grid.Physics
 
     public static class GridTileBlockHelpers
     {
-        public static void Collision(GridTilePhysicalData i_PhysicalData, int i_Settings, Vector3 i_RayOrigin, Vector3 i_RayDirection)
+        public static bool Collision(GridTilePhysicalData i_PhysicalData, int i_Settings, Vector3 i_RayOrigin, Vector3 i_RayDirection, out TileIntersection i_Intersection)
         {
-            if((i_Settings & (int)ETileSurfaceSimpleBlockerType.BlockerTop) != 0)
+            int wallSettings = i_Settings >> (int)ETileSurfaceSimpleBlockerType.BitStride;
+            i_Intersection = default(TileIntersection);
+            int size = i_PhysicalData.Shape.EdgeFaces.Length;
+            for (int i = 0; i > size; ++i)
             {
-                //TODO
+                int faceSetting = (wallSettings >> (i * (int)ETileEdgeSimpleBlockerType.BitStride)) & (int)ETileEdgeSimpleBlockerType.FullySetStride;
+                if (faceSetting != 0)
+                {
+                    i_PhysicalData.Shape.EdgeFaces[i].Intersects(i_PhysicalData.Position, i_RayOrigin, i_RayDirection, out i_Intersection);
+                    switch (i_Intersection.IntersectionType)
+                    {
+                        case TileIntersectionType.Frontface:
+                        case TileIntersectionType.Backface:
+                            if(Collision(i_PhysicalData, i_Settings, i_Intersection))
+                            {
+                                return true;
+                            }
+                            break;
+                    }
+                }
             }
-
+            
+            //bottom
             if ((i_Settings & (int)ETileSurfaceSimpleBlockerType.BlockerBottom) != 0)
             {
-                //TODO
-            }
-
-            i_Settings = i_Settings >> (int)ETileSurfaceSimpleBlockerType.BitStride;
-
-            int size = i_PhysicalData.Shape.EdgeFaces.Length;
-            for(int i = 0; i < size; ++i)
-            {
-                int blockerSetting = i_Settings & (int)ETileEdgeSimpleBlockerType.FullySetStride;
-                if (blockerSetting != 0)
+                i_PhysicalData.Shape.IntersectsSurface(i_PhysicalData.Position, i_RayOrigin, i_RayDirection, GridTilePhysicalShape.TileSurfaceType.Bottom, out i_Intersection);
+                switch (i_Intersection.IntersectionType)
                 {
-                    //TODO
+                    case TileIntersectionType.Frontface:
+                    case TileIntersectionType.Backface:
+                        if (Collision(i_PhysicalData, i_Settings, i_Intersection))
+                        {
+                            return true;
+                        }
+                        break;
                 }
-                i_Settings = i_Settings >> (int)ETileEdgeSimpleBlockerType.BitStride;
             }
+
+            //top
+            if ((i_Settings & (int)ETileSurfaceSimpleBlockerType.BlockerBottom) != 0)
+            {
+                Vector3 newPos = i_PhysicalData.Position;
+                newPos.y += i_PhysicalData.Shape.EdgeFaces[0].VerticalLength;
+                i_PhysicalData.Shape.IntersectsSurface(newPos, i_RayOrigin, i_RayDirection, GridTilePhysicalShape.TileSurfaceType.Top, out i_Intersection);
+                switch (i_Intersection.IntersectionType)
+                {
+                    case TileIntersectionType.Frontface:
+                    case TileIntersectionType.Backface:
+                        if (Collision(i_PhysicalData, i_Settings, i_Intersection))
+                        {
+                            return true;
+                        }
+                        break;
+                }
+            }
+
+            return false;
         }
 
         public static bool Collision(GridTilePhysicalData i_PhysicalData, int i_Settings, TileIntersection i_Intersection)
         {
-            if(i_Intersection.IntersectionType == TileIntersectionType.
-            if ((i_Settings & (int)ETileSurfaceSimpleBlockerType.BlockerTop) != 0)
+            if (i_Intersection.IntersectionType != TileIntersectionType.None)
             {
-
-            }
-
-            if ((i_Settings & (int)ETileSurfaceSimpleBlockerType.BlockerBottom) != 0)
-            {
-                //TODO
-            }
-
-            i_Settings = i_Settings >> (int)ETileSurfaceSimpleBlockerType.BitStride;
-
-            int size = i_PhysicalData.Shape.EdgeFaces.Length;
-            for (int i = 0; i < size; ++i)
-            {
-                int blockerSetting = i_Settings & (int)ETileEdgeSimpleBlockerType.FullySetStride;
-                if (blockerSetting != 0)
+                switch(i_Intersection.FaceId)
                 {
-                    //TODO
+                    case -2:
+                        //top
+                        if((i_Settings & (int)ETileSurfaceSimpleBlockerType.BlockerTop) != 0)
+                        {
+                            return true;
+                        }
+                        break;
+                    case -1:
+                        //bottom
+                        if ((i_Settings & (int)ETileSurfaceSimpleBlockerType.BlockerBottom) != 0)
+                        {
+                            return true;
+                        }
+                        break;
+                    default:
+                        //sides
+                        {
+                            var face = i_PhysicalData.Shape.EdgeFaces[i_Intersection.FaceId];
+                            float blockingHeightF = i_Intersection.IntersectionPoint.y - face.BottomLeft.y;
+                            int blockingSetting = (int)(blockingHeightF / (face.VerticalLength / (float)ETileEdgeSimpleBlockerType.MaxBlocker)) + 1;
+
+                            int faceSettings = i_Settings >> (int)ETileSurfaceSimpleBlockerType.BitStride >> (i_Intersection.FaceId * (int)ETileEdgeSimpleBlockerType.BitStride);
+                            if ((faceSettings & (int)ETileEdgeSimpleBlockerType.FullySetStride) >= blockingSetting)
+                            {
+                                return true;
+                            }
+                        }
+                        break;
                 }
-                i_Settings = i_Settings >> (int)ETileEdgeSimpleBlockerType.BitStride;
             }
+            return false;
         }
     }
 }

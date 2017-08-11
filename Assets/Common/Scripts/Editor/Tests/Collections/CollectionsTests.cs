@@ -45,6 +45,17 @@ namespace Common.Tests.Collections
             List<ushort> ushortList = new List<ushort>();
             List<sbyte> sbyteList = new List<sbyte>();
 
+            List<float> floatList2 = new List<float>();
+            List<double> doubleList2 = new List<double>();
+            List<int> intList2 = new List<int>();
+            List<long> longList2 = new List<long>();
+            List<short> shortList2 = new List<short>();
+            List<byte> byteList2 = new List<byte>();
+            List<uint> uintList2 = new List<uint>();
+            List<ulong> ulongList2 = new List<ulong>();
+            List<ushort> ushortList2 = new List<ushort>();
+            List<sbyte> sbyteList2 = new List<sbyte>();
+
             List<int> genericList = new List<int>();
 
             foreach (int value in temp)
@@ -63,6 +74,17 @@ namespace Common.Tests.Collections
                 genericList.Add(value);
             }
 
+            floatList2.AddRange(floatList);
+            doubleList2.AddRange(doubleList);
+            intList2.AddRange(intList);
+            longList2.AddRange(longList);
+            shortList2.AddRange(shortList);
+            byteList2.AddRange(byteList);
+            uintList2.AddRange(uintList);
+            ulongList2.AddRange(ulongList);
+            ushortList2.AddRange(ushortList);
+            sbyteList2.AddRange(sbyteList);
+
             floatList.InsertionSortAscending();
             doubleList.InsertionSortAscending();
             intList.InsertionSortAscending();
@@ -74,22 +96,33 @@ namespace Common.Tests.Collections
             ushortList.InsertionSortAscending();
             sbyteList.InsertionSortAscending();
 
+            floatList2.Sort();
+            doubleList2.Sort();
+            intList2.Sort();
+            longList2.Sort();
+            shortList2.Sort();
+            byteList2.Sort();
+            uintList2.Sort();
+            ulongList2.Sort();
+            ushortList2.Sort();
+            sbyteList2.Sort();
+
             genericList.InsertionSort(new TestAscendingComparerInt());
 
-            for (int i = 1; i < testSize; ++i)
+            for (int i = 0; i < testSize; ++i)
             {
-                Assert.That(floatList[i - 1] <= floatList[i], "Float insertion sort ascending specialization failed.");
-                Assert.That(doubleList[i - 1] <= doubleList[i], "Double insertion sort ascending specialization failed.");
-                Assert.That(intList[i - 1] <= intList[i], "Int insertion sort ascending specialization failed.");
-                Assert.That(longList[i - 1] <= longList[i], "Long insertion sort ascending specialization failed.");
-                Assert.That(shortList[i - 1] <= shortList[i], "Short insertion sort ascending specialization failed.");
-                Assert.That(byteList[i - 1] <= byteList[i], "Byte insertion sort ascending specialization failed.");
-                Assert.That(uintList[i - 1] <= uintList[i], "Uint insertion sort ascending specialization failed.");
-                Assert.That(ulongList[i - 1] <= ulongList[i], "Ulong insertion sort ascending specialization failed.");
-                Assert.That(ushortList[i - 1] <= ushortList[i], "UShort insertion sort ascending specialization failed.");
-                Assert.That(sbyteList[i - 1] <= sbyteList[i], "Sbyte insertion sort ascending specialization failed.");
+                Assert.That(floatList[i] == floatList2[i], "Float insertion sort ascending specialization failed.");
+                Assert.That(doubleList[i] == doubleList2[i], "Double insertion sort ascending specialization failed.");
+                Assert.That(intList[i] == intList2[i], "Int insertion sort ascending specialization failed.");
+                Assert.That(longList[i] == longList2[i], "Long insertion sort ascending specialization failed.");
+                Assert.That(shortList[i] == shortList2[i], "Short insertion sort ascending specialization failed.");
+                Assert.That(byteList[i] == byteList2[i], "Byte insertion sort ascending specialization failed.");
+                Assert.That(uintList[i] == uintList2[i], "Uint insertion sort ascending specialization failed.");
+                Assert.That(ulongList[i] == ulongList2[i], "Ulong insertion sort ascending specialization failed.");
+                Assert.That(ushortList[i] == ushortList2[i], "UShort insertion sort ascending specialization failed.");
+                Assert.That(sbyteList[i] == sbyteList2[i], "Sbyte insertion sort ascending specialization failed.");
 
-                Assert.That(genericList[i - 1] <= genericList[i], "Generic insertion sort ascending failed.");
+                Assert.That(genericList[i] == intList[i], "Generic insertion sort ascending failed.");
             }
 
             floatList.Clear();
@@ -131,23 +164,34 @@ namespace Common.Tests.Collections
             ulongList.InsertionSortDescending();
             ushortList.InsertionSortDescending();
             sbyteList.InsertionSortDescending();
+            
+            floatList2.Sort((a, b) => -1 * a.CompareTo(b));
+            doubleList2.Sort((a, b) => -1 * a.CompareTo(b));
+            intList2.Sort((a, b) => -1 * a.CompareTo(b));
+            longList2.Sort((a, b) => -1 * a.CompareTo(b));
+            shortList2.Sort((a, b) => -1 * a.CompareTo(b));
+            byteList2.Sort((a, b) => -1 * a.CompareTo(b));
+            uintList2.Sort((a, b) => -1 * a.CompareTo(b));
+            ulongList2.Sort((a, b) => -1 * a.CompareTo(b));
+            ushortList2.Sort((a, b) => -1 * a.CompareTo(b));
+            sbyteList2.Sort((a, b) => -1 * a.CompareTo(b));
 
             genericList.InsertionSort(new TestDescendingComparerInt());
 
             for (int i = 1; i < testSize; ++i)
             {
-                Assert.That(floatList[i - 1] >= floatList[i], "Float insertion sort descending specialization failed.");
-                Assert.That(doubleList[i - 1] >= doubleList[i], "Double insertion sort descending specialization failed.");
-                Assert.That(intList[i - 1] >= intList[i], "Int insertion sort descending specialization failed.");
-                Assert.That(longList[i - 1] >= longList[i], "Long insertion sort descending specialization failed.");
-                Assert.That(shortList[i - 1] >= shortList[i], "Short insertion sort descending specialization failed.");
-                Assert.That(byteList[i - 1] >= byteList[i], "Byte insertion sort descending specialization failed.");
-                Assert.That(uintList[i - 1] >= uintList[i], "Uint insertion sort descending specialization failed.");
-                Assert.That(ulongList[i - 1] >= ulongList[i], "Ulong insertion sort descending specialization failed.");
-                Assert.That(ushortList[i - 1] >= ushortList[i], "UShort insertion sort descending specialization failed.");
-                Assert.That(sbyteList[i - 1] >= sbyteList[i], "Sbyte insertion sort descending specialization failed.");
+                Assert.That(floatList[i] == floatList2[i], "Float insertion sort descending specialization failed.");
+                Assert.That(doubleList[i] == doubleList2[i], "Double insertion sort descending specialization failed.");
+                Assert.That(intList[i] == intList2[i], "Int insertion sort descending specialization failed.");
+                Assert.That(longList[i] == longList2[i], "Long insertion sort descending specialization failed.");
+                Assert.That(shortList[i] == shortList2[i], "Short insertion sort descending specialization failed.");
+                Assert.That(byteList[i] == byteList2[i], "Byte insertion sort descending specialization failed.");
+                Assert.That(uintList[i] == uintList2[i], "Uint insertion sort descending specialization failed.");
+                Assert.That(ulongList[i] == ulongList2[i], "Ulong insertion sort descending specialization failed.");
+                Assert.That(ushortList[i] == ushortList2[i], "UShort insertion sort descending specialization failed.");
+                Assert.That(sbyteList[i] == sbyteList2[i], "Sbyte insertion sort descending specialization failed.");
 
-                Assert.That(genericList[i - 1] >= genericList[i], "Generic insertion sort descending failed.");
+                Assert.That(genericList[i] == intList2[i], "Generic insertion sort descending failed.");
             }
         }
     }

@@ -28,7 +28,7 @@ namespace Common.Grid
 
         public override string ToString()
         {
-            return string.Format("{{ X: {0}; Y: {1}; Z: {2}}", X, Y, Z);
+            return string.Format("{{ X: {0}; Y: {1}; Z: {2}}}", X, Y, Z);
         }
 
         public static GridPosition3D operator+ (GridPosition3D i_ObjA, GridPosition3D i_ObjB)
