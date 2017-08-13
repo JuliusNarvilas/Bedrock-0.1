@@ -40,6 +40,9 @@ namespace Common.Grid.Path
             GridPathElement<TPosition, TContext, TTile> originElement;
             if (i_PathData.TryGetElement(i_Origin, out originElement) == EGridPathDataResponse.Success)
             {
+                originElement.PathingState = EGridPathfindingState.Opened;
+                m_OpenQueue.Enqueue(originElement);
+
                 OpenNeighbours(originElement);
                 while (m_OpenQueue.Count > 0)
                 {
