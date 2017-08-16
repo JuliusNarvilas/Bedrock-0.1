@@ -8,10 +8,45 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83384870dc966b04fb7e7127962ca4ad, type: 3}
+  m_Script: {fileID: 11500000, guid: 1f2977457a329c34ca4b04934f2dac95, type: 3}
   m_Name: ResourceDB
   m_EditorClassIdentifier: 
   m_Items:
+  - m_Name: Editor
+    m_Ext: 
+    m_Path: 
+    m_Type: 1
+    m_ObjectTypeName: 
+  - m_Name: ResourceReferenceDrawer
+    m_Ext: .cs
+    m_Path: Editor
+    m_Type: 2
+    m_ObjectTypeName: UnityEditor.MonoScript, UnityEditor, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  - m_Name: ResourcesDBEditor
+    m_Ext: .cs
+    m_Path: Editor
+    m_Type: 2
+    m_ObjectTypeName: UnityEditor.MonoScript, UnityEditor, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  - m_Name: ResourceReference
+    m_Ext: .cs
+    m_Path: 
+    m_Type: 2
+    m_ObjectTypeName: UnityEditor.MonoScript, UnityEditor, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  - m_Name: ResourcesDB
+    m_Ext: .cs
+    m_Path: 
+    m_Type: 2
+    m_ObjectTypeName: UnityEditor.MonoScript, UnityEditor, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  - m_Name: ResourcesDBItem
+    m_Ext: .cs
+    m_Path: 
+    m_Type: 2
+    m_ObjectTypeName: UnityEditor.MonoScript, UnityEditor, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   - m_Name: Fonts
     m_Ext: 
     m_Path: 
@@ -100,8 +135,8 @@ MonoBehaviour:
     m_Ext: .asset
     m_Path: 
     m_Type: 2
-    m_ObjectTypeName: Common.IO.ResourcesDB, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-      PublicKeyToken=null
-  m_FileCount: 10
-  m_FolderCount: 6
+    m_ObjectTypeName: Common.IO.Recources.ResourcesDB, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  m_FileCount: 15
+  m_FolderCount: 7
   UpdateAutomatically: 0

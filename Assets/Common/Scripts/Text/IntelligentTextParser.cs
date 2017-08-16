@@ -17,10 +17,6 @@ namespace Common.Text
         /// Name of the root xml element.
         /// </summary>
         private static readonly string ROOT_TAG = "root";
-        /// <summary>
-        /// The replacement space placeholder size during the measuring test.
-        /// </summary>
-        private const float SPACE_PLACEHOLDER_MEASURE_SIZE = 100;
 
         /// <summary>
         /// The Intelligent Text insert tag for making data insertion early in the parsing process.
@@ -260,7 +256,6 @@ namespace Common.Text
             {
                 color = Color.black,
                 font = TextSettings.font,
-                fontSize = (int)(SPACE_PLACEHOLDER_MEASURE_SIZE + 0.5),
                 lineSpacing = 1,
                 alignByGeometry = false,
                 fontStyle = FontStyle.Normal,
@@ -269,8 +264,6 @@ namespace Common.Text
                 horizontalOverflow = HorizontalWrapMode.Overflow,
                 pivot = new Vector2(0.5f, 0.5f),
                 resizeTextForBestFit = false,
-                resizeTextMaxSize = 600,
-                resizeTextMinSize = 6,
                 richText = false,
                 scaleFactor = 1,
                 textAnchor = TextAnchor.MiddleCenter,
@@ -282,7 +275,7 @@ namespace Common.Text
 
             var tempVerts = m_TextGenerator.verts;
             var placeholderSize = tempVerts[1].position - tempVerts[3].position;
-            m_SpacePlaceholderSizePerUnit = new Vector2(placeholderSize.x, placeholderSize.y) / SPACE_PLACEHOLDER_MEASURE_SIZE;
+            m_SpacePlaceholderSizePerUnit = new Vector2(placeholderSize.x, placeholderSize.y) / TextSettings.font.fontSize;
         }
 
         /// <summary>
@@ -305,6 +298,7 @@ namespace Common.Text
             {
                 m_DataList[i].BuildText(textAccumulator, ref this);
             }
+
             //append the space placeholder to find out its size in current text
             textAccumulator.Append(SPACE_PLACEHOLDER_STR);
             string finalText = textAccumulator.ToString();
@@ -314,19 +308,30 @@ namespace Common.Text
             var generatedLines = m_TextGenerator.lines;
             int lineCount = generatedLines.Count;
             IList<UIVertex> generatorVerts = m_TextGenerator.verts;
-            int vertSize = generatorVerts.Count;
+            int vertCount = generatorVerts.Count;
+            int trimmedVertCount = vertCount - (lineCount * 4);
             IntelligentTextMeshData initialMeshData = new IntelligentTextMeshData
             {
                 Order = 0,
                 TextLength = finalText.Length,
                 Lines = new List<IntelligentTextLineInfo>(lineCount),
-                Verts = new List<Vector3>(vertSize),
-                Colors = new List<Color32>(vertSize),
-                Uvs = new List<Vector2>(vertSize),
+                Verts = new List<Vector3>(trimmedVertCount),
+                Colors = new List<Color32>(trimmedVertCount),
+                Uvs = new List<Vector2>(trimmedVertCount),
                 SubMeshes = new List<IntelligentTextSubMeshData>(),
                 ExtentRect = Rectangle
             };
-            for(int i = 0; i < lineCount; ++i)
+
+            //track characters to skip to avoid the generated empty characters
+            var charactersToSkip = new int[lineCount];
+            for (int i = 1; i < lineCount; ++i)
+            {
+                charactersToSkip[i - 1] = generatedLines[i].startCharIdx - 1;
+            }
+            //don't skip any character when you reach this point
+            charactersToSkip[lineCount - 1] = -1;
+
+            for (int i = 0; i < lineCount; ++i)
             {
                 var line = new IntelligentTextLineInfo() {
                     Height = generatedLines[i].height,
@@ -334,16 +339,28 @@ namespace Common.Text
                 };
                 initialMeshData.Lines.Add(line);
             }
-            for (int i = 0; i < vertSize; ++i)
+
+            int skipCharacterArrayIndex = 0;
+            int skipCharacterIndex = charactersToSkip[skipCharacterArrayIndex++];
+            //removing last 2 characters because of empty space and placeholder;
+            int vertCountWithoutEnding = vertCount - (4 * 2);
+            for (int i = 0; i < vertCountWithoutEnding; ++i)
             {
-                initialMeshData.Verts.Add(generatorVerts[i].position);
-                initialMeshData.Colors.Add(generatorVerts[i].color);
-                initialMeshData.Uvs.Add(generatorVerts[i].uv0);
+                if (i != skipCharacterIndex)
+                {
+                    initialMeshData.Verts.Add(generatorVerts[i].position);
+                    initialMeshData.Colors.Add(generatorVerts[i].color);
+                    initialMeshData.Uvs.Add(generatorVerts[i].uv0);
+                }
+                else
+                {
+                    skipCharacterIndex = charactersToSkip[skipCharacterArrayIndex++];
+                }
             }
             List<IntelligentTextMeshData> meshDataList = new List<IntelligentTextMeshData>() { initialMeshData };
 
 
-            //TODO: figure out the inserted empty characters for new lines
+            //TODO: avoid using another property like "characters"
 
             //calculate the space placeholder size in current text
             var generatedChars = m_TextGenerator.characters;
@@ -354,6 +371,7 @@ namespace Common.Text
                 generatedSpacePlaceholderWidth += generatedSpacePlaceholderChar.charWidth;
             }
             m_SpacePlaceholderSize = m_SpacePlaceholderSizePerUnit * (generatedSpacePlaceholderWidth / m_SpacePlaceholderSizePerUnit.x);
+
 
 
             //building final mesh data, applying mesh adjustments from Intelligent Text data nodes

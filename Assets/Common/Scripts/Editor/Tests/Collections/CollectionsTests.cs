@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Common.Tests.Collections
 {
@@ -193,6 +194,97 @@ namespace Common.Tests.Collections
 
                 Assert.That(genericList[i] == intList2[i], "Generic insertion sort descending failed.");
             }
+        }
+
+
+        private class Integer : IComparable<Integer>
+        {
+            public readonly int Value;
+            public Integer(int value) { Value = value; }
+
+            public int CompareTo(Integer other)
+            {
+                return Value.CompareTo(other.Value);
+            }
+        }
+
+        //[Test]
+        public void InsertionSortPerformance()
+        {
+            const int TEST_SIZE = 1000000;
+            List<int> regularIntSortList = new List<int>(TEST_SIZE);
+            List<int> insertionIntSortList = new List<int>(TEST_SIZE);
+            List<Integer> regularObjSortList = new List<Integer>(TEST_SIZE);
+            List<Integer> insertionObjSortList = new List<Integer>(TEST_SIZE);
+
+            int counter = 1;
+            for(int i = 0; i < TEST_SIZE; ++i)
+            {
+                regularIntSortList.Add(counter);
+                insertionIntSortList.Add(counter);
+                regularObjSortList.Add(new Integer(counter));
+                insertionObjSortList.Add(new Integer(counter));
+                counter++;
+            }
+            
+            Stopwatch regularIntStopwatch = new Stopwatch();
+            Stopwatch insertionIntStopwatch = new Stopwatch();
+            Stopwatch regularObjStopwatch = new Stopwatch();
+            Stopwatch insertionObjStopwatch = new Stopwatch();
+
+            regularIntStopwatch.Start();
+            regularIntSortList.Sort();
+            regularIntStopwatch.Stop();
+
+            insertionIntStopwatch.Start();
+            insertionIntSortList.InsertionSortAscending();
+            insertionIntStopwatch.Stop();
+
+            regularObjStopwatch.Start();
+            regularObjSortList.Sort();
+            regularObjStopwatch.Stop();
+
+            insertionObjStopwatch.Start();
+            insertionObjSortList.InsertionSort();
+            insertionObjStopwatch.Stop();
+
+            UnityEngine.Debug.LogFormat("[Sorted Test] Regular int: {0}; Insertion int: {1}; Regular obj: {2}; Insertion obj: {3}",
+                regularIntStopwatch.ElapsedMilliseconds,
+                insertionIntStopwatch.ElapsedMilliseconds,
+                regularObjStopwatch.ElapsedMilliseconds,
+                insertionObjStopwatch.ElapsedMilliseconds);
+
+            regularIntSortList[TEST_SIZE - 1] = 0;
+            insertionIntSortList[TEST_SIZE - 1] = 0;
+            regularObjSortList[TEST_SIZE - 1] = new Integer(0);
+            insertionObjSortList[TEST_SIZE - 1] = new Integer(0);
+
+            Stopwatch regularIntStopwatch2 = new Stopwatch();
+            Stopwatch insertionIntStopwatch2 = new Stopwatch();
+            Stopwatch regularObjStopwatch2 = new Stopwatch();
+            Stopwatch insertionObjStopwatch2 = new Stopwatch();
+
+            regularIntStopwatch2.Start();
+            regularIntSortList.Sort();
+            regularIntStopwatch2.Stop();
+
+            insertionIntStopwatch2.Start();
+            insertionIntSortList.InsertionSortAscending();
+            insertionIntStopwatch2.Stop();
+
+            regularObjStopwatch2.Start();
+            regularObjSortList.Sort();
+            regularObjStopwatch2.Stop();
+
+            insertionObjStopwatch2.Start();
+            insertionObjSortList.InsertionSort();
+            insertionObjStopwatch2.Stop();
+
+            UnityEngine.Debug.LogFormat("[Semi Sorted Test] Regular int: {0}; Insertion int: {1}; Regular obj: {2}; Insertion obj: {3}",
+                regularIntStopwatch2.ElapsedMilliseconds,
+                insertionIntStopwatch2.ElapsedMilliseconds,
+                regularObjStopwatch2.ElapsedMilliseconds,
+                insertionObjStopwatch2.ElapsedMilliseconds);
         }
     }
 }

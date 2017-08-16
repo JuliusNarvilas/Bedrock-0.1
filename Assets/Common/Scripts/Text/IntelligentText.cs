@@ -230,5 +230,10 @@ namespace Common.Text
         {
             m_Parser.Dispose();
         }
+
+        void OnApplicationQuit()
+        {
+            IntelligentTextSettings.Dispose();
+        }
     }
 }

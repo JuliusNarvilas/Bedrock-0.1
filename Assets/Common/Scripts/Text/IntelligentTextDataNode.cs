@@ -137,7 +137,8 @@ namespace Common.Text
         
         public override int BuildSubMesh(int i_StartCharIndex, List<IntelligentTextMeshData> i_MeshSets, ref IntelligentTextParser i_Parser)
         {
-            int characterCount = Text.Length;
+            string trimmedString = Text.Replace("\n", "");
+            int characterCount = trimmedString.Length;
             var subMeshData = new IntelligentTextSubMeshData {
                 Trinagles = new List<int>(characterCount * 6),
                 Material = i_Parser.TextSettings.font.material
@@ -153,13 +154,18 @@ namespace Common.Text
                 subMeshData.Trinagles.Add(vertIndexStart + 3);
             }
 
+
+            float pixelsPerUnit = (float)i_Parser.TextSettings.font.fontSize / (float)i_Parser.TextSettings.fontSize;
+            float unitsPerPixel = 1.0f / pixelsPerUnit;
+            int startVertIndex = i_StartCharIndex * 4;
+            int endVertIndex = (characterCount * 4) + startVertIndex;
+            for (int i = startVertIndex; i < endVertIndex; i++)
+            {
+                i_MeshSets[0].Verts[i] *= unitsPerPixel;
+            }
             i_MeshSets[0].SubMeshes.Add(subMeshData);
 
-            int size = MeshModifier.Count;
-            for (int i = 0; i < size; ++i)
-            {
-                MeshModifier[i].ChangeMesh();
-            }
+            
             return i_StartCharIndex + characterCount;
         }
     }
@@ -273,6 +279,7 @@ namespace Common.Text
             }
             
             return i_StartCharIndex + 1;
+
         }
     }
 

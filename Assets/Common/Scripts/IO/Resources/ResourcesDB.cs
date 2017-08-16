@@ -232,6 +232,8 @@ namespace Common.IO.Recources
                 UnityEditor.EditorUtility.SetDirty(this);
                 UnityEditor.AssetDatabase.SaveAssets();
             }
+
+            OnAfterDeserialize();
         }
 #endif
 

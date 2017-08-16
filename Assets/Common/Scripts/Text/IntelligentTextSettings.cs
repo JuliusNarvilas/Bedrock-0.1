@@ -53,6 +53,18 @@ namespace Common.Text
             }
         }
 
+        public static void Dispose()
+        {
+            if(s_Instance != null)
+            {
+                if(s_Instance.m_ActiveTextRegistry.Count  > 0)
+                {
+                    Log.DebugLogWarning("IntelligentTextSettings Disposed with active text registrations.");
+                }
+                s_Instance = null;
+            }
+        }
+
         [SerializeField]
         private TextAsset m_Localisations = null;
         
