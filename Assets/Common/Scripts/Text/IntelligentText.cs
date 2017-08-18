@@ -7,6 +7,7 @@ namespace Common.Text
     /// </summary>
     /// <seealso cref="UnityEngine.MonoBehaviour" />
     [RequireComponent(typeof(RectTransform))]
+    [ExecuteInEditMode]
     public class IntelligentText : MonoBehaviour
     {
         /// <summary>
@@ -207,17 +208,35 @@ namespace Common.Text
 
         }
 
+#if UNITY_EDITOR
+        private bool m_ForceRefresh;
+
         private void OnValidate()
         {
-            if (!Application.isPlaying)
+            //defer text regeneration after the script started up, 
+            //as OnValidate can trigger too early in the bootup
+            m_ForceRefresh = true;
+        }
+
+
+        private void Update()
+        {
+            if(m_ForceRefresh)
             {
+                m_ForceRefresh = false;
                 m_RenderMode = ERenderMode.Unknown;
                 Refresh();
             }
         }
-        
+#endif
+
         private void OnEnable()
         {
+#if UNITY_EDITOR
+            //prevent two text regenerations during the bootup
+            //as IntelligentTextSettings.Instance.RegisterText calls Refresh
+            m_ForceRefresh = false;
+#endif
             IntelligentTextSettings.Instance.RegisterText(this);
         }
         
@@ -225,6 +244,8 @@ namespace Common.Text
         {
             IntelligentTextSettings.Instance.UnregisterText(this);
         }
+
+
 
         private void OnDistroy()
         {

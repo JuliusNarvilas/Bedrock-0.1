@@ -137,8 +137,7 @@ namespace Common.Text
         
         public override int BuildSubMesh(int i_StartCharIndex, List<IntelligentTextMeshData> i_MeshSets, ref IntelligentTextParser i_Parser)
         {
-            string trimmedString = Text.Replace("\n", "");
-            int characterCount = trimmedString.Length;
+            int characterCount = Text.Length;
             var subMeshData = new IntelligentTextSubMeshData {
                 Trinagles = new List<int>(characterCount * 6),
                 Material = i_Parser.TextSettings.font.material
@@ -152,16 +151,6 @@ namespace Common.Text
                 subMeshData.Trinagles.Add(vertIndexStart);
                 subMeshData.Trinagles.Add(vertIndexStart + 2);
                 subMeshData.Trinagles.Add(vertIndexStart + 3);
-            }
-
-
-            float pixelsPerUnit = (float)i_Parser.TextSettings.font.fontSize / (float)i_Parser.TextSettings.fontSize;
-            float unitsPerPixel = 1.0f / pixelsPerUnit;
-            int startVertIndex = i_StartCharIndex * 4;
-            int endVertIndex = (characterCount * 4) + startVertIndex;
-            for (int i = startVertIndex; i < endVertIndex; i++)
-            {
-                i_MeshSets[0].Verts[i] *= unitsPerPixel;
             }
             i_MeshSets[0].SubMeshes.Add(subMeshData);
 
@@ -188,9 +177,8 @@ namespace Common.Text
         public override void BuildText(StringBuilder i_TextAccumulator, ref IntelligentTextParser i_Parser)
         {
             Vector2 imageSize = ImageData.Sprite.rect.size;
-            imageSize *= i_Parser.TextSettings.fontSize / imageSize.y * Transform.scale;
-            float estimatedPlaceholderWidth = i_Parser.TextSettings.fontSize * i_Parser.SpacePlaceholderSizePerUnit.x;
-            m_PlaceholderLength = (int)(imageSize.x / estimatedPlaceholderWidth + 0.5f);
+            imageSize *= (float)i_Parser.TextSettings.fontSize / (float)imageSize.y * Transform.scale;
+            m_PlaceholderLength = Mathf.CeilToInt(imageSize.x / i_Parser.SpacePlaceholderEstimatedSize.x);
             if (m_PlaceholderLength <= 0)
             {
                 m_PlaceholderLength = 1;
@@ -206,7 +194,7 @@ namespace Common.Text
         public override int BuildSubMesh(int i_StartCharIndex, List<IntelligentTextMeshData> i_MeshSets, ref IntelligentTextParser i_Parser)
         {
             var meshData = i_MeshSets[0];
-            meshData.RemoveChars(i_StartCharIndex + 1, m_PlaceholderLength - 1);
+            meshData.RemoveChars(i_StartCharIndex + 1, (m_PlaceholderLength * IntelligentTextParser.SPACE_PLACEHOLDER_STR.Length) - 1);
 
             int startVertIndex = i_StartCharIndex * 4;
             var subMeshData = new IntelligentTextSubMeshData
@@ -234,25 +222,29 @@ namespace Common.Text
                 }
             }
 
-            float actualFontSize = i_Parser.SpacePlaceholderSize.y * i_Parser.SpacePlaceholderSizePerUnit.y;
+            var singlePlaceholderSize = i_Parser.SpacePlaceholderSize;
+            float actualFontSize = singlePlaceholderSize.y / i_Parser.SpacePlaceholderSizePerUnit.y;
             Vector2 imageSize = ImageData.Sprite.rect.size;
             imageSize *= actualFontSize / imageSize.y * Transform.scale;
-            Vector3 startVert = new Vector3();
+            
+            float horizontalAlignmentCorrection = (singlePlaceholderSize.x * m_PlaceholderLength - imageSize.x ) * 0.5f;
+            //m_PlaceholderLength * i_Parser.SpacePlacehold
+            Vector3 startVert = new Vector3(-i_Parser.SpacePlaceholderSideMarginPerUnit * actualFontSize + horizontalAlignmentCorrection, 0);
             switch(Transform.pivot)
             {
                 case EIntelligentTextTransformAnchor.Top:
-                    startVert = meshData.Verts[startVertIndex + 3];
+                    startVert += meshData.Verts[startVertIndex + 3];
                     startVert.y -= imageSize.y - matchedLine.Height;
                     break;
                 case EIntelligentTextTransformAnchor.Center:
-                    startVert = meshData.Verts[startVertIndex + 3];
+                    startVert += meshData.Verts[startVertIndex + 3];
                     startVert.y -= (imageSize.y - matchedLine.Height) * 0.5f;
                     break;
                 case EIntelligentTextTransformAnchor.Bottom:
-                    startVert = meshData.Verts[startVertIndex + 3];
+                    startVert += meshData.Verts[startVertIndex + 3];
                     break;
             }
-            
+
             meshData.Verts[startVertIndex + 3] = startVert;
             startVert.x += imageSize.x;
             meshData.Verts[startVertIndex + 1] = startVert;

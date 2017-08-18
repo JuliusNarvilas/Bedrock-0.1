@@ -51,6 +51,7 @@ namespace Common.Text
         /// The replacement space placeholder string.
         /// </summary>
         public static readonly string SPACE_PLACEHOLDER_STR = "|";
+        public static readonly float SPACE_PLACEHOLDER_MARGIN_CORRECTION_SCALER = 0.917f;
 
         /// <summary>
         /// The list of all Intelligent Text data nodes.
@@ -61,9 +62,17 @@ namespace Common.Text
         /// </summary>
         private TextGenerator m_TextGenerator;
         /// <summary>
-        /// The replacement space placeholder size per unit from the measuring test.
+        /// The replacement space placeholder size per unit from the measuring test (with margin included).
         /// </summary>
         private Vector2 m_SpacePlaceholderSizePerUnit;
+        /// <summary>
+        /// Margin value that is expected on both left and right hand side of the placeholder.
+        /// </summary>
+        private float m_SpacePlaceholderSideMarginPerUnit;
+        /// <summary>
+        /// Specified font size units per generated text pixel size.
+        /// </summary>
+        private float m_UnitsPerPixel;
         /// <summary>
         /// The replacement space placeholder size from the generated text.
         /// </summary>
@@ -93,6 +102,11 @@ namespace Common.Text
         /// The space placeholder size per unit.
         /// </value>
         public Vector2 SpacePlaceholderSizePerUnit { get { return m_SpacePlaceholderSizePerUnit; } }
+        public float SpacePlaceholderSideMarginPerUnit { get { return m_SpacePlaceholderSideMarginPerUnit; } }
+        /// <summary>
+        /// Specified font size units per generated text pixel size.
+        /// </summary>
+        public float UnitsPerPixel { get { return m_UnitsPerPixel; } }
         /// <summary>
         /// Gets the estimated size of the replacement space placeholder.
         /// </summary>
@@ -273,13 +287,19 @@ namespace Common.Text
             //update the spacing placeholder width for selected font
             m_TextGenerator.Populate(SPACE_PLACEHOLDER_STR, tempTextSettings);
 
+            float pixelsPerUnit = (float)TextSettings.font.fontSize / (float)TextSettings.fontSize;
+            m_UnitsPerPixel = 1.0f / pixelsPerUnit;
+
             var tempVerts = m_TextGenerator.verts;
             var placeholderSize = tempVerts[1].position - tempVerts[3].position;
             m_SpacePlaceholderSizePerUnit = new Vector2(placeholderSize.x, placeholderSize.y) / TextSettings.font.fontSize;
+            //margin for one
+            m_SpacePlaceholderSideMarginPerUnit = ((tempVerts[4].position.x - tempVerts[1].position.x) / TextSettings.font.fontSize) * SPACE_PLACEHOLDER_MARGIN_CORRECTION_SCALER;
+            m_SpacePlaceholderSizePerUnit.x += 2.0f * m_SpacePlaceholderSideMarginPerUnit;
         }
 
         /// <summary>
-        /// Rebuilds the INtelligent Text mesh.
+        /// Rebuilds the Intelligent Text mesh.
         /// </summary>
         public void RebuildMesh()
         {
@@ -302,60 +322,46 @@ namespace Common.Text
             //append the space placeholder to find out its size in current text
             textAccumulator.Append(SPACE_PLACEHOLDER_STR);
             string finalText = textAccumulator.ToString();
-            m_TextGenerator.Populate(finalText, TextSettings);
+
+            //prevent warning messages for fixed sized font text generation
+            TextGenerationSettings adjustedSettings = TextSettings;
+            adjustedSettings.fontSize = 0;
+            adjustedSettings.resizeTextMinSize = 0;
+            adjustedSettings.resizeTextMaxSize = 0;
+            m_TextGenerator.Populate(finalText, adjustedSettings);
+
 
             //create line data for calculating mesh adjustments for added elements like images
             var generatedLines = m_TextGenerator.lines;
             int lineCount = generatedLines.Count;
             IList<UIVertex> generatorVerts = m_TextGenerator.verts;
             int vertCount = generatorVerts.Count;
-            int trimmedVertCount = vertCount - (lineCount * 4);
             IntelligentTextMeshData initialMeshData = new IntelligentTextMeshData
             {
                 Order = 0,
                 TextLength = finalText.Length,
                 Lines = new List<IntelligentTextLineInfo>(lineCount),
-                Verts = new List<Vector3>(trimmedVertCount),
-                Colors = new List<Color32>(trimmedVertCount),
-                Uvs = new List<Vector2>(trimmedVertCount),
+                Verts = new List<Vector3>(vertCount),
+                Colors = new List<Color32>(vertCount),
+                Uvs = new List<Vector2>(vertCount),
                 SubMeshes = new List<IntelligentTextSubMeshData>(),
                 ExtentRect = Rectangle
             };
-
-            //track characters to skip to avoid the generated empty characters
-            var charactersToSkip = new int[lineCount];
-            for (int i = 1; i < lineCount; ++i)
-            {
-                charactersToSkip[i - 1] = generatedLines[i].startCharIdx - 1;
-            }
-            //don't skip any character when you reach this point
-            charactersToSkip[lineCount - 1] = -1;
-
+            
             for (int i = 0; i < lineCount; ++i)
             {
                 var line = new IntelligentTextLineInfo() {
-                    Height = generatedLines[i].height,
+                    Height = generatedLines[i].height * m_UnitsPerPixel,
                     StartCharIndex = generatedLines[i].startCharIdx
                 };
                 initialMeshData.Lines.Add(line);
             }
-
-            int skipCharacterArrayIndex = 0;
-            int skipCharacterIndex = charactersToSkip[skipCharacterArrayIndex++];
-            //removing last 2 characters because of empty space and placeholder;
-            int vertCountWithoutEnding = vertCount - (4 * 2);
-            for (int i = 0; i < vertCountWithoutEnding; ++i)
+            
+            for (int i = 0; i < vertCount; ++i)
             {
-                if (i != skipCharacterIndex)
-                {
-                    initialMeshData.Verts.Add(generatorVerts[i].position);
-                    initialMeshData.Colors.Add(generatorVerts[i].color);
-                    initialMeshData.Uvs.Add(generatorVerts[i].uv0);
-                }
-                else
-                {
-                    skipCharacterIndex = charactersToSkip[skipCharacterArrayIndex++];
-                }
+                initialMeshData.Verts.Add(generatorVerts[i].position * m_UnitsPerPixel);
+                initialMeshData.Colors.Add(generatorVerts[i].color);
+                initialMeshData.Uvs.Add(generatorVerts[i].uv0);
             }
             List<IntelligentTextMeshData> meshDataList = new List<IntelligentTextMeshData>() { initialMeshData };
 
@@ -363,13 +369,14 @@ namespace Common.Text
             //TODO: avoid using another property like "characters"
 
             //calculate the space placeholder size in current text
-            var generatedChars = m_TextGenerator.characters;
             float generatedSpacePlaceholderWidth = 0;
             for (int i = SPACE_PLACEHOLDER_STR.Length; i > 0; --i)
             {
-                var generatedSpacePlaceholderChar = generatedChars[finalText.Length - i];
-                generatedSpacePlaceholderWidth += generatedSpacePlaceholderChar.charWidth;
+                int leftMostVertIndex = (initialMeshData.TextLength - 1) * 4 + 3;
+                generatedSpacePlaceholderWidth += (initialMeshData.Verts[leftMostVertIndex - 1].x - initialMeshData.Verts[leftMostVertIndex].x);
+                generatedSpacePlaceholderWidth += (initialMeshData.Verts[leftMostVertIndex + 4].x - initialMeshData.Verts[leftMostVertIndex - 1].x) * 2.0f * SPACE_PLACEHOLDER_MARGIN_CORRECTION_SCALER;
             }
+
             m_SpacePlaceholderSize = m_SpacePlaceholderSizePerUnit * (generatedSpacePlaceholderWidth / m_SpacePlaceholderSizePerUnit.x);
 
 
@@ -383,7 +390,8 @@ namespace Common.Text
             //sorting the rendered elements if they require to appear in a specific order
             meshDataList.InsertionSort(IntelligentTextMeshData.Sorter.Ascending);
 
-            //combining seperate mesh data
+            //combining seperate mesh data into a single Unity mesh
+            //with submesh triangle lists and materials
             var combinedData = meshDataList[0];
             for (int i = 1; i < meshDataList.Count; ++i)
             {

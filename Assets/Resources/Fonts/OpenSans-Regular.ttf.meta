@@ -4,11 +4,12 @@ timeCreated: 1475363630
 licenseType: Free
 TrueTypeFontImporter:
   serializedVersion: 4
-  fontSize: 20
+  fontSize: 30
   forceTextureCase: -1
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
+  fontName: Open Sans
   fontNames:
   - Open Sans
   fallbackFontReferences: []
