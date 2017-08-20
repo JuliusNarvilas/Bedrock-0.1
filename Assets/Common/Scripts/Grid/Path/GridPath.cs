@@ -189,12 +189,20 @@ namespace Common.Grid.Path
             m_GridPathData = null;
         }
 
-        private GridPathElement<TPosition, TContext, TTile> FillPathResult(GridPathElement<TPosition, TContext, TTile> i_Element, int counter)
+        /// <summary>
+        /// Filling OpenList with copies of the path elements in the right order.
+        /// Copies are made and parent relationship remapped to new elements because
+        /// original elements will be recycled to the object pool.
+        /// </summary>
+        /// <param name="i_Element">Element to backtrack from.</param>
+        /// <param name="i_Counter">Backtrack counter.</param>
+        /// <returns></returns>
+        private GridPathElement<TPosition, TContext, TTile> FillPathResult(GridPathElement<TPosition, TContext, TTile> i_Element, int i_Counter)
         {
             if(i_Element != null)
             {
-                var inserted = FillPathResult(i_Element.Parent, ++counter);
-                var resultElement = m_OpenList[m_OpenList.Count - counter];
+                var inserted = FillPathResult(i_Element.Parent, ++i_Counter);
+                var resultElement = m_OpenList[m_OpenList.Count - i_Counter];
                 resultElement.Set(i_Element);
                 resultElement.Parent = inserted;
                 
@@ -202,7 +210,7 @@ namespace Common.Grid.Path
             }
             else
             {
-                GridPathElementPool<TPosition, TContext, TTile>.GLOBAL.GetMultiple(counter, m_OpenList);
+                GridPathElementPool<TPosition, TContext, TTile>.GLOBAL.GetMultiple(i_Counter, m_OpenList);
             }
             return null;
         }

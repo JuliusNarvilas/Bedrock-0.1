@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define INTELLIGENT_TEXT_NO_BEST_FIT
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
@@ -192,6 +194,7 @@ namespace Common.Text
                 switch (node.NodeType)
                 {
                     case XmlNodeType.Text:
+                    case XmlNodeType.Whitespace:
                         {
                             IntelligentTextDataNode data = new IntelligentTextDataTextNode(
                                 m_DataList.Count,
@@ -274,7 +277,7 @@ namespace Common.Text
                 alignByGeometry = false,
                 fontStyle = FontStyle.Normal,
                 generateOutOfBounds = true,
-                generationExtents = new Vector2(100, 100),
+                generationExtents = new Vector2(1000, 1000),
                 horizontalOverflow = HorizontalWrapMode.Overflow,
                 pivot = new Vector2(0.5f, 0.5f),
                 resizeTextForBestFit = false,
@@ -286,9 +289,6 @@ namespace Common.Text
             };
             //update the spacing placeholder width for selected font
             m_TextGenerator.Populate(SPACE_PLACEHOLDER_STR, tempTextSettings);
-
-            float pixelsPerUnit = (float)TextSettings.font.fontSize / (float)TextSettings.fontSize;
-            m_UnitsPerPixel = 1.0f / pixelsPerUnit;
 
             var tempVerts = m_TextGenerator.verts;
             var placeholderSize = tempVerts[1].position - tempVerts[3].position;
@@ -310,6 +310,10 @@ namespace Common.Text
                 m_Mesh.hideFlags = HideFlags.DontSaveInBuild | HideFlags.DontSaveInEditor | HideFlags.HideInHierarchy | HideFlags.NotEditable;
             }
             m_Mesh.Clear(false);
+            m_TextGenerator.Invalidate();
+
+            float pixelsPerUnit = (float)TextSettings.font.fontSize / (float)TextSettings.fontSize;
+            m_UnitsPerPixel = 1.0f / pixelsPerUnit;
 
             //build up the final text
             StringBuilder textAccumulator = new StringBuilder();
@@ -319,12 +323,15 @@ namespace Common.Text
                 m_DataList[i].BuildText(textAccumulator, ref this);
             }
 
+#if !INTELLIGENT_TEXT_NO_BEST_FIT
             //append the space placeholder to find out its size in current text
             textAccumulator.Append(SPACE_PLACEHOLDER_STR);
+#endif
             string finalText = textAccumulator.ToString();
 
             //prevent warning messages for fixed sized font text generation
             TextGenerationSettings adjustedSettings = TextSettings;
+            adjustedSettings.generationExtents /= UnitsPerPixel;
             adjustedSettings.fontSize = 0;
             adjustedSettings.resizeTextMinSize = 0;
             adjustedSettings.resizeTextMaxSize = 0;
@@ -365,9 +372,7 @@ namespace Common.Text
             }
             List<IntelligentTextMeshData> meshDataList = new List<IntelligentTextMeshData>() { initialMeshData };
 
-
-            //TODO: avoid using another property like "characters"
-
+#if  !INTELLIGENT_TEXT_NO_BEST_FIT
             //calculate the space placeholder size in current text
             float generatedSpacePlaceholderWidth = 0;
             for (int i = SPACE_PLACEHOLDER_STR.Length; i > 0; --i)
@@ -378,7 +383,9 @@ namespace Common.Text
             }
 
             m_SpacePlaceholderSize = m_SpacePlaceholderSizePerUnit * (generatedSpacePlaceholderWidth / m_SpacePlaceholderSizePerUnit.x);
-
+#else
+            m_SpacePlaceholderSize = SpacePlaceholderEstimatedSize;
+#endif
 
 
             //building final mesh data, applying mesh adjustments from Intelligent Text data nodes
@@ -449,6 +456,7 @@ namespace Common.Text
             Setup();
             m_DataList.Clear();
             var document = new XmlDocument();
+            document.PreserveWhitespace = true;
             var dataRoot = new IntelligentTextDataNode(0);
             m_DataList.Add(dataRoot);
 

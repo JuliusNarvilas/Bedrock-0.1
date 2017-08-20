@@ -6,45 +6,43 @@ using UnityEngine;
 
 namespace Tools
 {
-    public class GridMapObjectBehaviour : MonoBehaviour
+    [ExecuteInEditMode]
+    public class GridMapObjectBehaviour<TPosition, TTileSettings> : MonoBehaviour
     {
-        private static GridMapEditorBehaviour Editor;
+        private static GridMapEditorBehaviour<TPosition, TTileSettings> Editor;
 
         public static int ActiveGridObject = -1;
         public static int ActiveGridTileIndex = -1;
 
         public string Id;
-        public GridPosition3D Offset;
-        public GridPosition3D Size;
+        public TPosition Position;
+        public TPosition Size;
         public int ObjectSettings;
-        public List<GridMapObjectTile> Tiles;
+        public List<GridMapObjectTile3D> Tiles;
         public List<GridMapObjectConnection> Connections;
 
-        private void Start()
-        {
-            
-        }
+
 
         public GridPosition3D GetFinalGridPosition()
         {
             if (Editor == null)
             {
-                Editor = FindObjectOfType<GridMapEditorBehaviour>();
+                Editor = FindObjectOfType<GridMapEditorBehaviour<GridPosition3D, int>>();
             }
             if (Editor != null)
             {
-                return GetFinalPositionRecursive(Editor.MapTypeData, transform.parent, Offset);
+                return GetFinalPositionRecursive(Editor.MapTypeData, transform.parent, Position);
             }
-            return GetFinalPositionRecursive(new GridMapEditorCuboidTypeData(), transform.parent, Offset);
+            return GetFinalPositionRecursive(new GridMapEditorCuboidTypeData(), transform.parent, Position);
         }
 
-        private static GridPosition3D GetFinalPositionRecursive(IGridMapEditorTypeData i_MapTypeData, Transform i_Target, GridPosition3D i_Pos)
+        private static GridPosition3D GetFinalPositionRecursive(GridMapEditorTypeData<GridPosition3D, int> i_MapTypeData, Transform i_Target, GridPosition3D i_Pos)
         {
             var parent = i_Target.GetComponent<GridMapObjectBehaviour>();
             if(parent != null)
             {
-                var rotatedPos = i_MapTypeData.RotateGridPosition(i_Pos, parent.transform.rotation);
-                return GetFinalPositionRecursive(i_MapTypeData, parent.transform.parent, rotatedPos + parent.Offset);
+                var rotatedPos = i_MapTypeData.RotateGridOffset(i_Pos, i_MapTypeData.RotationToSnapPoint(parent.transform.rotation));
+                return GetFinalPositionRecursive(i_MapTypeData, parent.transform.parent, rotatedPos + parent.Position);
             }
             return i_Pos;
         }
@@ -53,7 +51,7 @@ namespace Tools
         {
             if(Editor == null)
             {
-                Editor = FindObjectOfType<GridMapEditorBehaviour>();
+                Editor = FindObjectOfType<GridMapEditorBehaviour<GridPosition3D, int>>();
             }
             if (Editor != null)
             {
@@ -65,7 +63,7 @@ namespace Tools
         {
             if (Editor == null)
             {
-                Editor = FindObjectOfType<GridMapEditorBehaviour>();
+                Editor = FindObjectOfType<GridMapEditorBehaviour<GridPosition3D, int>>();
             }
             if (Editor != null)
             {
@@ -78,6 +76,31 @@ namespace Tools
                 }
             }
         }
+        
+        
+#if UNITY_EDITOR
+        private bool m_ValidateUpdate;
+
+        private void OnValidate()
+        {
+            m_ValidateUpdate = true;
+        }
+
+
+        private void Update()
+        {
+            if (m_ValidateUpdate)
+            {
+                m_ValidateUpdate = false;
+                SnapToGrid(false);
+            }
+            else if (transform.hasChanged)
+            {
+                transform.hasChanged = false;
+                SnapToGrid(true);
+            }
+        }
+#endif
 
         public void SnapToGrid(bool fromTransform = false)
         {
@@ -85,27 +108,18 @@ namespace Tools
 
             if (Editor == null)
             {
-                Editor = FindObjectOfType<GridMapEditorBehaviour>();
+                Editor = FindObjectOfType<GridMapEditorBehaviour<GridPosition3D, int>>();
             }
             if (Editor != null)
             {
-                var gridObjRotation = Editor.MapTypeData.SnapRotationToGrid(transform.rotation);
-                transform.rotation = gridObjRotation;
-
-                Vector3 tileSize = Editor.TileSize;
                 if (fromTransform)
                 {
-                    Vector3 halfSize = tileSize * 0.5f;
-                    Vector3 position = transform.localPosition + halfSize;
-
-                    Offset = new GridPosition3D(
-                        Mathf.FloorToInt(position.x / tileSize.x),
-                        Mathf.FloorToInt(position.z / tileSize.z),
-                        Mathf.FloorToInt(position.y / tileSize.y)
-                        );
+                    Position = Editor.MapTypeData.SnapToGrid(transform, Editor.TileSize);
                 }
-
-                transform.localPosition = new Vector3(Offset.X * tileSize.x, Offset.Z * tileSize.y, Offset.Y * tileSize.z);
+                else
+                {
+                    Editor.MapTypeData.SnapToGrid(Position, Editor.TileSize, 0, transform);
+                }
             }
         }
     }

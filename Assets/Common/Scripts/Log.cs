@@ -1,30 +1,15 @@
 ﻿#if DEBUG_LOGS_OFF
     #undef DEBUG_LOGS
-    #if !DEBUG_ASSERTS
-        #define DEBUG_ASSERTS_OFF
-    #endif
 #elif UNITY_EDITOR || DEBUG || DEBUG_LOGS
     #define DEBUG_LOGS
-    #if DEBUG_ASSERTS_OFF
-        #undef DEBUG_ASSERTS
-    #else
-        #define DEBUG_ASSERTS
-    #endif
 #else
     #define DEBUG_LOGS_OFF
-    #if !DEBUG_ASSERTS
-        #define DEBUG_ASSERTS_OFF
-    #endif
 #endif
 
 #if PRODUCTION_LOGS_OFF
     #undef PRODUCTION_LOGS
-    #if !PRODUCTION_ASSERTS
-        #define PRODUCTION_ASSERTS_OFF
-    #endif
 #else
     #define PRODUCTION_LOGS
-    #define PRODUCTION_ASSERTS
 #endif
 
 using System.Diagnostics;
@@ -97,7 +82,7 @@ namespace Common
             }
         }
 
-        [Conditional("DEBUG_ASSERTS")]
+        [Conditional("DEBUG_LOGS")]
         public static void DebugAssert(bool i_Assertion, string i_Message, params object[] i_Args)
         {
             Debug.m_Assert(i_Assertion, i_Message, i_Args);
@@ -148,7 +133,7 @@ namespace Common
             }
         }
 
-        [Conditional("PRODUCTION_ASSERTS")]
+        [Conditional("PRODUCTION_LOGS")]
         public static void ProductionAssert(bool i_Assertion, string i_Message, params object[] i_Args)
         {
             Debug.m_Assert(i_Assertion, i_Message, i_Args);

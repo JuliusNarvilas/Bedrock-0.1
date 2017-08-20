@@ -29,7 +29,7 @@ namespace Common.Grid.Path.Specializations
 
             if (m_Data.Count < 1)
             {
-                m_Data.Add(new GridPathElement<GridPosition3D, TContext, TTile>());
+                m_Data.Add(GridPathElementPool<GridPosition3D, TContext, TTile>.GLOBAL.Get());
             }
             TTile tile;
             if (m_Source.TryGetTile(i_Min, out tile))
@@ -66,22 +66,18 @@ namespace Common.Grid.Path.Specializations
                     int oldSizeY = m_Max.Y - m_Min.Y + 1;
                     int oldSizeZ = m_Max.Z - m_Min.Z + 1;
                     int newDataCount = newSizeX * newSizeY * newSizeZ;
-                    int oldDataCount = oldSizeX * oldSizeY * oldSizeZ;
-                    var oldData = new List<GridPathElement<GridPosition3D, TContext, TTile>>(oldDataCount);
+                    int freeElementIndex = oldSizeX * oldSizeY * oldSizeZ;
+                    int addedDataCount = newDataCount - m_Data.Count;
+                    var oldData = new List<GridPathElement<GridPosition3D, TContext, TTile>>(m_Data);
 
                     //fill in required new data elements
                     if (m_Data.Capacity < newDataCount)
                     {
                         m_Data.Capacity = newDataCount;
                     }
-                    for (int i = m_Data.Count; i < newDataCount; ++i)
+                    if (addedDataCount > 0)
                     {
-                        m_Data.Add(new GridPathElement<GridPosition3D, TContext, TTile>());
-                    }
-                    //record old data to map elements into a new position afterwards
-                    for (int i = 0; i < oldDataCount; ++i)
-                    {
-                        oldData.Add(m_Data[i]);
+                        GridPathElementPool<GridPosition3D, TContext, TTile>.GLOBAL.GetMultiple(addedDataCount, m_Data);
                     }
 
                     int newStrideX = newSizeY * newSizeZ;
@@ -89,18 +85,17 @@ namespace Common.Grid.Path.Specializations
                     int oldStrideX = oldSizeY * oldSizeZ;
                     int oldStrideY = oldSizeZ;
                     //indicater for what index to take new data elements from 
-                    int freeElementIndex = oldDataCount;
                     for (int itX = newMin.X; itX <= newMax.X; ++itX)
                     {
                         bool inOldXRange = m_Min.X <= itX && m_Max.X >= itX;
                         for (int itY = newMin.Y; itY <= newMax.Y; ++itY)
                         {
-                            bool inOldYRange = m_Min.Y <= itY && m_Max.Y >= itY;
+                            bool inOldXYRange = inOldXRange && m_Min.Y <= itY && m_Max.Y >= itY;
                             for (int itZ = newMin.Z; itZ <= newMax.Z; ++itZ)
                             {
                                 int newIndex = newStrideX * (itX - newMin.X) + newStrideY * (itY - newMin.Y) + (itZ - newMin.Z);
                                 //if is old data
-                                if (inOldXRange && inOldYRange && m_Min.Z <= itZ && m_Max.Z >= itZ)
+                                if (inOldXYRange && m_Min.Z <= itZ && m_Max.Z >= itZ)
                                 {
                                     int oldIndex = oldStrideX * (itX - m_Min.X) + oldStrideY * (itY - m_Min.Y) + (itZ - m_Min.Z);
                                     m_Data[newIndex] = oldData[oldIndex];

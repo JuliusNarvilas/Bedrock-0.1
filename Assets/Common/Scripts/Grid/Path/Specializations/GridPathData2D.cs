@@ -71,7 +71,10 @@ namespace Common.Grid.Path.Specializations
                     {
                         m_Data.Capacity = newDataCount;
                     }
-                    GridPathElementPool<GridPosition2D, TContext, TTile>.GLOBAL.GetMultiple(addedDataCount, m_Data);
+                    if (addedDataCount > 0)
+                    {
+                        GridPathElementPool<GridPosition2D, TContext, TTile>.GLOBAL.GetMultiple(addedDataCount, m_Data);
+                    }
 
                     //record old data to map elements into a new position afterwards
                     for (int i = 0; i < oldDataCount; ++i)

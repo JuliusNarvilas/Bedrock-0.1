@@ -1,40 +1,34 @@
 {
-    "inserts": [
-        {
-            "id": "text1",
-            "data": "Test localization text1-2"
-        },
-        {
-            "id": "text2",
-            "data": "Test localization <insert id=\"text3\" /> inserted-2"
-        },
-        {
-            "id": "text3",
-            "data": "text3-2"
-        },
-        {
-            "id": "text3",
-            "data": "text3-2"
-        }
-    ],
-    "styles": [
-        {
-            "id": "HeadStyle",
-            "data": {
-                "fontPath": "Fonts\\",
-                "fontSize": 20,
-                "color": { "r": 1, "g": 0, "b": 0, "a": 1 },
-                "lineSpacing": 1.0
-            }
-        },
-        {
-            "id": "BodyStyle",
-            "data": {
-                "fontPath": "Fonts\\",
-                "fontSize": 16,
-                "color": { "r": 0, "g": 1, "b": 0, "a": 1 },
-                "lineSpacing": 1.0
-            }
-        }
-    ]
+  "inserts": [
+    {
+      "id": "text3",
+      "data": "text3 (EN override);"
+    },
+    {
+      "id": "text4",
+      "data": "PlayerOne: <image id=\"image2\" transformId=\"transform1\"/> name"
+    }
+  ],
+  "styles": [
+    {
+      "id": "DefaultEn",
+      "fontPath": "Fonts/OpenSans-Regular",
+      "fontSize": 15,
+      "color": {
+        "r": 0,
+        "g": 0,
+        "b": 1,
+        "a": 1
+      },
+      "lineSpacing": 1.0
+    }
+  ],
+  "images": [
+    {
+      "id": "image2",
+      "texturePath": "Images/Test",
+      "sprite": "Test_2",
+      "materialPath": "Materials/Sprite"
+    }
+  ]
 }

@@ -3,7 +3,7 @@
 namespace Common.Text
 {
     /// <summary>
-    /// A behaviour for introducing text with more features into a scene.
+    /// A behaviour for introducing text into a scene.
     /// </summary>
     /// <seealso cref="UnityEngine.MonoBehaviour" />
     [RequireComponent(typeof(RectTransform))]
@@ -36,8 +36,6 @@ namespace Common.Text
         protected bool m_GenerateOutOfBounds = false;
         [SerializeField]
         protected HorizontalWrapMode m_HorizontalOverflow = HorizontalWrapMode.Wrap;
-        [SerializeField]
-        protected bool m_BestFit = false;
         [SerializeField]
         protected bool m_RichText = false;
         [SerializeField]
@@ -188,7 +186,7 @@ namespace Common.Text
                 m_Parser.TextSettings.generationExtents = transform.rect.size;
                 m_Parser.TextSettings.horizontalOverflow = m_HorizontalOverflow;
                 m_Parser.TextSettings.pivot = new Vector2(0.5f, 0.5f);
-                m_Parser.TextSettings.resizeTextForBestFit = m_BestFit;
+                m_Parser.TextSettings.resizeTextForBestFit = false;
                 m_Parser.TextSettings.resizeTextMaxSize = 600;
                 m_Parser.TextSettings.resizeTextMinSize = 6;
                 m_Parser.TextSettings.richText = m_RichText;
@@ -221,8 +219,9 @@ namespace Common.Text
 
         private void Update()
         {
-            if(m_ForceRefresh)
+            if(m_ForceRefresh || transform.hasChanged)
             {
+                transform.hasChanged = false;
                 m_ForceRefresh = false;
                 m_RenderMode = ERenderMode.Unknown;
                 Refresh();

@@ -92,6 +92,7 @@ namespace Common.Grid.Specializations
 
 #if !GRID_COORDINATE_SAFETY_DISABLE
             }
+            Log.DebugLogWarning("CuboidGrid: TryGetTile received position out of bounds.");
             o_Tile = null;
             return false;
 #endif
@@ -176,7 +177,9 @@ namespace Common.Grid.Specializations
             o_Tile = new GridTilePhysicalData(worldPos, m_TilePhysicalShape);
 
 #if !GRID_COORDINATE_SAFETY_DISABLE
-            return i_Position.X >= 0 && i_Position.X < m_SizeX && i_Position.Y >= 0 && i_Position.Y < m_SizeY && i_Position.Z >= 0 && i_Position.Z < m_SizeZ;
+            var result = i_Position.X >= 0 && i_Position.X < m_SizeX && i_Position.Y >= 0 && i_Position.Y < m_SizeY && i_Position.Z >= 0 && i_Position.Z < m_SizeZ;
+            Log.DebugLogWarningIf(!result, "CuboidGrid: TryGetTilePhysicalData received position out of bounds.");
+            return result;
 #else
             return true;
 #endif

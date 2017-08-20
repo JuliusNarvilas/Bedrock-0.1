@@ -21,9 +21,7 @@ namespace Common
         /// <returns>The equality result.</returns>
         public static bool EqualsWithMarginF(float i_NumberA, float i_NumberB, float i_ErrorMargin = DEFAULT_FLOAT_EQUALITY_ERROR_MARGIN)
         {
-#if UNITY_EDITOR || DEBUG
             Log.DebugAssert(i_ErrorMargin >= 0, "MathHelper.EqualsWithMarginF has invalid error marging: {0} >= 0", i_ErrorMargin);
-#endif
             return Math.Abs(i_NumberA - i_NumberB) <= i_ErrorMargin;
         }
 
@@ -37,9 +35,7 @@ namespace Common
         /// <returns>The equality result.</returns>
         public static bool EqualsWithMargin(double i_NumberA, double i_NumberB, float i_ErrorMargin = DEFAULT_FLOAT_EQUALITY_ERROR_MARGIN)
         {
-#if UNITY_EDITOR || DEBUG
             Log.DebugAssert(i_ErrorMargin >= 0, "MathHelper.EqualsWithMarginF has invalid error marging: {0} >= 0", i_ErrorMargin);
-#endif
             return Math.Abs(i_NumberA - i_NumberB) <= i_ErrorMargin;
         }
 

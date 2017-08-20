@@ -1,6 +1,9 @@
-﻿using Common.Graphics;
+﻿using Common;
+using Common.Graphics;
 using Common.Grid;
 using Common.Grid.Generation;
+using Common.Grid.Serialization;
+using Common.Grid.Serialization.Specialization;
 using Game.Grid;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,56 +12,66 @@ using UnityEngine;
 namespace Tools
 {
 
-    public class GridMapEditorBehaviour : MonoBehaviour
+    public class GridMapEditorBehaviour<TPosition, TTileSettings> : MonoBehaviour
     {
         public static readonly Color NORMAL_TILE_COLOR = new Color(0f, 0f, 1f, 0.5f);
         public static readonly Color EMPTY_TILE_COLOR = new Color(0.7f, 0.7f, 1f, 0.5f);
         public static readonly Color SELECTED_TILE_COLOR = new Color(1f, 1f, 0f, 0.5f);
         public static readonly Color SELECTED_EMPTY_TILE_COLOR = new Color(1f, 1f, 0.7f, 0.5f);
 
+        public GridSave<TPosition, TTileSettings> SaveAsset;
 
-        public GridPosition3D Size;
+        public TPosition Size;
         public Vector3 TileSize;
-        public IGridMapEditorTypeData MapTypeData = new GridMapEditorCuboidTypeData();
-        public IGridMapEditorTypeDrawing MapTypeDrawing = new GridMapEditorCuboidTypeDrawing();
+        public GridMapEditorTypeData<TPosition, TTileSettings> MapTypeData;
         public bool DrawTileData = true;
 
         private Vector3 m_LastTileSize;
-        
+
+        public void Load()
+        {
+            if (SaveAsset != null)
+            {
+                Size = SaveAsset.GridSize;
+                TileSize = SaveAsset.PhysicalTileSize;
+            }
+            else
+            {
+                Log.ProductionLogWarning("GridMapEditorBehaviour.Load(): No save asset given.");
+            }
+        }
+
+        public void Save()
+        {
+            if (SaveAsset != null)
+            {
+                SaveAsset.GridSize = Size;
+                SaveAsset.PhysicalTileSize = TileSize;
+            }
+            else
+            {
+                Log.ProductionLogWarning("GridMapEditorBehaviour.Save(): No save asset given.");
+            }
+        }
+
+
+
 
         public void DrawGridMapObject(GridMapObjectBehaviour i_Obj)
         {
             if (DrawTileData)
             {
-                MapTypeDrawing.DrawObject(this, i_Obj);
+                MapTypeData.DrawObjectBounds();
+                //MapTypeDrawing.DrawObject(this, i_Obj);
             }
         }
         
 
-        public static float GetBlockerHeight(EGridTileSettings settingsFlags)
+        private void OnDrawGizmos()
         {
-            var blockerFlags = EGridTileSettings.BlockerFullySetStride & settingsFlags;
-
-            switch(blockerFlags)
-            {
-                case EGridTileSettings.None:
-                    break;
-                case EGridTileSettings.BlockerExtraSmall:
-                    return 1.0f / 6.0f;
-                case EGridTileSettings.BlockerSmall:
-                    return 2.0f / 6.0f;
-                case EGridTileSettings.BlockerMedium:
-                    return 3.0f / 6.0f;
-                case EGridTileSettings.BlockerMediumLarge:
-                    return 4.0f / 6.0f;
-                case EGridTileSettings.BlockerLarge:
-                    return 5.0f / 6.0f;
-                case EGridTileSettings.BlockerExtraLarge:
-                    return 6.0f / 6.0f;
-            }
-            return 0.0f;
+            //MapTypeDrawing.DrawBounds(this);
         }
-        
+
         public void OnValidate()
         {
             GridMapObjectBehaviour[] gridMapObjects = null;

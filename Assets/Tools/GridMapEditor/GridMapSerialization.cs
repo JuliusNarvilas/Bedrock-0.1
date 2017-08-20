@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Grid;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,7 @@ namespace Tools
 
 
 
-        public void Serialize(GridMapEditorBehaviour i_Editor)
+        public void Serialize(GridMapEditorBehaviour<GridPosition3D, int> i_Editor)
         {
             foreach (Transform child in i_Editor.transform)
             {

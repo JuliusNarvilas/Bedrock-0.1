@@ -10,7 +10,7 @@ namespace Common
 
         public MutexLock(Mutex i_Mutex)
         {
-            Log.DebugAssert(i_Mutex != null, "Invalid null property.");
+            Log.ProductionAssert(i_Mutex != null, "MutexLock: Invalid null property.");
             m_Mutex = i_Mutex;
             m_Mutex.WaitOne();
         }

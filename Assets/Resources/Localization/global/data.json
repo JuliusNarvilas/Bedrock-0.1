@@ -2,19 +2,15 @@
     "inserts": [
         {
             "id": "text1",
-            "data": "Test localization text1-2"
+            "data": "Test1;"
         },
         {
             "id": "text2",
-            "data": "Test localization <insert id=\"text3\" /> inserted-2"
+            "data": "Text2 start; <insert id=\"text3\" /> text2 end;"
         },
         {
             "id": "text3",
-            "data": "text3-2"
-        },
-        {
-            "id": "text3",
-            "data": "text3-2"
+            "data": "text3;"
         }
     ],
     "styles": [
@@ -24,27 +20,13 @@
             "fontSize": 10,
             "color": { "r": 1, "g": 0, "b": 0, "a": 1 },
             "lineSpacing": 1.0
-        },
-        {
-            "id": "HeadStyle",
-            "fontPath": "Fonts/",
-            "fontSize": 20,
-            "color": { "r": 1, "g": 0, "b": 0, "a": 1 },
-            "lineSpacing": 1.0
-        },
-        {
-            "id": "BodyStyle",
-            "fontPath": "Fonts/",
-            "fontSize": 16,
-            "color": { "r": 0, "g": 1, "b": 0, "a": 1 },
-            "lineSpacing": 1.0
         }
     ],
     "images": [
         {
             "id": "image1",
-            "texturePath": "Images/me face",
-            "sprite": "me face 0",
+            "texturePath": "Images/Test",
+            "sprite": "Test_0",
             "materialPath": "Materials/Sprite"
         }
     ],

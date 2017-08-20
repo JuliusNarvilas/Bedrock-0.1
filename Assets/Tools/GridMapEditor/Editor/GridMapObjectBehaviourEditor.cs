@@ -43,7 +43,7 @@ namespace Tools
 
             m_OtherProperties = new List<SerializedProperty> {
                 serializedObject.FindProperty("Id"),
-                serializedObject.FindProperty("Offset"),
+                serializedObject.FindProperty("Position"),
                 serializedObject.FindProperty("Size"),
                 serializedObject.FindProperty("ObjectSettings")
             };
@@ -106,8 +106,6 @@ namespace Tools
             m_GridConnectionsList.DoLayoutList();
 
             serializedObject.ApplyModifiedProperties();
-
-            m_TargetObject.SnapToGrid(true);
         }
         
     }

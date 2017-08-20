@@ -63,18 +63,6 @@ MonoBehaviour:
     m_Path: 
     m_Type: 1
     m_ObjectTypeName: 
-  - m_Name: me face
-    m_Ext: .jpg
-    m_Path: Images
-    m_Type: 2
-    m_ObjectTypeName: UnityEngine.Texture2D, UnityEngine, Version=0.0.0.0, Culture=neutral,
-      PublicKeyToken=null
-  - m_Name: profile
-    m_Ext: .png
-    m_Path: Images
-    m_Type: 2
-    m_ObjectTypeName: UnityEngine.Texture2D, UnityEngine, Version=0.0.0.0, Culture=neutral,
-      PublicKeyToken=null
   - m_Name: Test
     m_Ext: .jpg
     m_Path: Images
@@ -137,6 +125,6 @@ MonoBehaviour:
     m_Type: 2
     m_ObjectTypeName: Common.IO.Recources.ResourcesDB, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  m_FileCount: 15
+  m_FileCount: 13
   m_FolderCount: 7
   UpdateAutomatically: 0

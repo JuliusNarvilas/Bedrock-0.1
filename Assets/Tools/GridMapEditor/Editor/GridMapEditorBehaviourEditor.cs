@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Common.Grid;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditorInternal;
@@ -41,4 +42,23 @@ namespace Tools
         }
     }
     */
+
+    [CustomEditor(typeof(GridMapEditorBehaviour<GridPosition3D, int>))]
+    class GridMapEditorBehaviourEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Load"))
+            {
+                ((GridMapEditorBehaviour<GridPosition3D, int>)target).Load();
+            }
+            if (GUILayout.Button("Save"))
+            {
+                ((GridMapEditorBehaviour<GridPosition3D, int>)target).Save();
+            }
+            GUILayout.EndHorizontal();
+            DrawDefaultInspector();
+        }
+    }
 }

@@ -4,17 +4,33 @@ using Game.Grid;
 using System;
 using UnityEngine;
 
-namespace Tools
+namespace Tools.Specialization
 {
     [Serializable]
-    public class GridMapObjectTile
+    public class GridMapObjectTile3D : IGridMapObjectTile<GridPosition3D, int>
     {
-        public GridPosition3D Position;
+        [SerializeField]
+        private GridPosition3D m_Position;
 
-        [EnumFlag(typeof(GridMapObjectTile), "ConvertBlockerEnumToFlags", "ConvertBlockerEnumToValue")]
-        public EGridTileSettings TileBlockerSettings;
+        [SerializeField]
+        [EnumFlag(typeof(GridMapObjectTile3D), "ConvertBlockerEnumToFlags", "ConvertBlockerEnumToValue")]
+        private EGridTileSettings m_TileBlockerSettings;
+
+        [SerializeField]
         [EnumFlag]
-        public EGameGridObjectSettings Settings;
+        private EGameGridObjectSettings m_Settings;
+
+        public GridPosition3D Position
+        {
+            get { return Position; }
+        }
+
+        public int Settings
+        {
+            get { return (int) m_Settings; }
+        }
+
+
 
         private static int ConvertBlockerEnumToFlags(int i_Value)
         {
