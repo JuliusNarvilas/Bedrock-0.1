@@ -6,8 +6,7 @@ using System.Text;
 
 namespace Tools.Specialization
 {
-    public class GridMapEditorCuboidBehaviour : GridMapEditorBehaviour<GridPosition3D, int>
+    public class GridMapEditor3DBehaviour : GridMapEditorBehaviour<GridPosition3D, int>
     {
-
     }
 }

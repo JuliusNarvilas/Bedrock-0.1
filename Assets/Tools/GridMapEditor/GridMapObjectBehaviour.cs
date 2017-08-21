@@ -1,13 +1,15 @@
 ﻿
+using System;
 using Common.Grid;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using System.Linq;
 
 namespace Tools
 {
     [ExecuteInEditMode]
-    public class GridMapObjectBehaviour<TPosition, TTileSettings> : MonoBehaviour
+    public abstract class GridMapObjectBehaviour<TPosition, TTileSettings> : MonoBehaviour
     {
         private static GridMapEditorBehaviour<TPosition, TTileSettings> Editor;
 
@@ -18,44 +20,59 @@ namespace Tools
         public TPosition Position;
         public TPosition Size;
         public int ObjectSettings;
-        public List<GridMapObjectTile3D> Tiles;
-        public List<GridMapObjectConnection> Connections;
+
+        public abstract int GetTileCount();
+        public abstract IGridMapObjectTile<TPosition, TTileSettings> GetTile(int index);
+
+        public List<GridMapObjectConnection> Connections = new List<GridMapObjectConnection>();
+        
 
 
-
-        public GridPosition3D GetFinalGridPosition()
+        public TPosition GetFinalGridPosition()
         {
             if (Editor == null)
             {
-                Editor = FindObjectOfType<GridMapEditorBehaviour<GridPosition3D, int>>();
+                Editor = FindObjectOfType<GridMapEditorBehaviour<TPosition, TTileSettings>>();
             }
             if (Editor != null)
             {
-                return GetFinalPositionRecursive(Editor.MapTypeData, transform.parent, Position);
+                return GetFinalPositionRecursive(Editor.GetMapTypeData(), transform.parent, Position);
             }
-            return GetFinalPositionRecursive(new GridMapEditorCuboidTypeData(), transform.parent, Position);
+            throw new NotImplementedException("GridMapEditorBehaviour not found");
         }
 
-        private static GridPosition3D GetFinalPositionRecursive(GridMapEditorTypeData<GridPosition3D, int> i_MapTypeData, Transform i_Target, GridPosition3D i_Pos)
+        private TPosition GetFinalPositionRecursive(GridMapEditorTypeData<TPosition, TTileSettings> i_MapTypeData, Transform i_Target, TPosition i_Pos)
         {
-            var parent = i_Target.GetComponent<GridMapObjectBehaviour>();
+            var parent = i_Target.GetComponent<GridMapObjectBehaviour<TPosition, TTileSettings>>();
             if(parent != null)
             {
-                var rotatedPos = i_MapTypeData.RotateGridOffset(i_Pos, i_MapTypeData.RotationToSnapPoint(parent.transform.rotation));
-                return GetFinalPositionRecursive(i_MapTypeData, parent.transform.parent, rotatedPos + parent.Position);
+                var rotatedPos = i_MapTypeData.GetAbsolutePosition(parent.Position, parent.Size, i_Pos, i_MapTypeData.RotationToSnapPoint(parent.transform.rotation));
+                return GetFinalPositionRecursive(i_MapTypeData, parent.transform.parent, rotatedPos);
             }
             return i_Pos;
         }
 
+#if UNITY_EDITOR
+
         private void OnDrawGizmos()
         {
-            if(Editor == null)
+            if (Editor == null)
             {
-                Editor = FindObjectOfType<GridMapEditorBehaviour<GridPosition3D, int>>();
+                Editor = FindObjectOfType<GridMapEditorBehaviour<TPosition, TTileSettings>>();
             }
             if (Editor != null)
             {
-                Editor.DrawGridMapObject(this);
+                Editor.DrawGridMapObject(this, m_GizmoDrawCalls);
+            }
+
+            if (m_GizmoDrawCalls.Count > 0)
+            {
+                var orderedDraws = m_GizmoDrawCalls.OrderByDescending(x => x.Distance);
+                foreach (var item in orderedDraws)
+                {
+                    item.Draw();
+                }
+                m_GizmoDrawCalls.Clear();
             }
         }
 
@@ -63,7 +80,7 @@ namespace Tools
         {
             if (Editor == null)
             {
-                Editor = FindObjectOfType<GridMapEditorBehaviour<GridPosition3D, int>>();
+                Editor = FindObjectOfType<GridMapEditorBehaviour<TPosition, TTileSettings>>();
             }
             if (Editor != null)
             {
@@ -72,14 +89,24 @@ namespace Tools
                 {
                     ActiveGridObject = instanceId;
                     SceneView.RepaintAll();
-                    Editor.DrawGridMapObject(this);
+                    Editor.DrawGridMapObject(this, m_GizmoDrawCalls);
                 }
+            }
+
+            if (m_GizmoDrawCalls.Count > 0)
+            {
+                var orderedDraws = m_GizmoDrawCalls.OrderByDescending(x => x.Distance);
+                foreach (var item in orderedDraws)
+                {
+                    item.Draw();
+                }
+                m_GizmoDrawCalls.Clear();
             }
         }
         
         
-#if UNITY_EDITOR
         private bool m_ValidateUpdate;
+        private List<GridMapEditorDrawRef> m_GizmoDrawCalls = new List<GridMapEditorDrawRef>();
 
         private void OnValidate()
         {
@@ -108,17 +135,17 @@ namespace Tools
 
             if (Editor == null)
             {
-                Editor = FindObjectOfType<GridMapEditorBehaviour<GridPosition3D, int>>();
+                Editor = FindObjectOfType<GridMapEditorBehaviour<TPosition, TTileSettings>>();
             }
             if (Editor != null)
             {
                 if (fromTransform)
                 {
-                    Position = Editor.MapTypeData.SnapToGrid(transform, Editor.TileSize);
+                    Position = Editor.GetMapTypeData().SnapToGrid(transform, Editor.TileSize);
                 }
                 else
                 {
-                    Editor.MapTypeData.SnapToGrid(Position, Editor.TileSize, 0, transform);
+                    Editor.GetMapTypeData().SnapToGrid(Position, Editor.TileSize, 0, transform);
                 }
             }
         }

@@ -23,8 +23,13 @@ namespace Tools
 
         public TPosition Size;
         public Vector3 TileSize;
-        public GridMapEditorTypeData<TPosition, TTileSettings> MapTypeData;
         public bool DrawTileData = true;
+        public ScriptableObject TypeData;
+
+        public GridMapEditorTypeData<TPosition, TTileSettings> GetMapTypeData()
+        {
+            return (GridMapEditorTypeData<TPosition, TTileSettings>) TypeData;
+        }
 
         private Vector3 m_LastTileSize;
 
@@ -57,36 +62,37 @@ namespace Tools
 
 
 
-        public void DrawGridMapObject(GridMapObjectBehaviour i_Obj)
+        public void DrawGridMapObject(GridMapObjectBehaviour<TPosition, TTileSettings> i_Obj, List<GridMapEditorDrawRef> o_DrawCalls)
         {
             if (DrawTileData)
             {
-                MapTypeData.DrawObjectBounds();
-                //MapTypeDrawing.DrawObject(this, i_Obj);
+                var typeData = GetMapTypeData();
+                if(GetMapTypeData() != null)
+                    typeData.DrawObject(this, i_Obj, o_DrawCalls);
             }
         }
         
 
         private void OnDrawGizmos()
         {
-            //MapTypeDrawing.DrawBounds(this);
+            var typeData = GetMapTypeData();
+            if (GetMapTypeData() != null)
+                typeData.DrawGridBounds(transform.position, Size, TileSize);
         }
 
         public void OnValidate()
         {
-            GridMapObjectBehaviour[] gridMapObjects = null;
+            GridMapObjectBehaviour<TPosition, TTileSettings>[] gridMapObjects = null;
             if (m_LastTileSize != TileSize)
             {
                 m_LastTileSize = TileSize;
-                gridMapObjects = GetComponentsInChildren<GridMapObjectBehaviour>();
+                gridMapObjects = GetComponentsInChildren<GridMapObjectBehaviour<TPosition, TTileSettings>>();
 
                 foreach (var gridObject in gridMapObjects)
                 {
                     gridObject.SnapToGrid(false);
                 }
             }
-
-            
         }
 
 

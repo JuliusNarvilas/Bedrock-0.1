@@ -1,24 +1,25 @@
 ﻿
 using System.Collections.Generic;
+using Tools.Specialization;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
 namespace Tools
 {
-    [CustomEditor(typeof(GridMapObjectBehaviour))]
+    [CustomEditor(typeof(GridMapObjectCuboidBehaviour))]
     public class GridMapObjectBehaviourEditor : Editor
     {
         private ReorderableList m_GridTileList;
         private ReorderableList m_GridConnectionsList;
         private List<SerializedProperty> m_OtherProperties;
-        private GridMapObjectBehaviour m_TargetObject;
+        private GridMapObjectCuboidBehaviour m_TargetObject;
 
         // Use this for initialization
         public void OnEnable()
         {
             m_GridTileList = new ReorderableList(serializedObject,
-                serializedObject.FindProperty("Tiles"),
+                serializedObject.FindProperty("m_Tiles"),
                 true, true, true, true);
 
             m_GridTileList.elementHeightCallback = GetTileHeight;
@@ -48,16 +49,16 @@ namespace Tools
                 serializedObject.FindProperty("ObjectSettings")
             };
 
-            m_TargetObject = serializedObject.targetObject as GridMapObjectBehaviour;
+            m_TargetObject = serializedObject.targetObject as GridMapObjectCuboidBehaviour;
         }
 
         private void UpdateSelectDraw(ReorderableList list)
         {
-            int oldObjectId = GridMapObjectBehaviour.ActiveGridObject;
-            int oldTileIndex = GridMapObjectBehaviour.ActiveGridTileIndex;
-            GridMapObjectBehaviour.ActiveGridObject = m_TargetObject.GetInstanceID();
-            GridMapObjectBehaviour.ActiveGridTileIndex = list.index;
-            if (GridMapObjectBehaviour.ActiveGridObject != oldObjectId || GridMapObjectBehaviour.ActiveGridTileIndex != oldTileIndex)
+            int oldObjectId = GridMapObjectCuboidBehaviour.ActiveGridObject;
+            int oldTileIndex = GridMapObjectCuboidBehaviour.ActiveGridTileIndex;
+            GridMapObjectCuboidBehaviour.ActiveGridObject = m_TargetObject.GetInstanceID();
+            GridMapObjectCuboidBehaviour.ActiveGridTileIndex = list.index;
+            if (GridMapObjectCuboidBehaviour.ActiveGridObject != oldObjectId || GridMapObjectCuboidBehaviour.ActiveGridTileIndex != oldTileIndex)
             {
                 SceneView.RepaintAll();
             }

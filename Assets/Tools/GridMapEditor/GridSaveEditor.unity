@@ -530,16 +530,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 960849334}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8cc52a1983b5ff545ab5e8ecc3a23a1b, type: 3}
+  m_Script: {fileID: 11500000, guid: 9201099b8456dca448d0eb6ae0b6cf47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SaveAsset: {fileID: 11400000, guid: 4ce26a7c6042e5349adb2e9e2ae9c703, type: 2}
   Size:
-    X: 5
-    Y: 4
-    Z: 2
-  TileSize: {x: 1, y: 1.5, z: 1}
+    X: 6
+    Y: 6
+    Z: 1
+  TileSize: {x: 1, y: 1, z: 1}
   DrawTileData: 1
+  TypeData: {fileID: 11400000, guid: 558b0c26a2e1354419ff5199a8240a78, type: 2}
 --- !u!4 &960849336
 Transform:
   m_ObjectHideFlags: 0
@@ -547,7 +547,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 960849334}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 1.76, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1106278760}
@@ -578,12 +578,12 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1106278759}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: 0, z: 2}
+  m_LocalPosition: {x: 2, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 960849336}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: -0.52, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1106278761
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -592,33 +592,33 @@ MonoBehaviour:
   m_GameObject: {fileID: 1106278759}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ebacdec5587c304e987091f909bbd49, type: 3}
+  m_Script: {fileID: 11500000, guid: 22dc4add7cdae3249bc519e2fa52536a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Id: 
+  Id: Test1
   Position:
-    X: 1
-    Y: 2
+    X: 2
+    Y: 0
     Z: 0
   Size:
-    X: 2
-    Y: 1
-    Z: 1
+    X: 3
+    Y: 5
+    Z: 2
   ObjectSettings: 0
-  Tiles:
-  - Position:
-      X: 0
-      Y: 0
-      Z: 0
-    TileBlockerSettings: 0
-    Settings: 0
-  - Position:
+  Connections: []
+  m_Tiles:
+  - m_Position:
       X: 1
       Y: 0
       Z: 0
-    TileBlockerSettings: 0
-    Settings: 0
-  Connections: []
+    m_TileBlockerSettings: 0
+    m_Settings: 0
+  - m_Position:
+      X: 1
+      Y: 1
+      Z: 1
+    m_TileBlockerSettings: 0
+    m_Settings: 0
 --- !u!1 &1404470349
 GameObject:
   m_ObjectHideFlags: 0
@@ -736,7 +736,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1899926297}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 960849336}
@@ -750,41 +750,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 1899926297}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ebacdec5587c304e987091f909bbd49, type: 3}
+  m_Script: {fileID: 11500000, guid: 22dc4add7cdae3249bc519e2fa52536a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Id: 
+  Id: Test2
   Position:
-    X: 2
+    X: 0
     Y: 0
     Z: 0
   Size:
     X: 2
     Y: 2
-    Z: 1
+    Z: 2
   ObjectSettings: 0
-  Tiles:
-  - Position:
-      X: 0
-      Y: 0
-      Z: 0
-    TileBlockerSettings: 19
-    Settings: 0
-  - Position:
-      X: 1
-      Y: 0
-      Z: 0
-    TileBlockerSettings: 0
-    Settings: 0
-  - Position:
-      X: 1
-      Y: 1
-      Z: 0
-    TileBlockerSettings: 0
-    Settings: 0
-  Connections:
-  - Position:
-      X: 0
-      Y: 0
-      Z: 0
-    Settings: 48
+  Connections: []
+  m_Tiles: []

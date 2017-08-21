@@ -11,7 +11,7 @@ namespace Tools
     {
 
 
-
+        /*
         public void Serialize(GridMapEditorBehaviour<GridPosition3D, int> i_Editor)
         {
             foreach (Transform child in i_Editor.transform)
@@ -28,5 +28,6 @@ namespace Tools
         {
 
         }
+        */
     }
 }

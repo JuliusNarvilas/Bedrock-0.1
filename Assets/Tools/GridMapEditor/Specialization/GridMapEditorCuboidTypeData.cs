@@ -39,27 +39,48 @@ namespace Tools
 
         public override GridPosition3D GetAbsolutePosition(GridPosition3D i_Origin, GridPosition3D i_Size, GridPosition3D i_Offset, int i_OriginRotation)
         {
-            throw new NotImplementedException();
+            switch (i_OriginRotation)
+            {
+                case 0:
+                    break;
+                case 1:
+                    i_Offset = new GridPosition3D(i_Offset.Z, i_Offset.Y, i_Size.X - i_Offset.X);
+                    break;
+                case 2:
+                    i_Offset = new GridPosition3D(i_Size.X - i_Offset.X, i_Offset.Y, i_Size.Z - i_Offset.Z);
+                    break;
+                case 3:
+                    i_Offset = new GridPosition3D(i_Size.Z - i_Offset.Z, i_Offset.Y, i_Offset.X);
+                    break;
+                default:
+                    Log.DebugLogWarning("GridMapEditorCuboidTypeData.GetAbsolutePosition: Invalid rotation: {0}", i_OriginRotation);
+                    break;
+            }
+            return i_Origin + i_Offset;
         }
 
 
 
-        public override GridPosition3D RotateGridOffset(GridPosition3D i_Offset, int i_Rotation)
+        public override GridPosition3D RotateGridVector(GridPosition3D i_Direction, int i_Rotation)
         {
             switch (i_Rotation)
             {
                 case 0:
-                    return i_Offset;
+                    break;
                 case 1:
-                    return new GridPosition3D(i_Offset.Y, -i_Offset.X, i_Offset.Z);
+                    i_Direction = new GridPosition3D(i_Direction.Z, i_Direction.Y, -i_Direction.X);
+                    break;
                 case 2:
-                    return new GridPosition3D(-i_Offset.X, -i_Offset.Y, i_Offset.Z);
+                    i_Direction = new GridPosition3D(-i_Direction.X, i_Direction.Y, -i_Direction.Z);
+                    break;
                 case 3:
-                    return new GridPosition3D(-i_Offset.Y, i_Offset.X, i_Offset.Z);
+                    i_Direction = new GridPosition3D(- i_Direction.Z, i_Direction.Y, i_Direction.X);
+                    break;
                 default:
-                    Log.DebugLogWarning("GridMapEditorCuboidTypeData.RotateGridOffset: Invalid rotation: {0}", i_Rotation);
-                    return i_Offset;
+                    Log.DebugLogWarning("GridMapEditorCuboidTypeData.RotateGridDirection: Invalid rotation: {0}", i_Rotation);
+                    break;
             }
+            return i_Direction;
         }
 
         public override GridPosition3D SnapToGrid(Transform i_Transform, Vector3 i_TileSize)
@@ -88,8 +109,9 @@ namespace Tools
             Gizmos.DrawWireCube(i_WorldPosition, sizeVec);
         }
 
-        public override void DrawObjectBounds(Vector3 i_GridOrigin, GridPosition3D i_GridPosition, GridPosition3D i_GridObjectSize, Vector3 i_TileSize)
+        public override void DrawObjectBounds(Vector3 i_GridOrigin, GridPosition3D i_GridPosition, GridPosition3D i_GridObjectSize, Vector3 i_TileSize, int i_RotationSnapPoint)
         {
+            i_GridObjectSize = RotateGridVector(i_GridObjectSize, i_RotationSnapPoint);
             Vector3 gridOffset = new Vector3(i_GridPosition.X * i_TileSize.x, i_GridPosition.Y * i_TileSize.y, i_GridPosition.Z * i_TileSize.z);
             var worldPos = i_GridOrigin + gridOffset;
             Vector3 sizeVec = new Vector3(i_GridObjectSize.X * i_TileSize.x, i_GridObjectSize.Z * i_TileSize.y, i_GridObjectSize.Y * i_TileSize.z);

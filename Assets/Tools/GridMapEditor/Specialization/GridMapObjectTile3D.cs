@@ -22,12 +22,12 @@ namespace Tools.Specialization
 
         public GridPosition3D Position
         {
-            get { return Position; }
+            get { return m_Position; }
         }
 
         public int Settings
         {
-            get { return (int) m_Settings; }
+            get { return (int) m_Settings | (int) m_TileBlockerSettings; }
         }
 
 
