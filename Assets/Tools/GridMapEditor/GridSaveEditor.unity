@@ -334,7 +334,6 @@ GameObject:
   - component: {fileID: 810758100}
   - component: {fileID: 810758099}
   - component: {fileID: 810758098}
-  - component: {fileID: 810758102}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -406,17 +405,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 49.303, z: 0}
---- !u!114 &810758102
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 810758097}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b9522cd7fadd6649a6b6aee79db5a54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &871496714
 GameObject:
   m_ObjectHideFlags: 0
@@ -536,7 +524,7 @@ MonoBehaviour:
   Size:
     X: 6
     Y: 6
-    Z: 1
+    Z: 7
   TileSize: {x: 1, y: 1, z: 1}
   DrawTileData: 1
   TypeData: {fileID: 11400000, guid: 558b0c26a2e1354419ff5199a8240a78, type: 2}
@@ -547,7 +535,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 960849334}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.76, y: 0, z: 0}
+  m_LocalPosition: {x: 1.5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1106278760}
@@ -578,12 +566,12 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1106278759}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2, y: 0, z: 0}
+  m_LocalPosition: {x: 4, y: 4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 960849336}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 180, y: 0, z: 0}
 --- !u!114 &1106278761
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -597,13 +585,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Id: Test1
   Position:
-    X: 2
+    X: 4
     Y: 0
-    Z: 0
+    Z: 4
   Size:
-    X: 3
-    Y: 5
-    Z: 2
+    X: 4
+    Y: 4
+    Z: 3
   ObjectSettings: 0
   Connections: []
   m_Tiles:
@@ -615,7 +603,7 @@ MonoBehaviour:
     m_Settings: 0
   - m_Position:
       X: 1
-      Y: 1
+      Y: 0
       Z: 1
     m_TileBlockerSettings: 0
     m_Settings: 0
@@ -760,7 +748,7 @@ MonoBehaviour:
     Z: 0
   Size:
     X: 2
-    Y: 2
+    Y: 3
     Z: 2
   ObjectSettings: 0
   Connections: []

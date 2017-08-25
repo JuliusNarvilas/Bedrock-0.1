@@ -5,20 +5,23 @@ using Common.Grid.Generation;
 using Common.Grid.Serialization;
 using Common.Grid.Serialization.Specialization;
 using Game.Grid;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Tools
 {
+    [Serializable]
+    public struct MaterialReference
+    {
+        public string Key;
+        public Material Mat;
+    }
 
+    [ExecuteInEditMode]
     public class GridMapEditorBehaviour<TPosition, TTileSettings> : MonoBehaviour
     {
-        public static readonly Color NORMAL_TILE_COLOR = new Color(0f, 0f, 1f, 0.5f);
-        public static readonly Color EMPTY_TILE_COLOR = new Color(0.7f, 0.7f, 1f, 0.5f);
-        public static readonly Color SELECTED_TILE_COLOR = new Color(1f, 1f, 0f, 0.5f);
-        public static readonly Color SELECTED_EMPTY_TILE_COLOR = new Color(1f, 1f, 0.7f, 0.5f);
-
         public GridSave<TPosition, TTileSettings> SaveAsset;
 
         public TPosition Size;
@@ -30,8 +33,6 @@ namespace Tools
         {
             return (GridMapEditorTypeData<TPosition, TTileSettings>) TypeData;
         }
-
-        private Vector3 m_LastTileSize;
 
         public void Load()
         {
@@ -58,43 +59,66 @@ namespace Tools
                 Log.ProductionLogWarning("GridMapEditorBehaviour.Save(): No save asset given.");
             }
         }
+        
 
 
+        private bool m_ValidateUpdate;
+        private GameObject m_DebugDisplay;
 
-
-        public void DrawGridMapObject(GridMapObjectBehaviour<TPosition, TTileSettings> i_Obj, List<GridMapEditorDrawRef> o_DrawCalls)
+        private void Update()
         {
-            if (DrawTileData)
+            var typeData = GetMapTypeData();
+            if (typeData != null && typeData.Updated)
             {
-                var typeData = GetMapTypeData();
-                if(GetMapTypeData() != null)
-                    typeData.DrawObject(this, i_Obj, o_DrawCalls);
+                typeData.Updated = false;
+                m_ValidateUpdate = true;
             }
+            if (m_ValidateUpdate)
+            {
+                m_ValidateUpdate = false;
+                var gridMapObjects = GetComponentsInChildren<GridMapObjectBehaviour<TPosition, TTileSettings>>();
+                foreach (var gridObject in gridMapObjects)
+                {
+                    gridObject.OnValidate();
+                }
+                DrawDebug();
+            }
+        }
+
+
+        private void DrawDebug()
+        {
+            if (m_DebugDisplay != null)
+            {
+                DestroyImmediate(m_DebugDisplay);
+            }
+            m_DebugDisplay = GetMapTypeData().BuildGridDebug(this);
+            m_DebugDisplay.transform.SetParent(transform, false);
+        }
+
+
+        private void OnValidate()
+        {
+            m_ValidateUpdate = true;
         }
         
 
-        private void OnDrawGizmos()
+        private Material GetMaterialFrom(string key, List<MaterialReference> list)
         {
-            var typeData = GetMapTypeData();
-            if (GetMapTypeData() != null)
-                typeData.DrawGridBounds(transform.position, Size, TileSize);
-        }
-
-        public void OnValidate()
-        {
-            GridMapObjectBehaviour<TPosition, TTileSettings>[] gridMapObjects = null;
-            if (m_LastTileSize != TileSize)
+            Material alternative = null;
+            foreach (var obj in list)
             {
-                m_LastTileSize = TileSize;
-                gridMapObjects = GetComponentsInChildren<GridMapObjectBehaviour<TPosition, TTileSettings>>();
-
-                foreach (var gridObject in gridMapObjects)
+                if (obj.Key == key)
                 {
-                    gridObject.SnapToGrid(false);
+                    return obj.Mat;
+                }
+                else if (obj.Key == "Default")
+                {
+                    alternative = obj.Mat;
                 }
             }
+            return alternative;
         }
-
 
     }
 }

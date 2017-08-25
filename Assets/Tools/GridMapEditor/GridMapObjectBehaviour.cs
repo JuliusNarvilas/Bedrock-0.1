@@ -25,7 +25,7 @@ namespace Tools
         public abstract IGridMapObjectTile<TPosition, TTileSettings> GetTile(int index);
 
         public List<GridMapObjectConnection> Connections = new List<GridMapObjectConnection>();
-        
+
 
 
         public TPosition GetFinalGridPosition()
@@ -44,7 +44,7 @@ namespace Tools
         private TPosition GetFinalPositionRecursive(GridMapEditorTypeData<TPosition, TTileSettings> i_MapTypeData, Transform i_Target, TPosition i_Pos)
         {
             var parent = i_Target.GetComponent<GridMapObjectBehaviour<TPosition, TTileSettings>>();
-            if(parent != null)
+            if (parent != null)
             {
                 var rotatedPos = i_MapTypeData.GetAbsolutePosition(parent.Position, parent.Size, i_Pos, i_MapTypeData.RotationToSnapPoint(parent.transform.rotation));
                 return GetFinalPositionRecursive(i_MapTypeData, parent.transform.parent, rotatedPos);
@@ -54,65 +54,14 @@ namespace Tools
 
 #if UNITY_EDITOR
 
-        private void OnDrawGizmos()
-        {
-            if (Editor == null)
-            {
-                Editor = FindObjectOfType<GridMapEditorBehaviour<TPosition, TTileSettings>>();
-            }
-            if (Editor != null)
-            {
-                Editor.DrawGridMapObject(this, m_GizmoDrawCalls);
-            }
-
-            if (m_GizmoDrawCalls.Count > 0)
-            {
-                var orderedDraws = m_GizmoDrawCalls.OrderByDescending(x => x.Distance);
-                foreach (var item in orderedDraws)
-                {
-                    item.Draw();
-                }
-                m_GizmoDrawCalls.Clear();
-            }
-        }
-
-        private void OnDrawGizmosSelected()
-        {
-            if (Editor == null)
-            {
-                Editor = FindObjectOfType<GridMapEditorBehaviour<TPosition, TTileSettings>>();
-            }
-            if (Editor != null)
-            {
-                int instanceId = GetInstanceID();
-                if (ActiveGridObject != instanceId)
-                {
-                    ActiveGridObject = instanceId;
-                    SceneView.RepaintAll();
-                    Editor.DrawGridMapObject(this, m_GizmoDrawCalls);
-                }
-            }
-
-            if (m_GizmoDrawCalls.Count > 0)
-            {
-                var orderedDraws = m_GizmoDrawCalls.OrderByDescending(x => x.Distance);
-                foreach (var item in orderedDraws)
-                {
-                    item.Draw();
-                }
-                m_GizmoDrawCalls.Clear();
-            }
-        }
-        
-        
         private bool m_ValidateUpdate;
-        private List<GridMapEditorDrawRef> m_GizmoDrawCalls = new List<GridMapEditorDrawRef>();
+        private GameObject m_DebugDisplay;
 
-        private void OnValidate()
+        public void OnValidate()
         {
             m_ValidateUpdate = true;
+            
         }
-
 
         private void Update()
         {
@@ -120,6 +69,8 @@ namespace Tools
             {
                 m_ValidateUpdate = false;
                 SnapToGrid(false);
+                transform.hasChanged = false;
+                DrawDebug();
             }
             else if (transform.hasChanged)
             {
@@ -127,7 +78,6 @@ namespace Tools
                 SnapToGrid(true);
             }
         }
-#endif
 
         public void SnapToGrid(bool fromTransform = false)
         {
@@ -141,13 +91,31 @@ namespace Tools
             {
                 if (fromTransform)
                 {
-                    Position = Editor.GetMapTypeData().SnapToGrid(transform, Editor.TileSize);
+                    Position = Editor.GetMapTypeData().SnapToGrid(transform, Size, Editor.TileSize);
                 }
                 else
                 {
-                    Editor.GetMapTypeData().SnapToGrid(Position, Editor.TileSize, 0, transform);
+                    Editor.GetMapTypeData().SnapToGrid(Position, Size, Editor.TileSize, 0, transform);
                 }
             }
         }
+
+        public void DrawDebug()
+        {
+            if (m_DebugDisplay != null)
+            {
+                DestroyImmediate(m_DebugDisplay);
+            }
+            if (Editor == null)
+            {
+                Editor = FindObjectOfType<GridMapEditorBehaviour<TPosition, TTileSettings>>();
+            }
+            if (Editor != null)
+            {
+                m_DebugDisplay = Editor.GetMapTypeData().BuildObjectDebug(this, Editor.TileSize);
+                m_DebugDisplay.transform.SetParent(transform, false);
+            }
+        }
+#endif
     }
 }

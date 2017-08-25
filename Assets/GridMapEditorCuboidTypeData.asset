@@ -11,3 +11,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a9dbb28be6e49f47bc0cec07789442b, type: 3}
   m_Name: GridMapEditorCuboidTypeData
   m_EditorClassIdentifier: 
+  MatTileBaseDefault: {fileID: 2100000, guid: 9d0a9b2857fe2b54ab34bddc84382aba, type: 2}
+  MatTileBaseEmpty: {fileID: 2100000, guid: 59e8c4c7b463fe64a950de8634d90a5e, type: 2}
+  MatTileBaseSelected: {fileID: 2100000, guid: d694abc18c21222449221573d9ffc776, type: 2}
+  MatTileBaseSelectedEmpty: {fileID: 2100000, guid: 0f3c5c9f632e4324eb98cc0992da7227,
+    type: 2}
+  MatTileWallDefault: {fileID: 2100000, guid: 84fc19c2f8d26d64eb2ac57adbfd5a3f, type: 2}
+  MatTileWallSelected: {fileID: 2100000, guid: 4dc4c95576086cf408f8005b0868b101, type: 2}
+  MatGridObjectDefault: {fileID: 2100000, guid: 007718fda54c5804c833eb8fc16e83b2,
+    type: 2}
+  MatGridObjectSelected: {fileID: 2100000, guid: 575aa601b9a683f40ba355f3119b0a6d,
+    type: 2}
+  MatGridDefault: {fileID: 2100000, guid: 3dde3ffc42ba05a449f459600a91e384, type: 2}
+  TileBaseLift: 0.09

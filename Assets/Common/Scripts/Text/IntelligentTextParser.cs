@@ -307,7 +307,7 @@ namespace Common.Text
             {
                 m_Mesh = new Mesh();
                 m_Mesh.name = "Text Mesh";
-                m_Mesh.hideFlags = HideFlags.DontSaveInBuild | HideFlags.DontSaveInEditor | HideFlags.HideInHierarchy | HideFlags.NotEditable;
+                m_Mesh.hideFlags = HideFlags.HideAndDontSave;
             }
             m_Mesh.Clear(false);
             m_TextGenerator.Invalidate();

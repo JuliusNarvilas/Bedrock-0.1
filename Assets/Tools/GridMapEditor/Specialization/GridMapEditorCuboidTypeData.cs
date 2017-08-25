@@ -15,10 +15,33 @@ namespace Tools
     {
         public static readonly Quaternion ROTATION_90_DEG = Quaternion.Euler(0, 90, 0);
 
+        public Material MatTileBaseDefault;
+        public Material MatTileBaseEmpty;
+        public Material MatTileBaseSelected;
+        public Material MatTileBaseSelectedEmpty;
+
+        public Material MatTileWallDefault;
+        public Material MatTileWallSelected;
+
+        public Material MatGridObjectDefault;
+        public Material MatGridObjectSelected;
+
+        public Material MatGridDefault;
+
+        [Range(0.001f, 1.0f)]
+        public float TileBaseLift = 0.1f;
+
+
         [MenuItem("Assets/Create/Grid/MapEditorTypeData/Cuboid")]
         public static void CreateAsset()
         {
             ScriptableObjectUtility.CreateAsset<GridMapEditorCuboidTypeData>();
+        }
+
+        
+        private void OnValidate()
+        {
+            Updated = true;
         }
 
         public override int RotationToSnapPoint(Quaternion i_Rotation)
@@ -83,43 +106,31 @@ namespace Tools
             return i_Direction;
         }
 
-        public override GridPosition3D SnapToGrid(Transform i_Transform, Vector3 i_TileSize)
+        public override GridPosition3D SnapToGrid(Transform i_Transform, GridPosition3D i_ObjSize, Vector3 i_TileSize)
         {
-            i_Transform.localRotation = SnapPointToRotation(RotationToSnapPoint(i_Transform.localRotation));
+            int snapPoint = RotationToSnapPoint(i_Transform.localRotation);
+            i_Transform.localRotation = SnapPointToRotation(snapPoint);
             Vector3 halfSize = i_TileSize * 0.5f;
             Vector3 position = i_Transform.localPosition + halfSize;
-
-            return new GridPosition3D(
+            var result = new GridPosition3D(
                 Mathf.FloorToInt(position.x / i_TileSize.x),
                 Mathf.FloorToInt(position.z / i_TileSize.z),
                 Mathf.FloorToInt(position.y / i_TileSize.y)
                 );
+
+            result = GetAbsolutePosition(result, i_ObjSize, new GridPosition3D(), snapPoint);
+            i_Transform.localPosition =  new Vector3(result.X * i_TileSize.x, result.Y * i_TileSize.y, result.Z * i_TileSize.z);
+            return result;
         }
 
-        public override void SnapToGrid(GridPosition3D i_Position, Vector3 i_TileSize, int i_RotationSnapPoint, Transform o_Output)
+        public override void SnapToGrid(GridPosition3D i_Position, GridPosition3D i_ObjSize, Vector3 i_TileSize, int i_RotationSnapPoint, Transform o_Output)
         {
             o_Output.localRotation = SnapPointToRotation(i_RotationSnapPoint);
             o_Output.localPosition = new Vector3(i_Position.X * i_TileSize.x, i_Position.Z * i_TileSize.y, i_Position.Y * i_TileSize.z);
         }
 
-        public override void DrawGridBounds(Vector3 i_WorldPosition, GridPosition3D i_GridSize, Vector3 i_TileSize)
-        {
-            Vector3 sizeVec = new Vector3(i_GridSize.X * i_TileSize.x, i_GridSize.Z * i_TileSize.y, i_GridSize.Y * i_TileSize.z);
-            i_WorldPosition += sizeVec * 0.5f;
-            Gizmos.DrawWireCube(i_WorldPosition, sizeVec);
-        }
-
-        public override void DrawObjectBounds(Vector3 i_GridOrigin, GridPosition3D i_GridPosition, GridPosition3D i_GridObjectSize, Vector3 i_TileSize, int i_RotationSnapPoint)
-        {
-            i_GridObjectSize = RotateGridVector(i_GridObjectSize, i_RotationSnapPoint);
-            Vector3 gridOffset = new Vector3(i_GridPosition.X * i_TileSize.x, i_GridPosition.Y * i_TileSize.y, i_GridPosition.Z * i_TileSize.z);
-            var worldPos = i_GridOrigin + gridOffset;
-            Vector3 sizeVec = new Vector3(i_GridObjectSize.X * i_TileSize.x, i_GridObjectSize.Z * i_TileSize.y, i_GridObjectSize.Y * i_TileSize.z);
-            worldPos += sizeVec * 0.5f;
-
-            Gizmos.DrawWireCube(worldPos, sizeVec);
-        }
-
+        
+        /*
         public override void DrawTile(Vector3 i_GridOrigin, GridPosition3D i_GridPosition, Vector3 i_TileSize, int i_RotationSnapPoint, int i_Settings, bool i_Selected, List<GridMapEditorDrawRef> o_DrawCalls)
         {
             Vector3 finalGlobalPosition = i_GridOrigin;
@@ -156,14 +167,14 @@ namespace Tools
                     Gizmos.color = lastColor;
                 }));
 
-            /*
+            
             var orderedDraws = drawElements.OrderByDescending(x => x.Distance);
             foreach (var item in orderedDraws)
             {
                 item.Draw();
             }
-            */
         }
+        */
 
         private void DrawWall(Vector3 i_Position, Vector3 i_InwardDirection, float i_Width, float i_Height)
         {
@@ -183,6 +194,8 @@ namespace Tools
         }
 
 
+
+
         private static void DrawConnectionDirection(int i_Settings, Vector3 i_LocationPos, Vector3 i_InwardDirection)
         {
             Vector3 scaledDirection = i_InwardDirection * 0.5f;
@@ -191,6 +204,114 @@ namespace Tools
                 DrawHelper.DrawArrow.ForGizmo(i_LocationPos, scaledDirection);
             if ((i_Settings & (int)EConnectionSettings.Outward) != 0)
                 DrawHelper.DrawArrow.ForGizmo(i_LocationPos + scaledDirection, scaledDirection * -1.0f);
+        }
+
+        public GameObject BuildTileDebug(GridPosition3D i_GridPosition, Vector3 i_TileSize, int i_Settings, bool i_Selected)
+        {
+            var result = new GameObject("Debug_GridTile");
+            result.hideFlags = HideFlags.DontSave; //HideFlags.HideAndDontSave;
+            result.transform.localPosition = new Vector3(i_GridPosition.X * i_TileSize.x, i_GridPosition.Y * i_TileSize.y, i_GridPosition.Z * i_TileSize.z);
+            var renderer = result.AddComponent<MeshRenderer>();
+            var filter = result.AddComponent<MeshFilter>();
+            var mesh = new Mesh();
+            
+            float baseLift = TileBaseLift * i_TileSize.y;
+            var verts = new List<Vector3>(4);
+            verts.Add(new Vector3(0, baseLift, i_TileSize.z));
+            verts.Add(new Vector3(i_TileSize.x, baseLift, i_TileSize.z));
+            verts.Add(new Vector3(i_TileSize.x, baseLift, 0));
+            verts.Add(new Vector3(0, baseLift, 0));
+            mesh.SetVertices(verts);
+
+            var triangles = new int[]
+            {
+                0, 1, 3, 1, 2, 3
+            };
+            mesh.SetTriangles(triangles, 0);
+            filter.mesh = mesh;
+            
+            switch(i_Settings)
+            {
+                case 0:
+                    renderer.material = i_Selected ? MatTileBaseSelectedEmpty : MatTileBaseEmpty;
+                    break;
+                default:
+                    renderer.material = i_Selected ? MatTileBaseSelected : MatTileBaseEmpty;
+                    break;
+            }
+
+            return result;
+        }
+
+        private GameObject addDebugBounds(GameObject i_Go, Material i_Mat, GridPosition3D i_ObjSize, Vector3 i_TileSize)
+        {
+            var renderer = i_Go.AddComponent<MeshRenderer>();
+            var filter = i_Go.AddComponent<MeshFilter>();
+            var mesh = new Mesh();
+
+            var heightAdjustment = new Vector3(0, i_TileSize.y * i_ObjSize.Y, 0);
+            var verts = new List<Vector3>(4);
+            verts.Add(new Vector3(0, 0, i_TileSize.z * i_ObjSize.Z));
+            verts.Add(new Vector3(i_TileSize.x * i_ObjSize.X, 0, i_TileSize.z * i_ObjSize.Z));
+            verts.Add(new Vector3(i_TileSize.x * i_ObjSize.X, 0, 0));
+            verts.Add(new Vector3());
+
+            verts.Add(verts[0] + heightAdjustment);
+            verts.Add(verts[1] + heightAdjustment);
+            verts.Add(verts[2] + heightAdjustment);
+            verts.Add(verts[3] + heightAdjustment);
+            mesh.SetVertices(verts);
+
+            var tris = new int[]
+            {
+                0, 1, 1, 2, 2, 3, 3, 0,
+                4, 5, 5, 6, 6, 7, 7, 4,
+                0, 4, 1, 5, 2, 6, 3, 7
+            };
+            mesh.SetIndices(tris, MeshTopology.Lines, 0);
+
+            filter.mesh = mesh;
+            renderer.sharedMaterial = i_Mat;
+
+            return i_Go;
+        }
+
+        public override GameObject BuildObjectDebug(GridMapObjectBehaviour<GridPosition3D, int> i_Obj, Vector3 i_TileSize)
+        {
+            var result = new GameObject("Debug_GridObject");
+            result.hideFlags = HideFlags.DontSave; //HideFlags.HideAndDontSave;
+            int instanceId = i_Obj.GetInstanceID();
+            var isSelected = (GridMapObjectBehaviour<GridPosition3D, int>.ActiveGridObject == instanceId);
+            addDebugBounds(result, isSelected ? MatGridObjectSelected : MatGridObjectDefault, i_Obj.Size, i_TileSize);
+
+            int tileCount = i_Obj.GetTileCount();
+            for (int i = 0; i < tileCount; ++i)
+            {
+                var tile = i_Obj.GetTile(i);
+                var tileSelected = isSelected && (GridMapObjectBehaviour<GridPosition3D, int>.ActiveGridTileIndex == i);
+                var tileGO = BuildTileDebug(tile.Position, i_TileSize, tile.Settings, tileSelected);
+                tileGO.transform.SetParent(result.transform, false);
+            }
+
+            int connectionCount = i_Obj.Connections.Count;
+            for (int i = 0; i < connectionCount; ++i)
+            {
+                //var connection = i_Obj.Connections[i];
+                //var adjustedTilePosition = i_Editor.MapTypeData.RotateGridPosition(connection.Position, objRotation);
+                //var adjustedDirectionType = i_Editor.MapTypeData.RotateGridDirectionType(((int)connection.TileLocation) & GridHelpers.GRID_TILE_LOCATION_STRIDE_MASK, objRotation);
+                //DrawConnectionDisplay(rootOriginPos, i_Editor.TileSize, objRotation, objOrigin + adjustedTilePosition, adjustedDirectionType | (int)connection.Settings);
+            }
+
+            return result;
+        }
+
+        public override GameObject BuildGridDebug(GridMapEditorBehaviour<GridPosition3D, int> i_Grid)
+        {
+            var result = new GameObject("Debug_Grid");
+            result.hideFlags = HideFlags.DontSave; //HideFlags.HideAndDontSave;
+            addDebugBounds(result, MatGridDefault, i_Grid.Size, i_Grid.TileSize);
+
+            return result;
         }
     }
 }
