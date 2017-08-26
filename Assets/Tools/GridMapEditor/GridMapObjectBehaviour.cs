@@ -17,6 +17,7 @@ namespace Tools
         public static int ActiveGridTileIndex = -1;
 
         public string Id;
+        public int RotationSnapPoint;
         public TPosition Position;
         public TPosition Size;
         public int ObjectSettings;
@@ -24,10 +25,11 @@ namespace Tools
         public abstract int GetTileCount();
         public abstract IGridMapObjectTile<TPosition, TTileSettings> GetTile(int index);
 
+        [HideInInspector]
         public List<GridMapObjectConnection> Connections = new List<GridMapObjectConnection>();
 
 
-
+        /*
         public TPosition GetFinalGridPosition()
         {
             if (Editor == null)
@@ -51,16 +53,29 @@ namespace Tools
             }
             return i_Pos;
         }
+        */
 
 #if UNITY_EDITOR
 
         private bool m_ValidateUpdate;
         private GameObject m_DebugDisplay;
 
+        private void Start()
+        {
+            if (Editor == null)
+            {
+                Editor = FindObjectOfType<GridMapEditorBehaviour<TPosition, TTileSettings>>();
+            }
+            if (Editor != null)
+            {
+                RotationSnapPoint = Editor.GetMapTypeData().RotationToSnapPoint(transform.localRotation);
+                Position = Editor.GetMapTypeData().SnapToGrid(transform, Position, ref RotationSnapPoint, Size, Editor.TileSize);
+            }
+        }
+
         public void OnValidate()
         {
             m_ValidateUpdate = true;
-            
         }
 
         private void Update()
@@ -91,11 +106,12 @@ namespace Tools
             {
                 if (fromTransform)
                 {
-                    Position = Editor.GetMapTypeData().SnapToGrid(transform, Size, Editor.TileSize);
+                    var oldPos = Position;
+                    Position = Editor.GetMapTypeData().SnapToGrid(transform, Position, ref RotationSnapPoint, Size, Editor.TileSize);
                 }
                 else
                 {
-                    Editor.GetMapTypeData().SnapToGrid(Position, Size, Editor.TileSize, 0, transform);
+                    Editor.GetMapTypeData().SnapToGrid(Position, Size, Editor.TileSize, RotationSnapPoint, transform);
                 }
             }
         }

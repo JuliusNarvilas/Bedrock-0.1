@@ -31,6 +31,7 @@ namespace Tools
         [Range(0.001f, 1.0f)]
         public float TileBaseLift = 0.1f;
 
+        public bool HideDebugObjectsInScene = true;
 
         [MenuItem("Assets/Create/Grid/MapEditorTypeData/Cuboid")]
         public static void CreateAsset()
@@ -106,27 +107,43 @@ namespace Tools
             return i_Direction;
         }
 
-        public override GridPosition3D SnapToGrid(Transform i_Transform, GridPosition3D i_ObjSize, Vector3 i_TileSize)
+        public override GridPosition3D SnapToGrid(Transform i_NewTransform, GridPosition3D i_ObjectPosition, ref int i_OldRotationSnapPoint, GridPosition3D i_ObjSize, Vector3 i_TileSize)
         {
-            int snapPoint = RotationToSnapPoint(i_Transform.localRotation);
-            i_Transform.localRotation = SnapPointToRotation(snapPoint);
-            Vector3 halfSize = i_TileSize * 0.5f;
-            Vector3 position = i_Transform.localPosition + halfSize;
-            var result = new GridPosition3D(
-                Mathf.FloorToInt(position.x / i_TileSize.x),
-                Mathf.FloorToInt(position.z / i_TileSize.z),
-                Mathf.FloorToInt(position.y / i_TileSize.y)
-                );
+            var newRotation = i_NewTransform.localRotation;
+            var oldRotation = SnapPointToRotation(i_OldRotationSnapPoint);
 
-            result = GetAbsolutePosition(result, i_ObjSize, new GridPosition3D(), snapPoint);
-            i_Transform.localPosition =  new Vector3(result.X * i_TileSize.x, result.Y * i_TileSize.y, result.Z * i_TileSize.z);
+            GridPosition3D result = i_ObjectPosition;
+            if(newRotation.eulerAngles.y != oldRotation.eulerAngles.y)
+            {
+                //adjust rotation
+                var newSnapPoint = RotationToSnapPoint(newRotation);
+                i_OldRotationSnapPoint = newSnapPoint;
+                i_NewTransform.localRotation = SnapPointToRotation(newSnapPoint);
+                var newAdjustedGridPosition = GetAbsolutePosition(i_ObjectPosition, i_ObjSize, new GridPosition3D(), newSnapPoint);
+                i_NewTransform.localPosition = new Vector3(newAdjustedGridPosition.X * i_TileSize.x, newAdjustedGridPosition.Y * i_TileSize.y, newAdjustedGridPosition.Z * i_TileSize.z);
+            }
+            else
+            {
+                //adjust position
+                Vector3 halfSize = i_TileSize * 0.5f;
+                Vector3 newWorldPositionLarger = i_NewTransform.localPosition + halfSize;
+                var newGridPosition = new GridPosition3D(
+                    Mathf.FloorToInt(newWorldPositionLarger.x / i_TileSize.x),
+                    Mathf.FloorToInt(newWorldPositionLarger.y / i_TileSize.y),
+                    Mathf.FloorToInt(newWorldPositionLarger.z / i_TileSize.z)
+                    );
+                
+                i_NewTransform.localPosition =  new Vector3(newGridPosition.X * i_TileSize.x, newGridPosition.Y * i_TileSize.y, newGridPosition.Z * i_TileSize.z);
+                result = i_ObjectPosition + newGridPosition - GetAbsolutePosition(i_ObjectPosition, i_ObjSize, new GridPosition3D(), i_OldRotationSnapPoint);
+            }
             return result;
         }
 
-        public override void SnapToGrid(GridPosition3D i_Position, GridPosition3D i_ObjSize, Vector3 i_TileSize, int i_RotationSnapPoint, Transform o_Output)
+        public override void SnapToGrid(GridPosition3D i_ObjectPosition, GridPosition3D i_ObjSize, Vector3 i_TileSize, int i_RotationSnapPoint, Transform o_Output)
         {
             o_Output.localRotation = SnapPointToRotation(i_RotationSnapPoint);
-            o_Output.localPosition = new Vector3(i_Position.X * i_TileSize.x, i_Position.Z * i_TileSize.y, i_Position.Y * i_TileSize.z);
+            var newAbsoluteGridPosition = GetAbsolutePosition(i_ObjectPosition, i_ObjSize, new GridPosition3D(), i_RotationSnapPoint);
+            o_Output.localPosition = new Vector3(newAbsoluteGridPosition.X * i_TileSize.x, newAbsoluteGridPosition.Y * i_TileSize.y, newAbsoluteGridPosition.Z * i_TileSize.z);
         }
 
         
@@ -209,9 +226,10 @@ namespace Tools
         public GameObject BuildTileDebug(GridPosition3D i_GridPosition, Vector3 i_TileSize, int i_Settings, bool i_Selected)
         {
             var result = new GameObject("Debug_GridTile");
-            result.hideFlags = HideFlags.DontSave; //HideFlags.HideAndDontSave;
+            result.hideFlags = HideDebugObjectsInScene ? HideFlags.HideAndDontSave : HideFlags.DontSave;
             result.transform.localPosition = new Vector3(i_GridPosition.X * i_TileSize.x, i_GridPosition.Y * i_TileSize.y, i_GridPosition.Z * i_TileSize.z);
             var renderer = result.AddComponent<MeshRenderer>();
+            EditorUtility.SetSelectedRenderState(renderer, EditorSelectedRenderState.Hidden);
             var filter = result.AddComponent<MeshFilter>();
             var mesh = new Mesh();
             
@@ -246,6 +264,7 @@ namespace Tools
         private GameObject addDebugBounds(GameObject i_Go, Material i_Mat, GridPosition3D i_ObjSize, Vector3 i_TileSize)
         {
             var renderer = i_Go.AddComponent<MeshRenderer>();
+            EditorUtility.SetSelectedRenderState(renderer, EditorSelectedRenderState.Hidden);
             var filter = i_Go.AddComponent<MeshFilter>();
             var mesh = new Mesh();
 
@@ -271,7 +290,7 @@ namespace Tools
             mesh.SetIndices(tris, MeshTopology.Lines, 0);
 
             filter.mesh = mesh;
-            renderer.sharedMaterial = i_Mat;
+            renderer.material = i_Mat;
 
             return i_Go;
         }
@@ -279,7 +298,7 @@ namespace Tools
         public override GameObject BuildObjectDebug(GridMapObjectBehaviour<GridPosition3D, int> i_Obj, Vector3 i_TileSize)
         {
             var result = new GameObject("Debug_GridObject");
-            result.hideFlags = HideFlags.DontSave; //HideFlags.HideAndDontSave;
+            result.hideFlags = HideDebugObjectsInScene ? HideFlags.HideAndDontSave : HideFlags.DontSave;
             int instanceId = i_Obj.GetInstanceID();
             var isSelected = (GridMapObjectBehaviour<GridPosition3D, int>.ActiveGridObject == instanceId);
             addDebugBounds(result, isSelected ? MatGridObjectSelected : MatGridObjectDefault, i_Obj.Size, i_TileSize);
@@ -308,7 +327,7 @@ namespace Tools
         public override GameObject BuildGridDebug(GridMapEditorBehaviour<GridPosition3D, int> i_Grid)
         {
             var result = new GameObject("Debug_Grid");
-            result.hideFlags = HideFlags.DontSave; //HideFlags.HideAndDontSave;
+            result.hideFlags = HideDebugObjectsInScene ? HideFlags.HideAndDontSave : HideFlags.DontSave;
             addDebugBounds(result, MatGridDefault, i_Grid.Size, i_Grid.TileSize);
 
             return result;

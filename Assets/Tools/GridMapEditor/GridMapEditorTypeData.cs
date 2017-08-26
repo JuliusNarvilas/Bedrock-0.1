@@ -24,7 +24,7 @@ namespace Tools
         public abstract TPosition GetAbsolutePosition(TPosition i_Origin, TPosition i_Size, TPosition i_Offset, int i_OriginRotation);
         public abstract TPosition RotateGridVector(TPosition i_Direction, int i_RotationSnapPoint);
 
-        public abstract TPosition SnapToGrid(Transform i_Transform, TPosition i_ObjSize, Vector3 i_TileSize);
+        public abstract TPosition SnapToGrid(Transform i_NewTransform, TPosition i_OldPosition, ref int i_OldRotation, TPosition i_ObjSize, Vector3 i_TileSize);
         public abstract void SnapToGrid(TPosition i_Position, TPosition i_ObjSize, Vector3 i_TileSize, int i_RotationSnapPoint, Transform o_Output);
 
         public abstract GameObject BuildObjectDebug(GridMapObjectBehaviour<TPosition, TTileSettings> i_Obj, Vector3 i_TileSize);

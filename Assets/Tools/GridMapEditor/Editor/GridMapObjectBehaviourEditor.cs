@@ -12,7 +12,6 @@ namespace Tools
     {
         private ReorderableList m_GridTileList;
         private ReorderableList m_GridConnectionsList;
-        private List<SerializedProperty> m_OtherProperties;
         private GridMapObjectCuboidBehaviour m_TargetObject;
 
         // Use this for initialization
@@ -42,14 +41,19 @@ namespace Tools
             };
             //m_GridConnectionsList.onSelectCallback = UpdateSelectDraw;
 
-            m_OtherProperties = new List<SerializedProperty> {
-                serializedObject.FindProperty("Id"),
-                serializedObject.FindProperty("Position"),
-                serializedObject.FindProperty("Size"),
-                serializedObject.FindProperty("ObjectSettings")
-            };
-
             m_TargetObject = serializedObject.targetObject as GridMapObjectCuboidBehaviour;
+            GridMapObjectCuboidBehaviour.ActiveGridObject = m_TargetObject.GetInstanceID();
+            m_TargetObject.DrawDebug();
+        }
+
+        private void OnDisable()
+        {
+            if(GridMapObjectCuboidBehaviour.ActiveGridObject == m_TargetObject.GetInstanceID())
+            {
+                GridMapObjectCuboidBehaviour.ActiveGridObject = -1;
+                GridMapObjectCuboidBehaviour.ActiveGridTileIndex = -1;
+                m_TargetObject.DrawDebug();
+            }
         }
 
         private void UpdateSelectDraw(ReorderableList list)
@@ -60,7 +64,7 @@ namespace Tools
             GridMapObjectCuboidBehaviour.ActiveGridTileIndex = list.index;
             if (GridMapObjectCuboidBehaviour.ActiveGridObject != oldObjectId || GridMapObjectCuboidBehaviour.ActiveGridTileIndex != oldTileIndex)
             {
-                SceneView.RepaintAll();
+                m_TargetObject.DrawDebug();
             }
         }
 
@@ -96,12 +100,8 @@ namespace Tools
 
         public override void OnInspectorGUI()
         {
+            DrawDefaultInspector();
             serializedObject.Update();
-
-            foreach(var property in m_OtherProperties)
-            {
-                EditorGUILayout.PropertyField(property);
-            }
             
             m_GridTileList.DoLayoutList();
             m_GridConnectionsList.DoLayoutList();
