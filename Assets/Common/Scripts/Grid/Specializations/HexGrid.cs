@@ -14,7 +14,7 @@ namespace Common.Grid.Specializations
             throw new NotImplementedException();
         }
 
-        public GridPath<GridPosition2D, TContext, TTile> GetPath(GridPosition2D i_Start, GridPosition2D i_End, TContext i_Context)
+        public GridPath<GridPosition2D, TContext, TTile> GetPath(GridPosition2D i_Start, GridPosition2D i_End, EGridPathAvoidanceStrategy i_AvoidanceStrategy, TContext i_Context)
         {
             throw new NotImplementedException();
         }
@@ -24,17 +24,12 @@ namespace Common.Grid.Specializations
             throw new NotImplementedException();
         }
 
-        public void GetPathArea(GridPosition2D i_Min, GridPosition2D i_Max, TContext i_Context)
-        {
-            throw new NotImplementedException();
-        }
-
         public bool TryGetTile(GridPosition2D i_Position, out TTile o_Tile)
         {
             throw new NotImplementedException();
         }
 
-        public GridPathArea<GridPosition2D, TContext, TTile> GetPathArea(GridPosition2D i_Min, GridPosition2D i_Max, GridPosition2D i_Origin, TContext i_Context)
+        public GridPathArea<GridPosition2D, TContext, TTile> GetPathArea(GridPosition2D i_Min, GridPosition2D i_Max, GridPosition2D i_Origin, EGridPathAvoidanceStrategy i_AvoidanceStrategy, TContext i_Context)
         {
             throw new NotImplementedException();
         }

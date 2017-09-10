@@ -11,7 +11,7 @@ namespace Game.Grid
         {
         }
 
-        public override float GetCost(IGridControl<GridPosition3D, GameGridChangeContext, GameGridTile> i_Grid, GridPathElement<GridPosition3D, GameGridChangeContext, GameGridTile> i_Source, GameGridChangeContext i_Context)
+        public override float GetCost(IGridControl<GridPosition3D, GameGridChangeContext, GameGridTile> i_Grid, GridPathElement<GridPosition3D, GameGridChangeContext, GameGridTile> i_Source, GameGridChangeContext i_Context, out int i_AvoidanceLevel)
         {
             throw new NotImplementedException();
         }

@@ -20,7 +20,18 @@ namespace Common.Grid.Path.Specializations
             Log.DebugAssert(i_Origin != null, "GridPathData2D constructed with no origin");
             m_Origin = i_Origin;
         }
-        
+
+
+        public GridPosition2D GetMin()
+        {
+            return m_Min;
+        }
+
+        public GridPosition2D GetMax()
+        {
+            return m_Max;
+        }
+
         public bool Set(IGridControl<GridPosition2D, TContext, TTile> i_Source, GridPosition2D i_Min, GridPosition2D i_Max)
         {
             m_Source = i_Source;

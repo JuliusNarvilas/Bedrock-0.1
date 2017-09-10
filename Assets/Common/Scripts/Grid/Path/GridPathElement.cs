@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Common.Grid.Path
 {
@@ -6,7 +7,17 @@ namespace Common.Grid.Path
     {
         New,
         Opened,
-        Closed
+        Closed,
+
+        AvoidanceClosed
+    }
+
+    public enum EGridPathAvoidanceStrategy
+    {
+        DisableAvoidance,
+        AvoidAll,
+        LowestCombinedAvoidanceLevel,
+        LowestAvoidanceCount
     }
 
     /// <summary>
@@ -40,6 +51,19 @@ namespace Common.Grid.Path
         /// </summary>
         public GridPathElement<TPosition, TContext, TTile> Parent;
 
+
+
+        /// <summary>
+        /// The path cost so far with the avoidance system.
+        /// </summary>
+        public float AvoidedPathCost;
+
+        public int AvoidanceLevel;
+        public int AvoidanceCount;
+
+
+        public GridPathElement<TPosition, TContext, TTile> AvoidedParent;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GridElement"/> class.
         /// </summary>
@@ -57,6 +81,10 @@ namespace Common.Grid.Path
             FValue = 0;
             PathingState = EGridPathfindingState.New;
             Parent = null;
+            AvoidedPathCost = 0;
+            AvoidanceLevel = 0;
+            AvoidanceCount = 0;
+            AvoidedParent = null;
         }
 
         /// <summary>
@@ -71,6 +99,10 @@ namespace Common.Grid.Path
             FValue = i_Other.FValue;
             PathingState = i_Other.PathingState;
             Parent = i_Other.Parent;
+            AvoidedPathCost = i_Other.AvoidedPathCost;
+            AvoidanceLevel = i_Other.AvoidanceLevel;
+            AvoidanceCount = i_Other.AvoidanceCount;
+            AvoidedParent = i_Other.AvoidedParent;
         }
 
         public class FValueComparer : IComparer<GridPathElement<TPosition, TContext, TTile>>
@@ -87,8 +119,53 @@ namespace Common.Grid.Path
                 return i_A.FValue.CompareTo(i_B.FValue) * m_Modifier;
             }
 
-            public static FValueComparer Ascending = new FValueComparer(true);
-            public static FValueComparer Descending = new FValueComparer(false);
+            public static readonly FValueComparer Ascending = new FValueComparer(true);
+            public static readonly FValueComparer Descending = new FValueComparer(false);
+        }
+
+        public class AvoidanceLevelComparer : IComparer<GridPathElement<TPosition, TContext, TTile>>
+        {
+            int m_Modifier;
+
+            private AvoidanceLevelComparer(bool i_Ascending)
+            {
+                m_Modifier = i_Ascending ? 1 : -1;
+            }
+
+            public int Compare(GridPathElement<TPosition, TContext, TTile> x, GridPathElement<TPosition, TContext, TTile> y)
+            {
+                var result = x.AvoidanceLevel.CompareTo(y.AvoidanceLevel) * m_Modifier;
+                if(result == 0)
+                {
+                    result = x.FValue.CompareTo(y.FValue) * m_Modifier;
+                }
+                return result;
+            }
+
+            public static readonly AvoidanceLevelComparer Ascending = new AvoidanceLevelComparer(true);
+            public static readonly AvoidanceLevelComparer Descending = new AvoidanceLevelComparer(false);
+        }
+        public class AvoidanceCountComparer : IComparer<GridPathElement<TPosition, TContext, TTile>>
+        {
+            int m_Modifier;
+
+            private AvoidanceCountComparer(bool i_Ascending)
+            {
+                m_Modifier = i_Ascending ? 1 : -1;
+            }
+
+            public int Compare(GridPathElement<TPosition, TContext, TTile> x, GridPathElement<TPosition, TContext, TTile> y)
+            {
+                var result = x.AvoidanceCount.CompareTo(y.AvoidanceCount) * m_Modifier;
+                if (result == 0)
+                {
+                    result = x.FValue.CompareTo(y.FValue) * m_Modifier;
+                }
+                return result;
+            }
+
+            public static readonly AvoidanceCountComparer Ascending = new AvoidanceCountComparer(true);
+            public static readonly AvoidanceCountComparer Descending = new AvoidanceCountComparer(false);
         }
     }
 }

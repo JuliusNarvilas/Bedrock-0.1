@@ -8,8 +8,10 @@ namespace Tools.Specialization
 {
     public class GridMapObjectCuboidBehaviour : GridMapObjectBehaviour<GridPosition3D, int>
     {
-        [HideInInspector]
+        //[HideInInspector]
         public List<GridMapObjectTile3D> m_Tiles = new List<GridMapObjectTile3D>();
+
+        public GridMapObjectTile3D TEST;
 
         public override IGridMapObjectTile<GridPosition3D, int> GetTile(int index)
         {

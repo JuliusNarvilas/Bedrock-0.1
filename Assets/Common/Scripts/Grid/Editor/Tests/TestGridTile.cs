@@ -15,8 +15,9 @@ namespace Common.Grid.Editor
             Cost = i_Cost;
         }
 
-        public override float GetCost(IGridControl<GridPosition3D, int, TestGridTile> i_Grid, GridPathElement<GridPosition3D, int, TestGridTile> i_Source, int i_Context)
+        public override float GetCost(IGridControl<GridPosition3D, int, TestGridTile> i_Grid, GridPathElement<GridPosition3D, int, TestGridTile> i_Source, int i_Context, out int o_AvoidanceLevel)
         {
+            o_AvoidanceLevel = 0;
             return Cost;
         }
     }

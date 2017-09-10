@@ -16,12 +16,14 @@ namespace Common.Grid.Path
     {
         private readonly IGridControl<TPosition, TContext, TTile> m_Grid;
         private IGridPathData<TPosition, TContext, TTile> m_GridPathData;
+        public readonly EGridPathAvoidanceStrategy AvoidanceStrategy;
 
         private List<GridPathElement<TPosition, TContext, TTile>> m_OpenList = new List<GridPathElement<TPosition, TContext, TTile>>();
         private List<GridPathElement<TPosition, TContext, TTile>> m_ClosedList = new List<GridPathElement<TPosition, TContext, TTile>>();
         private TContext m_Context;
 
         private List<TTile> m_ConnectedList = new List<TTile>();
+        private List<GridPathElement<TPosition, TContext, TTile>> m_AvoidanceList = new List<GridPathElement<TPosition, TContext, TTile>>();
         private GridPathElement<TPosition, TContext, TTile> m_FinishElement;
 
         /// <summary>
@@ -50,11 +52,13 @@ namespace Common.Grid.Path
             IGridControl<TPosition, TContext, TTile> i_Grid,
             IGridPathData<TPosition, TContext, TTile> i_PathData,
             TPosition i_StartPos, TPosition i_EndPosition,
+            EGridPathAvoidanceStrategy i_AvoidanceStrategy,
             TContext i_Context
         )
         {
             m_Grid = i_Grid;
             m_GridPathData = i_PathData;
+            AvoidanceStrategy = i_AvoidanceStrategy;
             m_Context = i_Context;
             m_FinishElement = GetElementOrDefault(i_EndPosition);
             
@@ -76,7 +80,7 @@ namespace Common.Grid.Path
                     Close(m_FinishElement);
                 }
             }
-
+            ProcessAvoidance();
             Finish();
         }
 
@@ -93,14 +97,50 @@ namespace Common.Grid.Path
 
         private void Open(GridPathElement<TPosition, TContext, TTile> i_Element, GridPathElement<TPosition, TContext, TTile> i_Parent)
         {
-            // move terrain cost
-            float terrainCost = i_Element.Tile.GetCost(m_Grid, i_Parent, m_Context);
+            int avoidance;
+            float terrainCost = i_Element.Tile.GetCost(m_Grid, i_Parent, m_Context, out avoidance);
+
             if (terrainCost >= 0.0f)
             {
-                i_Element.HeuristicDistance = m_Grid.GetHeuristicDistance(i_Element.Tile.Position, m_FinishElement.Tile.Position);
-                i_Element.PathCost = terrainCost + i_Parent.PathCost; //cost of the path so far
-                i_Element.FValue = i_Element.PathCost + i_Element.HeuristicDistance + i_Element.Tile.PathingDangerFactor;
+                switch (AvoidanceStrategy)
+                {
+                    case EGridPathAvoidanceStrategy.AvoidAll:
+                        if (avoidance > 0)
+                            return;
+                        break;
+                    case EGridPathAvoidanceStrategy.LowestCombinedAvoidanceLevel:
+                    case EGridPathAvoidanceStrategy.LowestAvoidanceCount:
+                        bool needAvoidanceUpdate = false;
+                        int newAvoidanceCount = i_Parent.AvoidanceCount;
+                        if (avoidance > 0)
+                        {
+                            newAvoidanceCount++;
+                            needAvoidanceUpdate = true;
+                            i_Element.AvoidedPathCost = i_Parent.PathCost + terrainCost;
+                            i_Element.AvoidanceCount = newAvoidanceCount;
+                        }
+                        if (i_Parent.AvoidedParent != null)
+                        {
+                            needAvoidanceUpdate = true;
+                            i_Element.AvoidedPathCost = terrainCost + i_Parent.AvoidedPathCost;
+                            i_Element.AvoidanceCount = newAvoidanceCount;
+                        }
 
+                        if (needAvoidanceUpdate)
+                        {
+                            i_Element.AvoidanceLevel = avoidance + i_Parent.AvoidanceLevel;
+                            i_Element.PathingState = EGridPathfindingState.Opened;
+                            i_Element.AvoidedParent = i_Parent;
+                            m_AvoidanceList.Add(i_Element);
+                            return;
+                        }
+                        break;
+                }
+
+                i_Element.HeuristicDistance = m_Grid.GetHeuristicDistance(i_Element.Tile.Position, m_FinishElement.Tile.Position);
+                //cost of the path so far
+                i_Element.PathCost = terrainCost + i_Parent.PathCost;
+                i_Element.FValue = i_Element.PathCost + i_Element.HeuristicDistance;
                 i_Element.PathingState = EGridPathfindingState.Opened;
                 i_Element.Parent = i_Parent;
                 m_OpenList.Add(i_Element);
@@ -109,15 +149,80 @@ namespace Common.Grid.Path
 
         private bool Reopen(GridPathElement<TPosition, TContext, TTile> i_Element, GridPathElement<TPosition, TContext, TTile> i_Parent)
         {
-            float terrainCost = i_Element.Tile.GetCost(m_Grid, i_Parent, m_Context);
+            int avoidance;
+            float terrainCost = i_Element.Tile.GetCost(m_Grid, i_Parent, m_Context, out avoidance);
+
             //negative cost indicates blockers
             if (terrainCost >= 0)
             {
+                switch (AvoidanceStrategy)
+                {
+                    case EGridPathAvoidanceStrategy.AvoidAll:
+                        if (avoidance > 0)
+                            return false;
+                        break;
+                    case EGridPathAvoidanceStrategy.LowestCombinedAvoidanceLevel:
+                    case EGridPathAvoidanceStrategy.LowestAvoidanceCount:
+                        bool needsAvoidanceUpdate = false;
+                        int newAvoidanceCount = i_Parent.AvoidanceCount;
+                        if (avoidance > 0)
+                            newAvoidanceCount++;
+
+                        //is already avoided
+                        if (i_Element.AvoidedParent != null)
+                        {
+                            if (AvoidanceStrategy == EGridPathAvoidanceStrategy.LowestCombinedAvoidanceLevel)
+                            {
+                                if (i_Element.AvoidanceLevel > (i_Parent.AvoidanceLevel + avoidance))
+                                    needsAvoidanceUpdate = true;
+                                else
+                                    return false;
+                            }
+                            else
+                            {
+                                if (i_Element.AvoidanceCount > newAvoidanceCount)
+                                    needsAvoidanceUpdate = true;
+                                else
+                                    return false;
+                            }
+                        }
+                        //is used for avoided path or is now avoided from this new source direction
+                        else if (i_Parent.AvoidedParent != null || avoidance > 0)
+                        {
+                            if (i_Element.PathCost > (terrainCost + i_Parent.PathCost))
+                            {
+                                needsAvoidanceUpdate = true;
+                            }
+                            else
+                                return false;
+                        }
+
+                        if (needsAvoidanceUpdate)
+                        {
+                            i_Element.AvoidanceCount = newAvoidanceCount;
+                            if (i_Parent.AvoidedParent != null)
+                                i_Element.AvoidedPathCost = i_Parent.AvoidedPathCost + terrainCost;
+                            else
+                                i_Element.AvoidedPathCost = i_Parent.PathCost + terrainCost;
+
+                            //only add to the AvoidanceList if it's not going to be there already
+                            if (i_Element.PathingState == EGridPathfindingState.Closed || i_Element.AvoidedParent == null)
+                            {
+                                i_Element.PathingState = EGridPathfindingState.Opened;
+                                m_AvoidanceList.Add(i_Element);
+                            }
+                            i_Element.AvoidanceLevel = i_Parent.AvoidanceLevel + avoidance;
+                            i_Element.AvoidedParent = i_Parent;
+                            return true;
+                        }
+                        break;
+                }
+
                 float newPathCost = (terrainCost + i_Parent.PathCost);
                 if (newPathCost < i_Element.PathCost)
                 {
                     i_Element.PathCost = newPathCost;
-                    i_Element.FValue = newPathCost + i_Element.HeuristicDistance + i_Element.Tile.PathingDangerFactor;
+                    i_Element.FValue = newPathCost + i_Element.HeuristicDistance;
                     i_Element.Parent = i_Parent;
                     return true;
                 }
@@ -151,7 +256,16 @@ namespace Common.Grid.Path
                             Open(neighbourElement, i_Element);
                             break;
                         case EGridPathfindingState.Opened:
-                            oldElementChanged = Reopen(neighbourElement, i_Element) || oldElementChanged;
+                            if (i_Element.Parent != neighbourElement)
+                            {
+                                oldElementChanged = Reopen(neighbourElement, i_Element) || oldElementChanged;
+                            }
+                            break;
+                        case EGridPathfindingState.Closed:
+                            if (i_Element.AvoidedParent != null)
+                            {
+                                oldElementChanged = Reopen(neighbourElement, i_Element) || oldElementChanged;
+                            }
                             break;
                     }
                 }
@@ -182,10 +296,11 @@ namespace Common.Grid.Path
             {
                 m_OpenList = null;
             }
+            m_ClosedList.Clear();
             m_ClosedList = null;
 
             m_FinishElement = null;
-            m_GridPathData.Dispose();
+            m_GridPathData.Clean();
             m_GridPathData = null;
         }
 
@@ -226,6 +341,36 @@ namespace Common.Grid.Path
             }
 
             return pick;
+        }
+
+        private void ProcessAvoidance()
+        {
+            int OpenListSize = m_OpenList.Count;
+            int lastIndex = m_AvoidanceList.Count - 1;
+            if (AvoidanceStrategy == EGridPathAvoidanceStrategy.LowestAvoidanceCount)
+                m_AvoidanceList.InsertionSort(GridPathElement<TPosition, TContext, TTile>.AvoidanceCountComparer.Descending);
+            else
+                m_AvoidanceList.InsertionSort(GridPathElement<TPosition, TContext, TTile>.AvoidanceLevelComparer.Descending);
+
+            while (lastIndex >= 0 && (m_AvoidanceList[lastIndex] != m_FinishElement))
+            {
+                var element = m_AvoidanceList[lastIndex];
+                m_AvoidanceList.RemoveAt(lastIndex);
+                OpenNeighbours(element);
+                element.PathingState = EGridPathfindingState.AvoidanceClosed;
+                //resort if new elements were added
+                if (lastIndex <= m_AvoidanceList.Count)
+                {
+                    if (AvoidanceStrategy == EGridPathAvoidanceStrategy.LowestAvoidanceCount)
+                        m_AvoidanceList.InsertionSort(GridPathElement<TPosition, TContext, TTile>.AvoidanceCountComparer.Descending);
+                    else
+                        m_AvoidanceList.InsertionSort(GridPathElement<TPosition, TContext, TTile>.AvoidanceLevelComparer.Descending);
+                }
+                lastIndex = m_AvoidanceList.Count - 1;
+            }
+            m_AvoidanceList.Clear();
+
+            Log.DebugAssert(m_OpenList.Count != OpenListSize, "Something is generating regular open list during avoidance processing!");
         }
 
         public void Dispose()

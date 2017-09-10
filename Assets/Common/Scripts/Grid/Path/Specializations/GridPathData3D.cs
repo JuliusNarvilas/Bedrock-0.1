@@ -21,6 +21,16 @@ namespace Common.Grid.Path.Specializations
             m_Origin = i_Origin;
         }
 
+        public GridPosition3D GetMin()
+        {
+            return m_Min;
+        }
+
+        public GridPosition3D GetMax()
+        {
+            return m_Max;
+        }
+
         public bool Set(IGridControl<GridPosition3D, TContext, TTile> i_Source, GridPosition3D i_Min, GridPosition3D i_Max)
         {
             m_Source = i_Source;

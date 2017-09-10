@@ -145,7 +145,7 @@ namespace Common.Grid.Specializations
             }
         }
 
-        public GridPath<GridPosition3D, TContext, TTile> GetPath(GridPosition3D i_Start, GridPosition3D i_End, TContext i_Context)
+        public GridPath<GridPosition3D, TContext, TTile> GetPath(GridPosition3D i_Start, GridPosition3D i_End, EGridPathAvoidanceStrategy i_AvoidanceStrategy, TContext i_Context)
         {
             const int pathingDataMargin = 4;
             var pathData = GridPathData3DProvider<TContext, TTile>.GLOBAL.GetGridPathData();
@@ -158,14 +158,14 @@ namespace Common.Grid.Specializations
             int maxZ = Math.Min(i_End.Z + pathingDataMargin, m_SizeZ - 1);
 
             pathData.Set(this, new GridPosition3D(minX, minY, minZ), new GridPosition3D(maxX, maxY, maxZ));
-            return new GridPath<GridPosition3D, TContext, TTile>(this, pathData, i_Start, i_End, i_Context);
+            return new GridPath<GridPosition3D, TContext, TTile>(this, pathData, i_Start, i_End, i_AvoidanceStrategy, i_Context);
         }
 
-        public GridPathArea<GridPosition3D, TContext, TTile> GetPathArea(GridPosition3D i_Min, GridPosition3D i_Max, GridPosition3D i_Origin, TContext i_Context)
+        public GridPathArea<GridPosition3D, TContext, TTile> GetPathArea(GridPosition3D i_Min, GridPosition3D i_Max, GridPosition3D i_Origin, EGridPathAvoidanceStrategy i_AvoidanceStrategy, TContext i_Context)
         {
             var pathData = GridPathData3DProvider<TContext, TTile>.GLOBAL.GetGridPathData();
             pathData.Set(this, i_Min, i_Max);
-            return new GridPathArea<GridPosition3D, TContext, TTile>(this, pathData, i_Min, i_Max, i_Origin, i_Context);
+            return new GridPathArea<GridPosition3D, TContext, TTile>(this, pathData, i_Origin, i_AvoidanceStrategy, i_Context);
         }
 
         public bool TryGetTilePhysicalData(GridPosition3D i_Position, out GridTilePhysicalData o_Tile)

@@ -106,7 +106,6 @@ namespace Tools
             {
                 if (fromTransform)
                 {
-                    var oldPos = Position;
                     Position = Editor.GetMapTypeData().SnapToGrid(transform, Position, ref RotationSnapPoint, Size, Editor.TileSize);
                 }
                 else

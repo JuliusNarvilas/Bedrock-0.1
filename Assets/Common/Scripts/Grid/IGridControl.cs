@@ -13,7 +13,7 @@ namespace Common.Grid
         /// <param name="i_Start">The start position.</param>
         /// <param name="i_End">The end position.</param>
         /// <returns></returns>
-        GridPath<TPosition, TContext, TTile> GetPath(TPosition i_Start, TPosition i_End, TContext i_Context);
+        GridPath<TPosition, TContext, TTile> GetPath(TPosition i_Start, TPosition i_End, EGridPathAvoidanceStrategy i_AvoidanceStrategy, TContext i_Context);
 
         /// <summary>
         /// Gets the path area.
@@ -23,7 +23,7 @@ namespace Common.Grid
         /// <param name="i_Origin">The origin pathing origin.</param>
         /// <param name="i_Context">The context.</param>
         /// <returns></returns>
-        GridPathArea<TPosition, TContext, TTile> GetPathArea(TPosition i_Min, TPosition i_Max, TPosition i_Origin, TContext i_Context);
+        GridPathArea<TPosition, TContext, TTile> GetPathArea(TPosition i_Min, TPosition i_Max, TPosition i_Origin, EGridPathAvoidanceStrategy i_AvoidanceStrategy, TContext i_Context);
 
         /// <summary>
         /// Tries to get a tile at given position.

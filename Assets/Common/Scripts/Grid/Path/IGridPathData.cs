@@ -18,6 +18,10 @@ namespace Common.Grid.Path
     /// <seealso cref="System.IDisposable" />
     public interface IGridPathData<TPosition, TContext, TTile> : IDisposable where TTile : GridTile<TPosition, TContext, TTile>
     {
+
+        TPosition GetMin();
+        TPosition GetMax();
+
         /// <summary>
         /// Sets the initial pathing data bounds.
         /// </summary>

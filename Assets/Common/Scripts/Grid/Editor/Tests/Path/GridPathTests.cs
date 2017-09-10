@@ -21,7 +21,7 @@ namespace Common.Grid.Editor.Path
         [Test]
         public void PathFinding()
         {
-            var path = m_Grid.GetPath(new GridPosition3D(0, 0, 0), new GridPosition3D(4, 0, 0), 0);
+            var path = m_Grid.GetPath(new GridPosition3D(0, 0, 0), new GridPosition3D(4, 0, 0), EGridPathAvoidanceStrategy.DisableAvoidance, 0);
 
             Assert.That(path.Tiles.Last().PathCost == 8, "Cheapest path not found.");
             Assert.That(path.Tiles.Count == 9, "Shortest path not found.");
@@ -49,9 +49,9 @@ namespace Common.Grid.Editor.Path
             var areaMin = new GridPosition3D(0, 0, 0);
             var areaMax = new GridPosition3D(4, 2, 1);
             var areaOrigin = new GridPosition3D(1, 1, 1);
-            var pathArea = m_Grid.GetPathArea(areaMin, areaMax, areaOrigin, 0);
-            Assert.That(pathArea.Min.Equals(areaMin), "Path area min wrong.");
-            Assert.That(pathArea.Max.Equals(areaMax), "Path area max wrong.");
+            var pathArea = m_Grid.GetPathArea(areaMin, areaMax, areaOrigin, EGridPathAvoidanceStrategy.DisableAvoidance, 0);
+            Assert.That(pathArea.GridPathData.GetMin().Equals(areaMin), "Path area min wrong.");
+            Assert.That(pathArea.GridPathData.GetMax().Equals(areaMax), "Path area max wrong.");
             Assert.That(pathArea.Origin.Equals(areaOrigin), "Path area origin wrong.");
 
 

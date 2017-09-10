@@ -81,11 +81,11 @@ namespace Tools
 
         private void DrawTile(Rect rect, int index, bool isActive, bool isFocused)
         {
-            const int GridObjectDisplayPadding = 2;
-            rect.y += GridObjectDisplayPadding;
+            const int GridObjectDisplayPadding = 10;
+            rect.x += GridObjectDisplayPadding;
+            rect.width -= GridObjectDisplayPadding;
 
             var element = m_GridTileList.serializedProperty.GetArrayElementAtIndex(index);
-
             EditorGUI.PropertyField(rect, element, true);
         }
         private void DrawConnection(Rect rect, int index, bool isActive, bool isFocused)
