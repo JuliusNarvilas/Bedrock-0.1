@@ -2,6 +2,7 @@
 
 namespace Common
 {
+    [Serializable]
     /// <summary>
     /// A container to combine two values together.
     /// </summary>
@@ -69,6 +70,7 @@ namespace Common
         }
     }
 
+    [Serializable]
     /// <summary>
     /// A container to combine two values together.
     /// </summary>

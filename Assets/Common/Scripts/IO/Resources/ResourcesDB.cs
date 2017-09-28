@@ -272,10 +272,10 @@ namespace Common.IO.Recources
                 return;
             if (!ResourcesDB.Instance.UpdateAutomatically)
                 return;
-            var files = importedAssets.Concat(deletedAssets).Concat(movedAssets).Concat(movedFromAssetPaths);
+
             bool update = false;
 
-            foreach (var file in files)
+            foreach (var file in importedAssets)
             {
                 var fn = file.ToLower();
                 if (!fn.Contains("resourcedb.asset") && fn.Contains("/resources/"))
