@@ -15,6 +15,11 @@ namespace Common.IO
     {
         private UnityEngine.Object m_Asset;
 
+        public AssetReferenceNoLoadHandle(UnityEngine.Object i_Asset)
+        {
+            m_Asset = i_Asset;
+        }
+
         public override T GetAsset<T>()
         {
             return m_Asset as T;
@@ -102,20 +107,23 @@ namespace Common.IO
         private AssetReferenceLoadHandle m_WaitingHandle;
         private AssetDataReference m_PendingData;
         private Type m_RequestedAssetType;
+        private string m_RequestedAssetSubName;
         public Action<UnityEngine.Object> LoadCallback;
+        private bool m_Done = false;
 
-        public AssetReferenceDelayedLoadHandle(AssetReferenceLoadHandle i_WaitingHandle, AssetDataReference i_PendingData, Type i_AssetType)
+        public AssetReferenceDelayedLoadHandle(AssetReferenceLoadHandle i_WaitingHandle, AssetDataReference i_PendingData, Type i_AssetType, string i_SubName)
         {
             m_WaitingHandle = i_WaitingHandle;
             m_PendingData = i_PendingData;
             m_RequestedAssetType = i_AssetType;
+            m_RequestedAssetSubName = i_SubName;
 
             UpdateRunner.Instance.AddTask(this);
         }
 
         public override T GetAsset<T>()
         {
-            if(IsDone())
+            if(IsDone() && m_WaitingHandle != null)
             {
                 return m_WaitingHandle.GetAsset<T>();
             }
@@ -124,19 +132,26 @@ namespace Common.IO
 
         public override bool IsDone()
         {
-            return m_PendingData == null && m_WaitingHandle.IsDone();
+            return m_Done;
         }
 
         public bool UpdateAndFinish()
         {
             if(m_PendingData != null)
             {
+                //waiting for dependent load to finish
                 if (m_WaitingHandle.IsDone())
                 {
-                    m_WaitingHandle = m_PendingData.LoadAsync(m_RequestedAssetType);
+                    //creating an asset load handle of interest
+                    m_WaitingHandle = m_PendingData.LoadAsync(m_RequestedAssetType, m_RequestedAssetSubName);
                     m_PendingData = null;
                 }
                 return false;
+            }
+            if(m_WaitingHandle == null)
+            {
+                m_Done = true;
+                return true;
             }
             if(m_WaitingHandle.IsDone())
             {
@@ -144,6 +159,7 @@ namespace Common.IO
                 {
                     LoadCallback.Invoke(m_WaitingHandle.GetAsset<UnityEngine.Object>());
                 }
+                m_Done = true;
                 return true;
             }
             return false;

@@ -30,11 +30,6 @@ namespace Common.IO
         public static readonly string StreamingAssetsWithSeperators = System.IO.Path.DirectorySeparatorChar + "StreamingAssets" + System.IO.Path.DirectorySeparatorChar;
     */
 
-    public class AssetRecord
-    {
-
-    }
-
     [Serializable]
     public class AssetReference : IDisposable
     {
@@ -90,17 +85,12 @@ namespace Common.IO
             return default(AssetReferenceType);
         }
 
-        public T Get<T>() where T : UnityEngine.Object
+        public AssetReferenceLoadHandle GetAsync<T>() where T : UnityEngine.Object
         {
             var dataRef = AssetReferenceTracker.Instance.GetData(m_GUID);
             if (dataRef != null)
             {
-                m_DataReference = dataRef;
-                if (!string.IsNullOrEmpty(m_SubName))
-                {
-                    return m_DataReference.Load(GetType(), m_SubName) as T;
-                }
-                return m_DataReference.Load<T>();
+                return dataRef.LoadAsync(typeof(T), m_SubName);
             }
             return null;
         }
@@ -118,82 +108,6 @@ namespace Common.IO
                 m_DataReference = null;
             }
         }
-
-        /*
-        public void Get()
-        {
-            AssetReferenceType referenceType = AssetReferenceType.AssetBundle;
-            switch(referenceType)
-            {
-                case AssetReferenceType.AssetBundle:
-                    break;
-                case AssetReferenceType.Resource:
-                    break;
-                case AssetReferenceType.StreamingAssetLocal:
-                    break;
-                case AssetReferenceType.StreamingAssetUrl:
-                    break;
-            }
-            WWW data = new WWW(Application.streamingAssetsPath + "/" + "");
-            
-            //data.Get
-        }
-        */
-
-        /*
-    public static UnityEngine.Object GUIDToObject(string i_GUID)
-    {
-        string assetPath = AssetDatabase.GUIDToAssetPath(i_GUID);
-        if (!string.IsNullOrEmpty(assetPath))
-        {
-            return AssetDatabase.LoadMainAssetAtPath(assetPath);
-        }
-        return null;
-    }
-    */
-
-
-        /*
-        public static AssetReferenceType FindObjectAssetType(UnityEngine.Object i_UnityObject)
-        {
-            AssetDatabase.AssetPathToGUID();
-            i_UnityObject.
-            string assetPath = AssetDatabase.GetAssetPath(i_UnityObject);
-            string bundleName = AssetImporter.GetAtPath(assetPath).assetBundleName;
-
-            if (!string.IsNullOrEmpty(bundleName))
-            {
-                return AssetReferenceType.AssetBundle;
-            }
-            else if (assetPath.IndexOf(ResourcesWithSeperators) >= 0)
-            {
-                return AssetReferenceType.Resource;
-            }
-            else if (assetPath.IndexOf(StreamingAssetsWithSeperators) >= 0)
-            {
-                return AssetReferenceType.StreamingAssetLocal;
-            }
-        }
-
-
-
-        IEnumerator Example()
-        {
-            if (filePath.Contains("://"))
-            {
-                WWW www = new WWW(filePath);
-                yield return www;
-                result = www.text;
-            }
-            else
-                result = System.IO.File.ReadAllText(filePath);
-        }
-
-        private void OnValidate()
-        {
-            Debug.Log(Obj.name);
-            Debug.Log(AssetDatabase.GetAssetPath(Obj));
-        }
-        */
+        
     }
 }

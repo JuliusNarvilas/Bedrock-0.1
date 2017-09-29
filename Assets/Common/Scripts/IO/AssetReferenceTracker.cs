@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -33,7 +32,7 @@ namespace Common.IO
         /// bundles: filename
         /// </summary>
         public readonly string Name;
-        public readonly AssetReferenceType Type;
+        public readonly AssetReferenceType ReferenceType;
 
         private AssetReferenceLoadHandle m_InitialLoad;
         private int m_RefCount = 0;
@@ -46,117 +45,130 @@ namespace Common.IO
 
         public AssetReferenceLoadHandle LoadAsync(System.Type i_Type, string i_SubName = null)
         {
-            ScriptableObject test;
-            switch(Type)
+            //load if not loaded before
+            if (m_Cache.Count <= 0)
             {
-                case AssetReferenceType.AssetBundle:
-                    //load if not loaded before
-                    if (m_Cache.Count <= 0)
+                if (m_InitialLoad == null)
+                {
+                    switch (ReferenceType)
                     {
-                        AssetBundleManager.LoadAssetAsync();
-                        string err;
-                        var bundle = AssetBundleManager.GetLoadedAssetBundle(Src, out err);
-                        if(!string.IsNullOrEmpty(i_SubName))
-                        {
-                            var newAssets = bundle.m_AssetBundle.LoadAssetWithSubAssets(Name, i_Type);
-                            int count = newAssets.Count();
-                            for(int i = 0; i < count; ++i)
+                        case AssetReferenceType.AssetBundle:
                             {
-                                m_Cache.Add(newAssets[i]);
+                                var operation = AssetBundleManager.LoadAssetAsync(Src, Name, i_Type);
+                                var operationHandle = new AssetReferenceAssetBundleLoadHandle(operation);
+                                operationHandle.LoadCallback = (UnityEngine.Object newAsset) =>
+                                {
+                                    m_Cache.Add(newAsset);
+                                    m_InitialLoad = null;
+                                };
+                                m_InitialLoad = operationHandle;
                             }
-                        }
-                        if (!string.IsNullOrEmpty(i_SubName))
-                        {
-                            m_Cache.Add(bundle.m_AssetBundle.LoadAsset(Name));
-                        }
+                            break;
+                        case AssetReferenceType.Resource:
+                            {
+                                var operation = Resources.LoadAsync(Src);
+                                var operationHandle = new AssetReferenceResourceLoadHandle(operation);
+                                operationHandle.LoadCallback = (UnityEngine.Object newAsset) =>
+                                {
+                                    m_Cache.Add(newAsset);
+                                    m_InitialLoad = null;
+                                };
+                                m_InitialLoad = operationHandle;
+                            }
+                            break;
                     }
-                    //load if it's the first sub-asset load request
-                    else if (m_Cache.Count == 1 && !string.IsNullOrEmpty(i_SubName))
+                }
+
+                //only load nested assets after the parent one for correct
+                //bundle loading and reference count tracking done by AssetBundleManager
+                if (!string.IsNullOrEmpty(i_SubName) && m_InitialLoad != null)
+                {
+                    //all subassets will be already added by AssetReferenceDelayedLoadHandle
+                    return new AssetReferenceDelayedLoadHandle(m_InitialLoad, this, i_Type, i_SubName);
+                }
+
+                Log.DebugAssert(m_InitialLoad != null, "AssetDataReference: invalid asset loading requested ({0} ; {1} ; {2}).", Src, Name, ReferenceType.ToString());
+                return m_InitialLoad;
+            }
+            
+
+            //requesting existing parrent asset
+            if (string.IsNullOrEmpty(i_SubName))
+            {
+                return new AssetReferenceNoLoadHandle(m_Cache[0]);
+            }
+            //requesting child asset
+            else
+            {
+                //load child assets
+                if (m_Cache.Count == 1)
+                {
+                    UnityEngine.Object[] newAssets = null;
+                    switch (ReferenceType)
                     {
-                        string err;
-                        AssetBundleManager.LoadAssetAsync();
-                        var bundle = AssetBundleManager.GetLoadedAssetBundle(Src, out err);
-                        var temp = m_Cache[0];
-                        m_Cache.Clear();
-                        var newAssets = bundle.m_AssetBundle.LoadAssetWithSubAssets(Name, i_Type);
-                        int count = newAssets.Count();
+                        case AssetReferenceType.AssetBundle:
+                            {
+                                string error;
+                                var assetBundle = AssetBundleManager.GetLoadedAssetBundle(Src, out error);
+                                newAssets = assetBundle.m_AssetBundle.LoadAssetWithSubAssets(Name, i_Type);
+                            }
+                            break;
+                        case AssetReferenceType.Resource:
+                            newAssets = Resources.LoadAll(Src, i_Type);
+                            break;
+                    }
+                    if (newAssets != null)
+                    {
+                        int count = newAssets.Length;
                         for (int i = 0; i < count; ++i)
                         {
                             m_Cache.Add(newAssets[i]);
                         }
-                        m_Cache.Add(temp);
                     }
-                    break;
-                case AssetReferenceType.Resource:
-                    //load if not loaded before
-                    if (m_Cache.Count <= 0)
-                    {
-                        m_Cache.AddRange(Resources.LoadAll(Src, i_Type));
-                        if (!string.IsNullOrEmpty(i_SubName))
-                        {
-                            m_Cache.Add(Resources.Load(Src));
-                        }
-                    }
-                    //load if it's the first sub-asset load request
-                    else if (m_Cache.Count == 1 && !string.IsNullOrEmpty(i_SubName))
-                    {
-                        var parentAsset = m_Cache[0];
-                        m_Cache.Clear();
-                        m_Cache.AddRange(Resources.LoadAll(Src, i_Type));
-                        m_Cache.Add(parentAsset);
-                    }
-                    break;
-            }
-
-            
-            if (string.IsNullOrEmpty(i_SubName))
-            {
-                ++m_RefCount;
-                return m_Cache.Last();
-            }
-            else
-            {
-                foreach (var cacheItem in m_Cache)
+                }
+                //load from cache
+                int cacheItemCount = m_Cache.Count;
+                for (int i = 0; i < cacheItemCount; ++i)
                 {
-                    if (cacheItem.name == i_SubName)
+                    if (m_Cache[i].name == i_SubName)
                     {
-                        ++m_RefCount;
-                        return cacheItem;
+                        return new AssetReferenceNoLoadHandle(m_Cache[i]);
                     }
                 }
             }
+
+            Log.DebugLogError("AssetDataReference: invalid asset loading requested ({0} ; {1} ; {2}).", Src, Name, ReferenceType.ToString());
             return null;
         }
 
         public void Unload()
         {
-            --m_RefCount;
-            if (m_RefCount <= 0)
+            if (m_RefCount > 0)
             {
-                int count = m_Cache.Count;
-                switch(Type)
+                --m_RefCount;
+                if (m_RefCount == 0)
                 {
-                    case AssetReferenceType.AssetBundle:
-                        string err;
-                        var bundle = AssetBundleManager.GetLoadedAssetBundle(Src, out err);
-                        for (int i = 0; i < count; ++i)
-                        {
-                            bundle.m_AssetBundle.Unload
-                            Resources.UnloadAsset(m_Cache[i]);
-                        }
-                        m_Cache.Clear();
-                        Resources.UnloadUnusedAssets();
-                        break;
-                    case AssetReferenceType.Resource:
-                        for (int i = 0; i < count; ++i)
-                        {
-                            Resources.UnloadAsset(m_Cache[i]);
-                        }
-                        m_Cache.Clear();
-                        Resources.UnloadUnusedAssets();
-                        break;
+                    switch (ReferenceType)
+                    {
+                        case AssetReferenceType.AssetBundle:
+                            {
+                                AssetBundleManager.UnloadAssetBundle(Src);
+                                m_Cache.Clear();
+                            }
+                            break;
+                        case AssetReferenceType.Resource:
+                            {
+                                int count = m_Cache.Count;
+                                for (int i = 0; i < count; ++i)
+                                {
+                                    Resources.UnloadAsset(m_Cache[i]);
+                                }
+                                m_Cache.Clear();
+                                //Resources.UnloadUnusedAssets();
+                            }
+                            break;
+                    }
                 }
-                m_RefCount = 0;
             }
         }
 
