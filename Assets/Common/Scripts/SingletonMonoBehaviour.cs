@@ -57,7 +57,10 @@ namespace Common
                                 _instance = singleton.AddComponent<T>();
                                 singleton.name = "(singleton) " + typeof(T).ToString();
 
-                                DontDestroyOnLoad(singleton);
+                                if (Application.isPlaying)
+                                {//invalid for execution in editor mode
+                                    DontDestroyOnLoad(singleton);
+                                }
 
                                 Debug.Log("[Singleton] An instance of " + typeof(T) +
                                     " is needed in the scene, so '" + singleton +
@@ -76,7 +79,13 @@ namespace Common
             }
         }
 
-        private static bool applicationIsQuitting = false;
+        protected static bool applicationIsQuitting = false;
+
+        protected void Awake()
+        {
+            applicationIsQuitting = false;
+        }
+
         /// <summary>
         /// When Unity quits, it destroys objects in a random order.
         /// In principle, a Singleton is only destroyed when application quits.

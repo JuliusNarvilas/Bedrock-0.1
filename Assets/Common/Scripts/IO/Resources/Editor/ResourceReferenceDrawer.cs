@@ -40,7 +40,7 @@ namespace Common.IO.Recources
                     string foundAssetName = System.IO.Path.GetFileNameWithoutExtension(foundAssetPath);
                     newAssetFilePath = System.IO.Path.ChangeExtension(foundAssetPath, null);
                     ResourcesDBItem info = ResourcesDB.GetByPath(newAssetFilePath);
-                    //noverting path to resource path
+                    //converting path to resource path
                     newAssetFilePath = (info != null) ? info.ResourcesPath : string.Empty;
 
                     if (asset.name != foundAssetName)
@@ -66,7 +66,7 @@ namespace Common.IO.Recources
 
         public override float GetPropertyHeight(SerializedProperty prop, GUIContent label)
         {
-            return EditorHelpers.DEFAULT_GUI_LINE_HEIGHT;
+            return EditorGUIUtility.singleLineHeight;
         }
     }
 }

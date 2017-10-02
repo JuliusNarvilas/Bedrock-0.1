@@ -34,17 +34,18 @@ namespace Common.IO
     public class AssetReference : IDisposable
     {
         [SerializeField]
-        private string m_GUID;
-        /// <summary>
-        /// For storing nested asset type information.
-        /// </summary>
-        [SerializeField]
-        private string m_TypeStr;
+        private string Guid;
         /// <summary>
         /// For nested assets like Sprites.
         /// </summary>
         [SerializeField]
-        private string m_SubName;
+        private string SubName;
+        /// <summary>
+        /// For storing nested asset type information.
+        /// Is mostly for editor scripts
+        /// </summary>
+        [SerializeField]
+        private string TypeStr;
 
         private AssetDataReference m_DataReference;
 
@@ -53,21 +54,21 @@ namespace Common.IO
         {
             if (m_Type == null)
             {
-                m_Type = System.Type.GetType(m_TypeStr);
+                m_Type = System.Type.GetType(TypeStr);
             }
             return m_Type;
         }
 
         private AssetReference(string i_GUID, string i_TypeStr, string i_SubName)
         {
-            m_GUID = i_GUID;
-            m_TypeStr = i_TypeStr;
-            m_SubName = i_SubName;
+            Guid = i_GUID;
+            TypeStr = i_TypeStr;
+            SubName = i_SubName;
         }
 
         public string GetPath()
         {
-            var info = AssetReferenceTracker.Instance.GetInfo(m_GUID);
+            var info = AssetReferenceTracker.Instance.GetAssetInfo(Guid);
             if(info != null)
             {
                 return info.FilePath;
@@ -77,27 +78,27 @@ namespace Common.IO
 
         public AssetReferenceType GetAssetRefType()
         {
-            var info = AssetReferenceTracker.Instance.GetInfo(m_GUID);
+            var info = AssetReferenceTracker.Instance.GetAssetInfo(Guid);
             if (info != null)
             {
-                return info.Type;
+                return info.ReferenceType;
             }
             return default(AssetReferenceType);
         }
 
         public AssetReferenceLoadHandle GetAsync<T>() where T : UnityEngine.Object
         {
-            var dataRef = AssetReferenceTracker.Instance.GetData(m_GUID);
+            var dataRef = AssetReferenceTracker.Instance.GetAssetData(Guid);
             if (dataRef != null)
             {
-                return dataRef.LoadAsync(typeof(T), m_SubName);
+                return dataRef.LoadAsync(typeof(T), SubName);
             }
             return null;
         }
 
         public AssetReference Clone()
         {
-            return new AssetReference(m_GUID, m_TypeStr, m_SubName);
+            return new AssetReference(Guid, TypeStr, SubName);
         }
 
         public void Dispose()

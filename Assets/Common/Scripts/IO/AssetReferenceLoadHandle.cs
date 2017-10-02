@@ -9,6 +9,7 @@ namespace Common.IO
     {
         public abstract bool IsDone();
         public abstract T GetAsset<T>() where T : UnityEngine.Object;
+        public Action<UnityEngine.Object> LoadCallback;
     }
 
     public class AssetReferenceNoLoadHandle : AssetReferenceLoadHandle
@@ -18,6 +19,10 @@ namespace Common.IO
         public AssetReferenceNoLoadHandle(UnityEngine.Object i_Asset)
         {
             m_Asset = i_Asset;
+            if(LoadCallback != null)
+            {
+                LoadCallback.Invoke(m_Asset);
+            }
         }
 
         public override T GetAsset<T>()
@@ -33,32 +38,39 @@ namespace Common.IO
 
     public class AssetReferenceAssetBundleLoadHandle : AssetReferenceLoadHandle, UpdateRunnerTask
     {
-        private readonly AssetBundleLoadAssetOperation m_AssetBundleOperation;
-        public Action<UnityEngine.Object> LoadCallback;
+        private AssetBundleLoadAssetOperation m_AssetBundleOperation;
+        private UnityEngine.Object m_Asset;
 
         public AssetReferenceAssetBundleLoadHandle(AssetBundleLoadAssetOperation i_PendingOperation)
         {
             m_AssetBundleOperation = i_PendingOperation;
-
+            //set to done if nothing to wait for
+            UpdateAndFinish();
             UpdateRunner.Instance.AddTask(this);
         }
 
         public override T GetAsset<T>()
         {
-            return m_AssetBundleOperation.GetAsset<T>();
+            return m_Asset as T;
         }
         public override bool IsDone()
         {
-            return m_AssetBundleOperation.IsDone();
+            return m_AssetBundleOperation == null;
         }
 
         public bool UpdateAndFinish()
         {
+            if(m_AssetBundleOperation == null)
+            {
+                return true;
+            }
             if (m_AssetBundleOperation.IsDone())
             {
+                m_Asset = m_AssetBundleOperation.GetAsset<UnityEngine.Object>();
+                m_AssetBundleOperation = null;
                 if (LoadCallback != null)
                 {
-                    LoadCallback.Invoke(m_AssetBundleOperation.GetAsset<UnityEngine.Object>());
+                    LoadCallback.Invoke(m_Asset);
                 }
                 return true;
             }
@@ -68,33 +80,42 @@ namespace Common.IO
 
     public class AssetReferenceResourceLoadHandle : AssetReferenceLoadHandle, UpdateRunnerTask
     {
-        private readonly ResourceRequest m_ResourceOperation;
-        public Action<UnityEngine.Object> LoadCallback;
+        private ResourceRequest m_ResourceOperation;
+        private UnityEngine.Object m_Asset;
 
         public AssetReferenceResourceLoadHandle(ResourceRequest i_PendingOperation)
         {
             m_ResourceOperation = i_PendingOperation;
+            //set to done if nothing to wait for
+            UpdateAndFinish();
 
             UpdateRunner.Instance.AddTask(this);
         }
 
         public override T GetAsset<T>()
         {
-            return m_ResourceOperation.asset as T;
+            return m_Asset as T;
         }
 
         public override bool IsDone()
         {
-            return m_ResourceOperation.isDone;
+            return m_ResourceOperation == null;
         }
+
 
         public bool UpdateAndFinish()
         {
+            if(m_ResourceOperation == null)
+            {
+                return true;
+            }
             if (m_ResourceOperation.isDone)
             {
+                m_Asset = m_ResourceOperation.asset;
+                m_ResourceOperation = null;
                 if (LoadCallback != null)
                 {
-                    LoadCallback.Invoke(m_ResourceOperation.asset);
+                    LoadCallback.Invoke(m_Asset);
                 }
                 return true;
             }
@@ -108,7 +129,6 @@ namespace Common.IO
         private AssetDataReference m_PendingData;
         private Type m_RequestedAssetType;
         private string m_RequestedAssetSubName;
-        public Action<UnityEngine.Object> LoadCallback;
         private bool m_Done = false;
 
         public AssetReferenceDelayedLoadHandle(AssetReferenceLoadHandle i_WaitingHandle, AssetDataReference i_PendingData, Type i_AssetType, string i_SubName)
@@ -117,6 +137,8 @@ namespace Common.IO
             m_PendingData = i_PendingData;
             m_RequestedAssetType = i_AssetType;
             m_RequestedAssetSubName = i_SubName;
+            //set to done if nothing to wait for
+            UpdateAndFinish();
 
             UpdateRunner.Instance.AddTask(this);
         }
@@ -140,13 +162,13 @@ namespace Common.IO
             if(m_PendingData != null)
             {
                 //waiting for dependent load to finish
-                if (m_WaitingHandle.IsDone())
+                if (m_WaitingHandle == null || m_WaitingHandle.IsDone())
                 {
                     //creating an asset load handle of interest
                     m_WaitingHandle = m_PendingData.LoadAsync(m_RequestedAssetType, m_RequestedAssetSubName);
                     m_PendingData = null;
                 }
-                return false;
+                return UpdateAndFinish();
             }
             if(m_WaitingHandle == null)
             {

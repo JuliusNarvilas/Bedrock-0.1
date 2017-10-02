@@ -33,7 +33,7 @@ namespace Common.Text
 
         public override float GetPropertyHeight(SerializedProperty prop, GUIContent label)
         {
-            return EditorHelpers.DEFAULT_GUI_LINE_HEIGHT;
+            return EditorGUIUtility.singleLineHeight;
         }
     }
 }

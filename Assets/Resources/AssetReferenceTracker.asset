@@ -1,0 +1,235 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: AssetReferenceTracker
+  m_EditorClassIdentifier: Assembly-CSharp:Common.IO:AssetReferenceTracker
+  m_AssetInfoList:
+  - Guid: 412195e63b8901646adb12ef3f33f415
+    ReferenceType: 2
+    FilePath: Assets/AssetBundleManager/Resources/AssetBundleServerURL.bytes
+    BundleName: 
+    Varient: 
+  - Guid: 2673728a4910efa45836875b36bc7721
+    ReferenceType: 0
+    FilePath: Assets/AssetBundleSample/SampleAssets/MyCube.prefab
+    BundleName: cube-bundle
+    Varient: 
+  - Guid: 30987f57dfd5b354a96c306664824284
+    ReferenceType: 0
+    FilePath: Assets/AssetBundleSample/SampleAssets/MyMaterial.mat
+    BundleName: material-bundle
+    Varient: 
+  - Guid: 296160cc1f71f5c449071fc93408024e
+    ReferenceType: 0
+    FilePath: Assets/AssetBundleSample/SampleAssets/Tanks/Scenes/TanksExample.unity
+    BundleName: tanks-scene-bundle
+    Varient: 
+  - Guid: 796cc09933d53c9459316e2c0feed48b
+    ReferenceType: 0
+    FilePath: Assets/AssetBundleSample/SampleAssets/Tanks/Variants/Language/Danish/Canvas.prefab
+    BundleName: banner
+    Varient: danish
+  - Guid: 894708833d2b98a46b3d514f308d78a7
+    ReferenceType: 0
+    FilePath: Assets/AssetBundleSample/SampleAssets/Tanks/Variants/Language/English/Canvas.prefab
+    BundleName: banner
+    Varient: english
+  - Guid: 9d1deef747266ff42b2a2c717bf84761
+    ReferenceType: 0
+    FilePath: Assets/AssetBundleSample/SampleAssets/Tanks/Variants/Skins/Desert-HD/TankAlbedo.png
+    BundleName: tanks-albedo
+    Varient: desert-hd
+  - Guid: 5beb741047348a343b40f2f9f85321b9
+    ReferenceType: 0
+    FilePath: Assets/AssetBundleSample/SampleAssets/Tanks/Variants/Skins/Desert-SD/TankAlbedo.png
+    BundleName: tanks-albedo
+    Varient: desert-sd
+  - Guid: 68888acfdbf98bb44a745fa63f199180
+    ReferenceType: 0
+    FilePath: Assets/AssetBundleSample/SampleAssets/Tanks/Variants/Skins/Normal-HD/TankAlbedo.png
+    BundleName: tanks-albedo
+    Varient: normal-hd
+  - Guid: bc7ba52c93de11543821a48b2d8e75f8
+    ReferenceType: 0
+    FilePath: Assets/AssetBundleSample/SampleAssets/Tanks/Variants/Skins/Normal-SD/TankAlbedo.png
+    BundleName: tanks-albedo
+    Varient: normal-sd
+  - Guid: db9e242d5bcd5944aad670123354f1cc
+    ReferenceType: 0
+    FilePath: Assets/AssetBundleSample/SampleAssets/Test/hm/New Material.mat
+    BundleName: cube-bundle
+    Varient: 
+  - Guid: 7d39fed77778afa468b17cd41e1d2df3
+    ReferenceType: 0
+    FilePath: Assets/AssetBundleSample/SampleAssets/Test/TestMat.mat
+    BundleName: cube-bundle
+    Varient: 
+  - Guid: b4c39875389d03d4580f45f5b9d5bdd5
+    ReferenceType: 0
+    FilePath: Assets/AssetBundleSample/SampleAssets/TestScene.unity
+    BundleName: scene-bundle
+    Varient: 
+  - Guid: d7237a1aa44f846fdb5e7cf9d27f3d87
+    ReferenceType: 0
+    FilePath: Assets/AssetBundleSample/SampleAssets/Variants/MyAssets-HD/myTexture.png
+    BundleName: variants/myassets
+    Varient: hd
+  - Guid: 4eb3a2051c0574dd49f7f450542bf9e5
+    ReferenceType: 0
+    FilePath: Assets/AssetBundleSample/SampleAssets/Variants/MyAssets-HD/someMaterial.mat
+    BundleName: variants/myassets
+    Varient: hd
+  - Guid: fd0ab07c3990515478ad07a641406ee4
+    ReferenceType: 0
+    FilePath: Assets/AssetBundleSample/SampleAssets/Variants/MyAssets-HD/unityLogo.png
+    BundleName: variants/myassets
+    Varient: hd
+  - Guid: d901fa437668a409388b09b15c7edb7e
+    ReferenceType: 0
+    FilePath: Assets/AssetBundleSample/SampleAssets/Variants/MyAssets-SD/myTexture.png
+    BundleName: variants/myassets
+    Varient: sd
+  - Guid: 25deb92ca06bb4297a0e16fc4756b110
+    ReferenceType: 0
+    FilePath: Assets/AssetBundleSample/SampleAssets/Variants/MyAssets-SD/someMaterial.mat
+    BundleName: variants/myassets
+    Varient: sd
+  - Guid: 713adedcd8c1c7d4187ec1d74591228c
+    ReferenceType: 0
+    FilePath: Assets/AssetBundleSample/SampleAssets/Variants/MyAssets-SD/unityLogo.png
+    BundleName: variants/myassets
+    Varient: sd
+  - Guid: a6e96c7fcdb534dd9b98655682bc8c08
+    ReferenceType: 0
+    FilePath: Assets/AssetBundleSample/SampleAssets/Variants/VariantScene.unity
+    BundleName: variants/variant-scene
+    Varient: 
+  - Guid: 957fee1cddc1270499715ba364e37938
+    ReferenceType: 2
+    FilePath: Assets/Common/Scripts/IO/Resources/Editor/ResourceReferenceDrawer.cs
+    BundleName: 
+    Varient: 
+  - Guid: 47b26f2fdde837744a7d613a3a64c84d
+    ReferenceType: 2
+    FilePath: Assets/Common/Scripts/IO/Resources/Editor/ResourcesDBEditor.cs
+    BundleName: 
+    Varient: 
+  - Guid: cdbc20cd181dfbb4195261a033ea98fe
+    ReferenceType: 2
+    FilePath: Assets/Common/Scripts/IO/Resources/ResourceReference.cs
+    BundleName: 
+    Varient: 
+  - Guid: 1f2977457a329c34ca4b04934f2dac95
+    ReferenceType: 2
+    FilePath: Assets/Common/Scripts/IO/Resources/ResourcesDB.cs
+    BundleName: 
+    Varient: 
+  - Guid: b2b60c73a5472b6488141c3ba9f575ca
+    ReferenceType: 2
+    FilePath: Assets/Common/Scripts/IO/Resources/ResourcesDBItem.cs
+    BundleName: 
+    Varient: 
+  - Guid: 2f152b191531f14408f83abb4385bf22
+    ReferenceType: 2
+    FilePath: Assets/Resources/AssetReferenceTracker.asset
+    BundleName: 
+    Varient: 
+  - Guid: d588c6bebc69c004a9977e75608b37fa
+    ReferenceType: 2
+    FilePath: Assets/Resources/Fonts/OpenSans-Regular.ttf
+    BundleName: 
+    Varient: 
+  - Guid: 9c8533caa6b3f5240a09db9055adb41d
+    ReferenceType: 2
+    FilePath: Assets/Resources/Images/Test.jpg
+    BundleName: 
+    Varient: 
+  - Guid: 3fc6f2ac111ebe44c9f0a61d0ccec638
+    ReferenceType: 2
+    FilePath: Assets/Resources/Images/Test 1.jpg
+    BundleName: 
+    Varient: 
+  - Guid: 22c1b4a134421e644be9369f0ffe4503
+    ReferenceType: 2
+    FilePath: Assets/Resources/IntelligentTextSettings.asset
+    BundleName: 
+    Varient: 
+  - Guid: 8f74cce472a93984f94ec7f793d1acca
+    ReferenceType: 2
+    FilePath: Assets/Resources/Localization/en/data.json
+    BundleName: 
+    Varient: 
+  - Guid: 258001dd4f53e5244854572ce78a1214
+    ReferenceType: 2
+    FilePath: Assets/Resources/Localization/global/data.json
+    BundleName: 
+    Varient: 
+  - Guid: b76229bf9de1ac44f9f8781ad936c25f
+    ReferenceType: 2
+    FilePath: Assets/Resources/Localization/localizations.json
+    BundleName: 
+    Varient: 
+  - Guid: 5a9f630c79e7e8e4dbb69ca9ade360a1
+    ReferenceType: 2
+    FilePath: Assets/Resources/Materials/Sprite.mat
+    BundleName: 
+    Varient: 
+  - Guid: 0bb2c4c1b6b1f0e4188a2b4b8a6ed754
+    ReferenceType: 2
+    FilePath: Assets/Resources/ResourceDB.asset
+    BundleName: 
+    Varient: 
+  m_AssetBundleDirectories:
+  - Guid: f0025b39632c7a94e9218bd5e6a3e100
+    ReferenceType: 1
+    FilePath: Assets/AssetBundleSample/SampleAssets/Tanks/Variants/Language/Danish
+    BundleName: banner
+    Varient: danish
+  - Guid: c2492ad84c3c7074a9f1e6a6e98173eb
+    ReferenceType: 1
+    FilePath: Assets/AssetBundleSample/SampleAssets/Tanks/Variants/Language/English
+    BundleName: banner
+    Varient: english
+  - Guid: 1387db9ebc16d4341adcb611ed7d1bae
+    ReferenceType: 1
+    FilePath: Assets/AssetBundleSample/SampleAssets/Tanks/Variants/Skins/Desert-HD
+    BundleName: tanks-albedo
+    Varient: desert-hd
+  - Guid: 6e295b2ea81dbcd46a57196f16974bbd
+    ReferenceType: 1
+    FilePath: Assets/AssetBundleSample/SampleAssets/Tanks/Variants/Skins/Desert-SD
+    BundleName: tanks-albedo
+    Varient: desert-sd
+  - Guid: 49540fdfe03c1aa4695827e466a044d7
+    ReferenceType: 1
+    FilePath: Assets/AssetBundleSample/SampleAssets/Tanks/Variants/Skins/Normal-HD
+    BundleName: tanks-albedo
+    Varient: normal-hd
+  - Guid: 3185ace854b9a774396a3c43b68ba854
+    ReferenceType: 1
+    FilePath: Assets/AssetBundleSample/SampleAssets/Tanks/Variants/Skins/Normal-SD
+    BundleName: tanks-albedo
+    Varient: normal-sd
+  - Guid: 33762dee1005bb54ba611cee8b843f83
+    ReferenceType: 1
+    FilePath: Assets/AssetBundleSample/SampleAssets/Test
+    BundleName: cube-bundle
+    Varient: 
+  - Guid: 80204c1ff2437486b9251d9e6530b6e6
+    ReferenceType: 1
+    FilePath: Assets/AssetBundleSample/SampleAssets/Variants/MyAssets-HD
+    BundleName: variants/myassets
+    Varient: hd
+  - Guid: b020066d521144b82a861fb2e271e5f0
+    ReferenceType: 1
+    FilePath: Assets/AssetBundleSample/SampleAssets/Variants/MyAssets-SD
+    BundleName: variants/myassets
+    Varient: sd

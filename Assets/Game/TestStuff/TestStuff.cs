@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using Common.IO;
+using Common.IO.Recources;
 
 public enum ETestEnum
 {
@@ -30,3 +32,9 @@ public class TestStuff<Test> : MonoBehaviour {
     public Test font;
 }
 
+public class TestStuff : MonoBehaviour
+{
+    public AssetReference Test;
+
+
+}

@@ -8,7 +8,6 @@ namespace Common
 {
     public static class EditorHelpers
     {
-        public const float DEFAULT_GUI_LINE_HEIGHT = 18;
         public const float DEFAULT_GUI_HEIGHT = 16;
         
         public enum EStringCasing
@@ -155,7 +154,7 @@ namespace Common
             labelUIArea.width *= 0.5f;
             enumUIArea.width *= 0.5f;
             enumUIArea.x += labelUIArea.width;
-            contentArea.y += DEFAULT_GUI_LINE_HEIGHT;
+            contentArea.y += EditorGUIUtility.singleLineHeight;
             
             selectedEnum = EditorGUILayout.EnumPopup(displayName, selectedEnum);
             matchedProperty.enumValueIndex = Convert.ToInt32(selectedEnum);

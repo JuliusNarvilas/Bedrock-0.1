@@ -16,6 +16,7 @@ using System.Diagnostics;
 
 namespace Common
 {
+
     public class Log
     {
         public delegate void LoggerOutputLogTargetFunc(string i_Message, params object[] i_Args);
