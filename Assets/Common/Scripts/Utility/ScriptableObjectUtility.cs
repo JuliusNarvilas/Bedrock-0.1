@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using System.IO;
+using System;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Common.Utility
 {
@@ -11,6 +14,7 @@ namespace Common.Utility
         /// </summary>
         public static void CreateAsset<T>() where T : ScriptableObject
         {
+#if UNITY_EDITOR
             T asset = ScriptableObject.CreateInstance<T>();
             string path = AssetDatabase.GetAssetPath(Selection.activeObject);
             if (path == "")
@@ -30,6 +34,9 @@ namespace Common.Utility
             AssetDatabase.Refresh();
             EditorUtility.FocusProjectWindow();
             Selection.activeObject = asset;
+#else
+            throw new NotSupportedException();
+#endif
         }
     }
 }

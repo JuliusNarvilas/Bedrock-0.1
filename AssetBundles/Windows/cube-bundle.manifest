@@ -1,0 +1,33 @@
+ManifestFileVersion: 0
+CRC: 857405677
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: b1b0ec0bc1e0e211309664946f1c3900
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: c09bcef2796a0f939e34f027b0643ead
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+Assets:
+- Assets/AssetBundleSample/SampleAssets/Test/TestMat.mat
+- Assets/AssetBundleSample/SampleAssets/MyCube.prefab
+- Assets/AssetBundleSample/SampleAssets/Test/hm/New Material.mat
+Dependencies:
+- D:/Workspaces/GitHub/Bedrock-0.1/AssetBundles/Windows/material-bundle

@@ -3,8 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Common.IO
 {
@@ -41,6 +44,10 @@ namespace Common.IO
         /// </summary>
         public AssetReferenceType ReferenceType;
 
+#if UNITY_EDITOR
+        public string AssetGuid;
+#endif
+
         /// <summary>
         /// This stores the main referenced asset load handle that will need to finish
         /// before child assets (like sprites in a Texture asset) can be loaded.
@@ -55,8 +62,9 @@ namespace Common.IO
             return LoadAsync(typeof(T), i_SubName) as T;
         }
         
-        public AssetReferenceLoadHandle LoadAsync(System.Type i_Type, string i_SubName = null, Action<UnityEngine.Object> i_LoadCallback = null)
+        public AssetReferenceLoadHandle LoadAsync(System.Type i_Type, string i_SubName = null)
         {
+
             //initial load
             if (m_Cache.Count <= 0)
             {
@@ -68,12 +76,11 @@ namespace Common.IO
                         case AssetReferenceType.AssetBundle:
                             {
                                 var operation = AssetBundleManager.LoadAssetAsync(Src, Name, i_Type);
-                                m_InitialLoad = new AssetReferenceAssetBundleLoadHandle(operation);
-                                m_InitialLoad.LoadCallback = (UnityEngine.Object newAsset) =>
+                                m_InitialLoad = new AssetReferenceAssetBundleLoadHandle(operation, (UnityEngine.Object newAsset) =>
                                 {
                                     m_Cache.Add(newAsset);
                                     m_InitialLoad = null;
-                                };
+                                });
                                 result = m_InitialLoad;
                             }
                             break;
@@ -83,12 +90,11 @@ namespace Common.IO
                                 if (Application.isPlaying)
                                 {
                                     var operation = Resources.LoadAsync(Src);
-                                    m_InitialLoad = new AssetReferenceResourceLoadHandle(operation);
-                                    m_InitialLoad.LoadCallback = (UnityEngine.Object newAsset) =>
+                                    m_InitialLoad = new AssetReferenceResourceLoadHandle(operation, (UnityEngine.Object newAsset) =>
                                     {
                                         m_Cache.Add(newAsset);
                                         m_InitialLoad = null;
-                                    };
+                                    });
                                     result = m_InitialLoad;
                                 }
                                 else
@@ -135,9 +141,19 @@ namespace Common.IO
                     {
                         case AssetReferenceType.AssetBundle:
                             {
-                                string error;
-                                var assetBundle = AssetBundleManager.GetLoadedAssetBundle(Src, out error);
-                                newAssets = assetBundle.m_AssetBundle.LoadAssetWithSubAssets(Name, i_Type);
+#if UNITY_EDITOR
+                                if(AssetBundleManager.SimulateAssetBundleInEditor)
+                                {
+                                    var assetPath = AssetDatabase.GUIDToAssetPath(AssetGuid);
+                                    newAssets = AssetDatabase.LoadAllAssetsAtPath(assetPath).Where(o => i_Type.IsAssignableFrom(o.GetType())).ToArray();
+                                }
+                                else
+#endif
+                                {
+                                    string error;
+                                    var assetBundle = AssetBundleManager.GetLoadedAssetBundle(Src, out error);
+                                    newAssets = assetBundle.m_AssetBundle.LoadAssetWithSubAssets(Name, i_Type);
+                                }
                             }
                             break;
                         case AssetReferenceType.Resource:
@@ -254,8 +270,9 @@ namespace Common.IO
             s_Instance = this;
         }
 
-
+#if UNITY_EDITOR
         [MenuItem("Tools/Rescan AssetReferenceTracker")]
+#endif
         internal static void TriggerUpdate()
         {
             if (s_Instance != null)
@@ -298,6 +315,7 @@ namespace Common.IO
         /// <returns>True if manager state changed and false otherwise.</returns>
         public bool UpdateAsset(string assetGuid)
         {
+#if UNITY_EDITOR
             var assetInfo = CreateAssetInfo(assetGuid);
 
             if (assetInfo != null)
@@ -321,6 +339,9 @@ namespace Common.IO
                 wasRemoved = m_PathToAssetBundleDirectory.Remove(assetGuid);
             }
             return wasRemoved;
+#else
+            throw new NotSupportedException();
+#endif
         }
 
         public AssetReferenceInfo GetAssetInfo(string assetGuid)
@@ -351,6 +372,9 @@ namespace Common.IO
                             Name = name,
                             ReferenceType = info.ReferenceType,
                             Src = info.BundleName
+#if UNITY_EDITOR
+                            ,AssetGuid = assetGuid
+#endif
                         };
                         break;
                     case AssetReferenceType.Resource:
@@ -362,6 +386,9 @@ namespace Common.IO
                             Name = name,
                             ReferenceType = info.ReferenceType,
                             Src = resourcePath.Substring(resourceStrStartIndex + resourcesDir.Length)
+#if UNITY_EDITOR
+                            ,AssetGuid = assetGuid
+#endif
                         };
                         break;
                     case AssetReferenceType.AssetBundleDirectory:
@@ -400,6 +427,7 @@ namespace Common.IO
 
         public AssetReferenceInfo CreateAssetInfo(string assetGuid)
         {
+#if UNITY_EDITOR
             string assetPath = AssetDatabase.GUIDToAssetPath(assetGuid);
             var attributes = File.GetAttributes(assetPath);
             var importer = AssetImporter.GetAtPath(assetPath);
@@ -459,10 +487,14 @@ namespace Common.IO
                 }
             }
             return null;
+#else
+            throw new NotSupportedException();
+#endif
         }
 
         public void Rescan(bool withSave = true)
         {
+#if UNITY_EDITOR
             m_GuidToAssetInfo.Clear();
             var allAssets = AssetDatabase.FindAssets(string.Empty);
 
@@ -486,14 +518,21 @@ namespace Common.IO
                 m_AssetInfoList = m_GuidToAssetInfo.Values.ToList();
                 m_AssetBundleDirectories = m_PathToAssetBundleDirectory.Values.ToList();
             }
+#else
+            throw new NotSupportedException();
+#endif
         }
 
         public void Save()
         {
+#if UNITY_EDITOR
             m_AssetInfoList = m_GuidToAssetInfo.Values.ToList();
             m_AssetBundleDirectories = m_PathToAssetBundleDirectory.Values.ToList();
             EditorUtility.SetDirty(this);
             AssetDatabase.SaveAssets();
+#else
+            throw new NotSupportedException();
+#endif
         }
 
         public void OnBeforeSerialize()

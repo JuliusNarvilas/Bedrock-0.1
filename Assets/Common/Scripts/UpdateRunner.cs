@@ -1,7 +1,9 @@
 ﻿
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Common.IO
 {
@@ -20,12 +22,15 @@ namespace Common.IO
         private bool m_Executing = false;
         private List<UpdateRunnerTask> m_Tasks = new List<UpdateRunnerTask>();
 
+#if UNITY_EDITOR
         //Force UpdateRunner to update in edit mode as it does in play mode
         [UnityEditor.Callbacks.DidReloadScripts]
         private static void OnScriptsReloaded()
         {
             Instance.Awake();
         }
+#endif
+
         private new void Awake()
         {
             m_Executing = false;
@@ -57,7 +62,7 @@ namespace Common.IO
         }
 
 #if UNITY_EDITOR
-        private void Update()
+        public void Update()
         {
             if(Application.isPlaying)
             {
@@ -65,10 +70,10 @@ namespace Common.IO
             }
         }
 
-        private void EditorUpdate()
+        public void EditorUpdate()
         {
 #else
-        private void Update()
+        public void Update()
         {
 #endif
             if (m_Tasks.Count > 0)

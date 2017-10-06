@@ -67,6 +67,7 @@ namespace Tools
 
         private void Update()
         {
+#if UNITY_EDITOR
             var typeData = GetMapTypeData();
             if (typeData != null && typeData.Updated)
             {
@@ -83,6 +84,7 @@ namespace Tools
                 }
                 DrawDebug();
             }
+#endif
         }
 
 

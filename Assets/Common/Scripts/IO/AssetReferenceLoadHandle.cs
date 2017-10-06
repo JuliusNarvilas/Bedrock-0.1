@@ -16,12 +16,12 @@ namespace Common.IO
     {
         private UnityEngine.Object m_Asset;
 
-        public AssetReferenceNoLoadHandle(UnityEngine.Object i_Asset)
+        public AssetReferenceNoLoadHandle(UnityEngine.Object i_Asset, Action<UnityEngine.Object> i_Callback = null)
         {
             m_Asset = i_Asset;
-            if(LoadCallback != null)
+            if(i_Callback != null)
             {
-                LoadCallback.Invoke(m_Asset);
+                i_Callback.Invoke(m_Asset);
             }
         }
 
@@ -41,9 +41,10 @@ namespace Common.IO
         private AssetBundleLoadAssetOperation m_AssetBundleOperation;
         private UnityEngine.Object m_Asset;
 
-        public AssetReferenceAssetBundleLoadHandle(AssetBundleLoadAssetOperation i_PendingOperation)
+        public AssetReferenceAssetBundleLoadHandle(AssetBundleLoadAssetOperation i_PendingOperation, Action<UnityEngine.Object> i_Callback = null)
         {
             m_AssetBundleOperation = i_PendingOperation;
+            LoadCallback = i_Callback;
             //set to done if nothing to wait for
             UpdateAndFinish();
             UpdateRunner.Instance.AddTask(this);
@@ -71,6 +72,7 @@ namespace Common.IO
                 if (LoadCallback != null)
                 {
                     LoadCallback.Invoke(m_Asset);
+                    LoadCallback = null;
                 }
                 return true;
             }
@@ -83,9 +85,10 @@ namespace Common.IO
         private ResourceRequest m_ResourceOperation;
         private UnityEngine.Object m_Asset;
 
-        public AssetReferenceResourceLoadHandle(ResourceRequest i_PendingOperation)
+        public AssetReferenceResourceLoadHandle(ResourceRequest i_PendingOperation, Action<UnityEngine.Object> i_Callback = null)
         {
             m_ResourceOperation = i_PendingOperation;
+            LoadCallback = i_Callback;
             //set to done if nothing to wait for
             UpdateAndFinish();
 
@@ -116,6 +119,7 @@ namespace Common.IO
                 if (LoadCallback != null)
                 {
                     LoadCallback.Invoke(m_Asset);
+                    LoadCallback = null;
                 }
                 return true;
             }
@@ -131,12 +135,13 @@ namespace Common.IO
         private string m_RequestedAssetSubName;
         private bool m_Done = false;
 
-        public AssetReferenceDelayedLoadHandle(AssetReferenceLoadHandle i_WaitingHandle, AssetDataReference i_PendingData, Type i_AssetType, string i_SubName)
+        public AssetReferenceDelayedLoadHandle(AssetReferenceLoadHandle i_WaitingHandle, AssetDataReference i_PendingData, Type i_AssetType, string i_SubName, Action<UnityEngine.Object> i_Callback = null)
         {
             m_WaitingHandle = i_WaitingHandle;
             m_PendingData = i_PendingData;
             m_RequestedAssetType = i_AssetType;
             m_RequestedAssetSubName = i_SubName;
+            LoadCallback = i_Callback;
             //set to done if nothing to wait for
             UpdateAndFinish();
 
@@ -164,11 +169,16 @@ namespace Common.IO
                 //waiting for dependent load to finish
                 if (m_WaitingHandle == null || m_WaitingHandle.IsDone())
                 {
+                    if(m_WaitingHandle != null && m_WaitingHandle.LoadCallback != null)
+                    {
+                        UpdateRunner.Instance.Update();
+                    }
                     //creating an asset load handle of interest
                     m_WaitingHandle = m_PendingData.LoadAsync(m_RequestedAssetType, m_RequestedAssetSubName);
                     m_PendingData = null;
+                    return UpdateAndFinish();
                 }
-                return UpdateAndFinish();
+                return false;
             }
             if(m_WaitingHandle == null)
             {
@@ -180,6 +190,7 @@ namespace Common.IO
                 if(LoadCallback != null)
                 {
                     LoadCallback.Invoke(m_WaitingHandle.GetAsset<UnityEngine.Object>());
+                    LoadCallback = null;
                 }
                 m_Done = true;
                 return true;

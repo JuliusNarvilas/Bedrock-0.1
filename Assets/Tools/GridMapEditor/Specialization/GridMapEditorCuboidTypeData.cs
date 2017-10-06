@@ -3,11 +3,12 @@ using Common.Grid;
 using UnityEngine;
 using Common;
 using System.Collections.Generic;
-using UnityEditor;
-using System.Linq;
 using Common.Utility;
 using Common.Graphics;
 using Common.Grid.Generation;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Tools
 {   
@@ -33,7 +34,9 @@ namespace Tools
 
         public bool HideDebugObjectsInScene = true;
 
+#if UNITY_EDITOR
         [MenuItem("Assets/Create/Grid/MapEditorTypeData/Cuboid")]
+#endif
         public static void CreateAsset()
         {
             ScriptableObjectUtility.CreateAsset<GridMapEditorCuboidTypeData>();
@@ -225,6 +228,7 @@ namespace Tools
 
         public GameObject BuildTileDebug(GridPosition3D i_GridPosition, Vector3 i_TileSize, int i_Settings, bool i_Selected)
         {
+#if UNITY_EDITOR
             var result = new GameObject("Debug_GridTile");
             result.hideFlags = HideDebugObjectsInScene ? HideFlags.HideAndDontSave : HideFlags.DontSave;
             result.transform.localPosition = new Vector3(i_GridPosition.X * i_TileSize.x, i_GridPosition.Y * i_TileSize.y, i_GridPosition.Z * i_TileSize.z);
@@ -259,10 +263,14 @@ namespace Tools
             }
 
             return result;
+#else
+            throw new NotSupportedException();
+#endif
         }
 
         private GameObject addDebugBounds(GameObject i_Go, Material i_Mat, GridPosition3D i_ObjSize, Vector3 i_TileSize)
         {
+#if UNITY_EDITOR
             var renderer = i_Go.AddComponent<MeshRenderer>();
             EditorUtility.SetSelectedRenderState(renderer, EditorSelectedRenderState.Hidden);
             var filter = i_Go.AddComponent<MeshFilter>();
@@ -293,6 +301,9 @@ namespace Tools
             renderer.material = i_Mat;
 
             return i_Go;
+#else
+            throw new NotSupportedException();
+#endif
         }
 
         public override GameObject BuildObjectDebug(GridMapObjectBehaviour<GridPosition3D, int> i_Obj, Vector3 i_TileSize)

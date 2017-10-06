@@ -137,11 +137,6 @@ MonoBehaviour:
     FilePath: Assets/Common/Scripts/IO/Resources/ResourcesDBItem.cs
     BundleName: 
     Varient: 
-  - Guid: 2f152b191531f14408f83abb4385bf22
-    ReferenceType: 2
-    FilePath: Assets/Resources/AssetReferenceTracker.asset
-    BundleName: 
-    Varient: 
   - Guid: d588c6bebc69c004a9977e75608b37fa
     ReferenceType: 2
     FilePath: Assets/Resources/Fonts/OpenSans-Regular.ttf
@@ -185,6 +180,36 @@ MonoBehaviour:
   - Guid: 0bb2c4c1b6b1f0e4188a2b4b8a6ed754
     ReferenceType: 2
     FilePath: Assets/Resources/ResourceDB.asset
+    BundleName: 
+    Varient: 
+  - Guid: e2c33ae1cd6a9e842a01e996a8c551aa
+    ReferenceType: 0
+    FilePath: Assets/Test/AssetReference/AssetBundles/Images/Crystal.jpg
+    BundleName: assetbundletest
+    Varient: 
+  - Guid: 612c48b66e0bcac41a2047a43a6b6021
+    ReferenceType: 0
+    FilePath: Assets/Test/AssetReference/AssetBundles/Images/Flower.jpg
+    BundleName: assetbundletest
+    Varient: 
+  - Guid: cf0f9c86f8d38b0419937d23c5af8a58
+    ReferenceType: 0
+    FilePath: Assets/Test/AssetReference/AssetBundlesFolder/Images/Crystal.jpg
+    BundleName: assetbundlefoldertest
+    Varient: 
+  - Guid: 01d7ffeccc9faec4a8fb39d981d25be0
+    ReferenceType: 0
+    FilePath: Assets/Test/AssetReference/AssetBundlesFolder/Images/Flower.jpg
+    BundleName: assetbundlefoldertest
+    Varient: 
+  - Guid: 6093831b5dea694409b306c2577b5486
+    ReferenceType: 2
+    FilePath: Assets/Test/AssetReference/Resources/Images/Crystal.jpg
+    BundleName: 
+    Varient: 
+  - Guid: 0ad6d0c06127b764e8b0f992a7ac2478
+    ReferenceType: 2
+    FilePath: Assets/Test/AssetReference/Resources/Images/Flower.jpg
     BundleName: 
     Varient: 
   m_AssetBundleDirectories:
@@ -233,3 +258,8 @@ MonoBehaviour:
     FilePath: Assets/AssetBundleSample/SampleAssets/Variants/MyAssets-SD
     BundleName: variants/myassets
     Varient: sd
+  - Guid: 3e428e62a672add429c40da4562ebfdf
+    ReferenceType: 1
+    FilePath: Assets/Test/AssetReference/AssetBundlesFolder/Images
+    BundleName: assetbundlefoldertest
+    Varient: 

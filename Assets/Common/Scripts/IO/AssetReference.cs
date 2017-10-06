@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEditor;
-using UnityEditor.Build;
 using UnityEngine;
 
 namespace Common.IO
@@ -15,20 +9,6 @@ namespace Common.IO
         AssetBundleDirectory,
         Resource
     }
-    /*
-    public enum AssetReferenceDataType
-    {
-        Bytes,
-        AssetBundle,
-        AudioClip,
-        MovieTexture,
-        Text,
-        Texture2D,
-        Texture2DNonReadable
-    }
-        public static readonly string ResourcesWithSeperators = System.IO.Path.DirectorySeparatorChar + "Resources" + System.IO.Path.DirectorySeparatorChar;
-        public static readonly string StreamingAssetsWithSeperators = System.IO.Path.DirectorySeparatorChar + "StreamingAssets" + System.IO.Path.DirectorySeparatorChar;
-    */
 
     [Serializable]
     public class AssetReference : IDisposable
