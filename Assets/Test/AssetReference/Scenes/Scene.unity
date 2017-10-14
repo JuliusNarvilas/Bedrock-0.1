@@ -408,19 +408,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_TextureWithSpritesTarget: {fileID: 1157803399}
   m_TextureWithSpritesReference:
-    Guid: 612c48b66e0bcac41a2047a43a6b6021
-    SubName: 
-    TypeStr: 
+    m_Asset: {fileID: 2800000, guid: 612c48b66e0bcac41a2047a43a6b6021, type: 3}
+    m_Info:
+      ReferenceType: 0
+      FilePath: Assets/Test/AssetReference/AssetBundles/Images/Flower.jpg
+      Src: assetbundletest
+      Name: Flower
+      SubAssetName: 
+      AssetTypeStr: UnityEngine.Texture2D, UnityEngine, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
   m_SpriteTarget: {fileID: 1085813443}
   m_SpriteReference:
-    Guid: 612c48b66e0bcac41a2047a43a6b6021
-    SubName: Test 1_0
-    TypeStr: UnityEngine.Sprite, UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    m_Asset: {fileID: 21300000, guid: 612c48b66e0bcac41a2047a43a6b6021, type: 3}
+    m_Info:
+      ReferenceType: 0
+      FilePath: Assets/Test/AssetReference/AssetBundles/Images/Flower.jpg
+      Src: assetbundletest
+      Name: Flower
+      SubAssetName: Test 1_0
+      AssetTypeStr: UnityEngine.Sprite, UnityEngine, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
   m_TextureTarget: {fileID: 1877361074}
   m_TextureReference:
-    Guid: e2c33ae1cd6a9e842a01e996a8c551aa
-    SubName: 
-    TypeStr: 
+    m_Asset: {fileID: 2800000, guid: e2c33ae1cd6a9e842a01e996a8c551aa, type: 3}
+    m_Info:
+      ReferenceType: 0
+      FilePath: Assets/Test/AssetReference/AssetBundles/Images/Crystal.jpg
+      Src: assetbundletest
+      Name: Crystal
+      SubAssetName: 
+      AssetTypeStr: UnityEngine.Texture2D, UnityEngine, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
 --- !u!114 &354404182
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1044,19 +1062,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_TextureWithSpritesTarget: {fileID: 1648160893}
   m_TextureWithSpritesReference:
-    Guid: 01d7ffeccc9faec4a8fb39d981d25be0
-    SubName: 
-    TypeStr: 
+    m_Asset: {fileID: 2800000, guid: 01d7ffeccc9faec4a8fb39d981d25be0, type: 3}
+    m_Info:
+      ReferenceType: 0
+      FilePath: Assets/Test/AssetReference/AssetBundlesFolder/Images/Flower.jpg
+      Src: assetbundlefoldertest
+      Name: Flower
+      SubAssetName: 
+      AssetTypeStr: UnityEngine.Texture2D, UnityEngine, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
   m_SpriteTarget: {fileID: 1200430980}
   m_SpriteReference:
-    Guid: 01d7ffeccc9faec4a8fb39d981d25be0
-    SubName: Flower_0
-    TypeStr: UnityEngine.Sprite, UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    m_Asset: {fileID: 21300000, guid: 01d7ffeccc9faec4a8fb39d981d25be0, type: 3}
+    m_Info:
+      ReferenceType: 0
+      FilePath: Assets/Test/AssetReference/AssetBundlesFolder/Images/Flower.jpg
+      Src: assetbundlefoldertest
+      Name: Flower
+      SubAssetName: Flower_0
+      AssetTypeStr: UnityEngine.Sprite, UnityEngine, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
   m_TextureTarget: {fileID: 780228107}
   m_TextureReference:
-    Guid: cf0f9c86f8d38b0419937d23c5af8a58
-    SubName: 
-    TypeStr: 
+    m_Asset: {fileID: 2800000, guid: cf0f9c86f8d38b0419937d23c5af8a58, type: 3}
+    m_Info:
+      ReferenceType: 0
+      FilePath: Assets/Test/AssetReference/AssetBundlesFolder/Images/Crystal.jpg
+      Src: assetbundlefoldertest
+      Name: Crystal
+      SubAssetName: 
+      AssetTypeStr: UnityEngine.Texture2D, UnityEngine, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
 --- !u!114 &1274243036
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1148,19 +1184,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_TextureWithSpritesTarget: {fileID: 1784932522}
   m_TextureWithSpritesReference:
-    Guid: 0ad6d0c06127b764e8b0f992a7ac2478
-    SubName: 
-    TypeStr: 
+    m_Asset: {fileID: 2800000, guid: 0ad6d0c06127b764e8b0f992a7ac2478, type: 3}
+    m_Info:
+      ReferenceType: 1
+      FilePath: Assets/Test/AssetReference/Resources/Images/Flower.jpg
+      Src: Images/Flower.jpg
+      Name: Flower
+      SubAssetName: 
+      AssetTypeStr: UnityEngine.Texture2D, UnityEngine, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
   m_SpriteTarget: {fileID: 163519750}
   m_SpriteReference:
-    Guid: 0ad6d0c06127b764e8b0f992a7ac2478
-    SubName: Test 1_0
-    TypeStr: UnityEngine.Sprite, UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    m_Asset: {fileID: 21300000, guid: 0ad6d0c06127b764e8b0f992a7ac2478, type: 3}
+    m_Info:
+      ReferenceType: 1
+      FilePath: Assets/Test/AssetReference/Resources/Images/Flower.jpg
+      Src: Images/Flower.jpg
+      Name: Flower
+      SubAssetName: Test 1_0
+      AssetTypeStr: UnityEngine.Sprite, UnityEngine, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
   m_TextureTarget: {fileID: 1567791091}
   m_TextureReference:
-    Guid: 6093831b5dea694409b306c2577b5486
-    SubName: 
-    TypeStr: 
+    m_Asset: {fileID: 2800000, guid: 6093831b5dea694409b306c2577b5486, type: 3}
+    m_Info:
+      ReferenceType: 1
+      FilePath: Assets/Test/AssetReference/Resources/Images/Crystal.jpg
+      Src: Images/Crystal.jpg
+      Name: Crystal
+      SubAssetName: 
+      AssetTypeStr: UnityEngine.Texture2D, UnityEngine, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
 --- !u!114 &1376738274
 MonoBehaviour:
   m_ObjectHideFlags: 0

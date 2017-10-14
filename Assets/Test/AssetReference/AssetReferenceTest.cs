@@ -23,26 +23,26 @@ public class AssetReferenceTest : MonoBehaviour {
             yield return null;
         }
 
-        var assetHandle = m_TextureWithSpritesReference.GetAsync<Texture2D>();
+        var assetHandle = m_TextureWithSpritesReference.LoadAsset();
         while(!assetHandle.IsDone())
         {
             yield return null;
         }
         m_TextureWithSpritesTarget.texture = assetHandle.GetAsset<Texture2D>();
 
-        assetHandle = m_SpriteReference.GetAsync<Sprite>();
+        assetHandle = m_SpriteReference.LoadAsset();
         while (!assetHandle.IsDone())
         {
             yield return null;
         }
         m_SpriteTarget.sprite = assetHandle.GetAsset<Sprite>();
 
-        assetHandle = m_TextureReference.GetAsync<Texture2D>();
+        assetHandle = m_TextureReference.LoadAsset();
         while (!assetHandle.IsDone())
         {
             yield return null;
         }
-        m_TextureTarget.texture = assetHandle.GetAsset<Texture2D>();
+        m_TextureTarget.texture = m_TextureReference.GetAsset<Texture2D>();
     }
 	
 	// Update is called once per frame

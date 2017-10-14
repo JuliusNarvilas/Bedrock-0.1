@@ -1,94 +1,100 @@
-﻿using System;
+﻿using AssetBundles;
+using System;
+using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 namespace Common.IO
 {
-    public enum AssetReferenceType
-    {
-        AssetBundle,
-        AssetBundleDirectory,
-        Resource
-    }
 
     [Serializable]
-    public class AssetReference : IDisposable
+    public class AssetReference : IDisposable , ISerializationCallbackReceiver
     {
+        public enum ReferenceType
+        {
+            AssetBundle,
+            Resource
+        }
+
+
+#if UNITY_EDITOR
         [SerializeField]
-        private string Guid;
-        /// <summary>
-        /// For nested assets like Sprites.
-        /// </summary>
-        [SerializeField]
-        private string SubName;
-        /// <summary>
-        /// For storing nested asset type information.
-        /// Is mostly for editor scripts
-        /// </summary>
-        [SerializeField]
-        private string TypeStr;
-
-        private AssetDataReference m_DataReference;
-
-        private Type m_Type;
-        public Type GetAssetType()
+        private UnityEngine.Object m_Asset;
+        private DateTime m_LastUpdate;
+#endif
+        [SerializeField, HideInInspector]
+        private AssetReferenceInfo m_Info;
+        private AssetReferenceLoadHandle m_LoadHandle;
+        private UnityEngine.Object m_LoadedAsset;
+        
+        public AssetReferenceInfo GetInfo()
         {
-            if (m_Type == null)
+            return m_Info;
+        }
+
+        public AssetReferenceLoadHandle LoadAsset()
+        {
+            if (m_Info != null && !string.IsNullOrEmpty(m_Info.FilePath))
             {
-                m_Type = System.Type.GetType(TypeStr);
+                m_LoadHandle = AssetReferenceLoadHandle.Create(m_Info);
             }
-            return m_Type;
+            return m_LoadHandle;
         }
 
-        private AssetReference(string i_GUID, string i_TypeStr, string i_SubName)
+        public T GetAsset<T>() where T : UnityEngine.Object
         {
-            Guid = i_GUID;
-            TypeStr = i_TypeStr;
-            SubName = i_SubName;
-        }
-
-        public string GetPath()
-        {
-            var info = AssetReferenceTracker.Instance.GetAssetInfo(Guid);
-            if(info != null)
+            if(m_LoadedAsset == null && m_LoadHandle != null)
             {
-                return info.FilePath;
+                m_LoadedAsset = m_LoadHandle.GetAsset<T>();
             }
-            return null;
+            return m_LoadedAsset as T;
         }
 
-        public AssetReferenceType GetAssetRefType()
+        public bool IsDone()
         {
-            var info = AssetReferenceTracker.Instance.GetAssetInfo(Guid);
-            if (info != null)
-            {
-                return info.ReferenceType;
-            }
-            return default(AssetReferenceType);
-        }
-
-        public AssetReferenceLoadHandle GetAsync<T>() where T : UnityEngine.Object
-        {
-            var dataRef = AssetReferenceTracker.Instance.GetAssetData(Guid);
-            if (dataRef != null)
-            {
-                return dataRef.LoadAsync(typeof(T), SubName);
-            }
-            return null;
-        }
-
-        public AssetReference Clone()
-        {
-            return new AssetReference(Guid, TypeStr, SubName);
+            return m_LoadHandle == null || m_LoadHandle.IsDone();
         }
 
         public void Dispose()
         {
-            if(m_DataReference != null)
+            if (m_LoadHandle != null)
             {
-                m_DataReference.Unload();
-                m_DataReference = null;
+                m_LoadHandle.Dispose();
+                m_LoadHandle = null;
+                m_LoadedAsset = null;
             }
         }
-        
+
+        [UnityEditor.Callbacks.DidReloadScripts]
+        private static void OnScriptsReloaded()
+        {
+            // do something
+        }
+
+        public void OnBeforeSerialize()
+        {
+#if UNITY_EDITOR
+            if (m_Asset != null)
+            {
+                //if the inspector is focused on something with AssetReference,
+                //OnBeforeSerialize() is spamed
+                var now = DateTime.UtcNow;
+                var timeDiff = now - m_LastUpdate;
+                if (timeDiff.TotalSeconds >= 1.0)
+                {
+                    m_LastUpdate = now;
+                    m_Info = AssetReferenceInfo.Create(m_Asset);
+                }
+            }
+            else
+            {
+                m_Info = null;
+            }
+#endif
+        }
+
+        public void OnAfterDeserialize()
+        {
+        }
     }
 }
